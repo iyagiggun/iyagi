@@ -1,52 +1,41 @@
-import { Application } from 'pixi.js';
-import { director_prototype } from './director';
-import { scene_prototype } from './scene';
-import { object_prototype } from './object';
-import dev_tools from './dev_tools';
 import application from './application';
+import { DirectorPrototype } from './director';
+import { ObjectOptions, ObjectPrototype } from './object';
+import { ScenePrototype } from './scene';
+import { DevTools } from './utils';
 
 type IyagiOptions = {
   debug?: boolean;
 }
 
-const iyagi_prototype = {
+const IyagiPrototype = {
   _init () {
   },
-  create_director () {
-    const i = Object.create(director_prototype) as typeof director_prototype;
+  createDirector () {
+    const i = Object.create(DirectorPrototype) as typeof DirectorPrototype;
     i._init();
     return i;
   },
-  create_scene () {
-    const i = Object.create(scene_prototype) as typeof scene_prototype;
-    i._init();
-    return i;
-  },
-  create_object (name: string) {
-    const i = Object.create(object_prototype) as typeof object_prototype;
+  createScene (name: string) {
+    const i = Object.create(ScenePrototype) as typeof ScenePrototype;
     i._init(name);
+    return i;
+  },
+  createObject (name: string, options: ObjectOptions) {
+    const i = Object.create(ObjectPrototype) as typeof ObjectPrototype;
+    i._init(name, options);
     return i;
   }
 };
 
 function iyagi (canvas: HTMLCanvasElement, options?: IyagiOptions) {
-  if (!(canvas instanceof HTMLCanvasElement)) {
-    throw new Error(`Fail to create iyagi. ${canvas} is not a canvas`);
-  }
-  const app = new Application({
-    view: canvas,
-    backgroundColor: 0x000000,
-    width: parseInt(getComputedStyle(canvas).width, 10),
-    height: parseInt(getComputedStyle(canvas).height, 10),
-  });
-
-  application.set(app);
+  application.set(canvas);
 
   if (options?.debug === true) {
-    dev_tools.enableDebug();
+    DevTools.enableDebug();
   }
 
-  const obj = Object.create(iyagi_prototype) as typeof iyagi_prototype;
+  const obj = Object.create(IyagiPrototype) as typeof IyagiPrototype;
   obj._init();
 
   return obj;

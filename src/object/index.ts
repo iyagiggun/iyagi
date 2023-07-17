@@ -1,9 +1,26 @@
+import { Container } from 'pixi.js';
+import { Area } from '../application/area';
 
-const object_prototype = {
-  _name: '',
-  _init(name: string) {
-    this._name = name;
+type SpriteAreaInfo = {
+  areaList: Area[];
+  collisionArea: Area;
+}
+
+export type ObjectOptions = {
+  imgUrl: string;
+  up?: SpriteAreaInfo;
+  down: SpriteAreaInfo;
+  left: SpriteAreaInfo;
+  right: SpriteAreaInfo;
+}
+
+const ObjectPrototype = {
+  name: '',
+  container: new Container(),
+  _init(name: string, options: ObjectOptions) {
+    this.name = name;
+    console.error(options);
   },
 };
 
-export { object_prototype };
+export { ObjectPrototype };

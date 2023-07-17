@@ -1,10 +1,10 @@
-import { object_prototype } from '.';
+import { ObjectPrototype } from '.';
 
-const tile_prototype = {
-  ...Object.create(object_prototype) as typeof object_prototype,
+const TilePrototype = {
+  ...Object.create(ObjectPrototype) as typeof ObjectPrototype,
   _init() {
     console.error(33);
   },
 };
 
-export { tile_prototype };
+export { TilePrototype };

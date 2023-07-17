@@ -1,10 +1,12 @@
 let debug = false;
 
-export default {
+const DevTools = {
   enableDebug() {
     debug = true;
   },
-  isDebug() {
+  isDebugMode() {
     return debug;
   }
 };
+
+export { DevTools };
