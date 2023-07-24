@@ -1,18 +1,18 @@
 import application from '../application';
-import { ScenePrototype } from '../scene';
+import { SceneType } from '../scene';
 
 const DirectorPrototype = {
-  scene: undefined as typeof ScenePrototype | undefined,
+  scene: undefined as SceneType | undefined,
   _init () {
   },
-  async play (scene: typeof ScenePrototype) {
+  async play (scene: SceneType) {
     if(this.scene) {
       this.scene = scene;
-      application.get().stage.removeChild(scene.container);
+      application.get().stage.removeChild(scene.getContainer());
     }
     await scene.load();
-
-    application.get().stage.addChild(scene.container);
+    scene.setup();
+    application.get().stage.addChild(scene.getContainer());
   }
 };
 

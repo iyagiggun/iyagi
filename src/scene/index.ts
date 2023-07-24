@@ -1,16 +1,36 @@
 import { Container } from 'pixi.js';
-import { DevTools } from '../utils';
+import { ObjectType } from '../object';
 
 const ScenePrototype = {
   name: '',
-  container: new Container(),
-  _init(name: string) {
+  _objectList: undefined as undefined | ObjectType[],
+  _container: undefined as undefined | Container,
+  _init(name: string, objectList: ObjectType[]) {
     this.name = name;
+    this._objectList = objectList;
+    this._container = new Container();
+  },
+  getContainer() {
+    if (!this._container) {
+      throw new Error(`[scene.getContainer] no container. ${this.name}`);
+    }
+    return this._container;
   },
   async load() {
-    DevTools.isDebugMode() && console.debug(`[scene] ${this.name}. load start.`);
-    DevTools.isDebugMode() && console.debug(`[scene] ${this.name}. load end.`);
+    const objectList = this._objectList;
+    if (!objectList) {
+      throw new Error('[Scene.load] not inited.');
+    }
+    await Promise.all(objectList.map((obj) => obj.load()));
+  },
+  setup() {
+    this._objectList?.forEach((obj) => {
+      this._container?.addChild(obj.getContainer());
+      console.error(obj.name, obj.getPos());
+    });
   }
 };
 
-export { ScenePrototype };
+type SceneType = typeof ScenePrototype;
+
+export { ScenePrototype, SceneType };
