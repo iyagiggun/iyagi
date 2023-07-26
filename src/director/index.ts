@@ -1,11 +1,16 @@
 import application from '../application';
-import { SceneType } from '../scene';
+import { ScenePrototype } from '../scene';
 
-const DirectorPrototype = {
-  scene: undefined as SceneType | undefined,
+interface DirectorPrototype {
+  scene?: ScenePrototype;
+  _init(): void;
+  play(scene: ScenePrototype): Promise<void>;
+}
+
+const DirectorPrototype: DirectorPrototype = {
   _init () {
   },
-  async play (scene: SceneType) {
+  async play (scene: ScenePrototype) {
     if(this.scene) {
       this.scene = scene;
       application.get().stage.removeChild(scene.getContainer());

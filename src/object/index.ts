@@ -1,5 +1,5 @@
 import { AnimatedSprite, BaseTexture, Container, Sprite, Spritesheet, Texture } from 'pixi.js';
-import { Area, Dir } from '../utils/area';
+import { Area, Direction } from '../utils/area';
 
 type SpriteInfo = {
   areaList: Area[];
@@ -28,6 +28,23 @@ export type DirectionalSprite = {
   right?: Sprite;
 }
 
+interface ObjectPrototype {
+  name: string;
+  options?: ObjectOptions;
+  _container?: Container;
+  _dir: Direction;
+  _directionalSprite?: DirectionalSprite;
+  _directionalSpriteMap?: { [key: string]: DirectionalSprite };
+  _init(name: string, options: ObjectOptions): void;
+  getContainer(): Container;
+  load(): Promise<void>;
+  _setDirectionalSprite(key: string): void;
+  getSprite(): Sprite;
+  setPos(x: number, y:number): ObjectPrototype;
+  getPos(): { x: number, y: number };
+  setDirection(dir: Direction): ObjectPrototype;
+}
+
 let spriteNamePrefix = 1;
 
 const TEXTURE_MAP: { [key: string] : BaseTexture } = {};
@@ -42,7 +59,7 @@ const areaListToFrame = (prefix: string, areaList?: Area[]) => {
   if (!areaList) {
     return {};
   }
-  return areaList.reduce((frames, [x, y, w, h], idx) => ({
+  return areaList.reduce((frames, { x, y, w, h }, idx) => ({
     ...frames,
     [`${prefix}:${idx}`]: {
       frame: {
@@ -94,13 +111,9 @@ async function getDirectionalSpriteMap(imgUrl: string, key: string, info: Direct
   };
 }
 
-const ObjectPrototype = {
+const ObjectPrototype: ObjectPrototype = {
   name: '',
-  options: undefined as undefined | ObjectOptions,
-  _container: undefined as undefined | Container,
-  _dir: 'down' as Dir,
-  _directionalSprite: undefined as undefined | DirectionalSprite,
-  _directionalSpriteMap: undefined as undefined | { [key: string]: DirectionalSprite },
+  _dir: 'down' as Direction,
   _init(name: string, options: ObjectOptions) {
     this.name = name;
     this.options = options;
@@ -127,28 +140,15 @@ const ObjectPrototype = {
       };
     }, {}) as { [key: string]: DirectionalSprite };
 
-    this.setDirectionalSprite('default');
+    this._setDirectionalSprite('default');
   },
-  setDirectionalSprite(key: string) {
-    const container = this.getContainer();
-    // remove last sprite
-    if (this._directionalSprite) {
-      const lastSprite = this._directionalSprite[this._dir];
-      if (!lastSprite) {
-        throw new Error(`[object.setDirectionSprite] no lastSprite. ${this.name}`);
-      }
-      container.removeChild(lastSprite);
-    }
+  _setDirectionalSprite(key: string) {
     const ds = this._directionalSpriteMap?.[key];
     if (!ds) {
       throw new Error(`[object.setDirectionSprite] no directionalSprite. ${this.name}:${key}`);
     }
-    const sprite = ds[this._dir];
-    if (!sprite) {
-      throw new Error(`[object.setDirectionSprite] no sprite. ${this.name}:${key}:${this._dir}`);
-    }
     this._directionalSprite = ds;
-    container.addChild(sprite);
+    this.setDirection(this._dir);
   },
   getSprite() {
     const sprite = this._directionalSprite?.[this._dir];
@@ -165,9 +165,24 @@ const ObjectPrototype = {
   getPos() {
     const { x, y } = this.getContainer();
     return { x, y };
+  },
+  setDirection(dir: Direction) {
+    const container = this.getContainer();
+    // remove last sprite
+    if (this._directionalSprite) {
+      const lastSprite = this._directionalSprite[this._dir];
+      if (lastSprite) {
+        container.removeChild(lastSprite);
+      }
+      const nextSprite = this._directionalSprite[dir];
+      if (!nextSprite) {
+        throw new Error(`[object.setDirection] no sprite. ${this.name}:${dir}`);
+      }
+      container.addChild(nextSprite);
+    }
+    this._dir = dir;
+    return this;
   }
 };
 
-type ObjectType = typeof ObjectPrototype;
-
-export { ObjectPrototype, ObjectType };
+export { ObjectPrototype };

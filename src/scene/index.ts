@@ -1,11 +1,19 @@
 import { Container } from 'pixi.js';
-import { ObjectType } from '../object';
+import { ObjectPrototype } from '../object';
 
-const ScenePrototype = {
+interface ScenePrototype {
+  name: string;
+  _objectList?: ObjectPrototype[];
+  _container?: Container;
+  _init(name: string, objectList: ObjectPrototype[]): void;
+  getContainer(): Container;
+  load(): Promise<void>;
+  setup(): void;
+}
+
+const ScenePrototype: ScenePrototype = {
   name: '',
-  _objectList: undefined as undefined | ObjectType[],
-  _container: undefined as undefined | Container,
-  _init(name: string, objectList: ObjectType[]) {
+  _init(name: string, objectList: ObjectPrototype[]) {
     this.name = name;
     this._objectList = objectList;
     this._container = new Container();
@@ -26,11 +34,8 @@ const ScenePrototype = {
   setup() {
     this._objectList?.forEach((obj) => {
       this._container?.addChild(obj.getContainer());
-      console.error(obj.name, obj.getPos());
     });
   }
 };
 
-type SceneType = typeof ScenePrototype;
-
-export { ScenePrototype, SceneType };
+export { ScenePrototype };

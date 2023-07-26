@@ -4,7 +4,11 @@ export type TileOptions = ObjectOptions & {
   test: 1
 }
 
-const Inheritor = {
+interface TilePrototype extends ObjectPrototype {
+  _init(name: string, options: TileOptions): void
+}
+
+const Inheritor: TilePrototype = {
   ...{} as typeof ObjectPrototype,
   _init(name: string, options: TileOptions) {
     ObjectPrototype._init.call(this, name, options);
@@ -13,6 +17,4 @@ const Inheritor = {
 
 const TilePrototype = Object.assign(Object.create(ObjectPrototype), Inheritor) as typeof Inheritor;
 
-type TileType = typeof TilePrototype;
-
-export { TilePrototype, TileType };
+export { TilePrototype };

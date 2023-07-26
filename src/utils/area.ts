@@ -1,3 +1,3 @@
-export type Area = [x: number, y: number, width: number, height: number];
+export type Area = { x: number, y: number, w: number, h: number; };
 // export type Pos = [x: number, y: number];
-export type Dir = 'up' | 'down' | 'left' | 'right';
+export type Direction = 'up' | 'down' | 'left' | 'right';
