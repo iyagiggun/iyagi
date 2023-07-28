@@ -1,6 +1,7 @@
 import application from './application';
 import { DirectorPrototype } from './director';
 import { ObjectOptions, ObjectPrototype } from './object';
+import { CharacterOptions, CharacterPrototype } from './object/character';
 import { TileOptions, TilePrototype } from './object/tile';
 import { ScenePrototype } from './scene';
 import { DevTools } from './utils';
@@ -30,6 +31,11 @@ const IyagiPrototype = {
   },
   createTile (name: string, options: TileOptions) {
     const i = Object.create(TilePrototype) as TilePrototype;
+    i._init(name, options);
+    return i;
+  },
+  createCharacter (name: string, options: CharacterOptions) {
+    const i = Object.create(CharacterPrototype) as CharacterPrototype;
     i._init(name, options);
     return i;
   }

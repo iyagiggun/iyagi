@@ -13,14 +13,6 @@ type DirectionalSpriteInfo = {
   right?: SpriteInfo;
 }
 
-export type ObjectOptions = {
-  imgUrl: string;
-  spriteInfoMap: {
-    default: DirectionalSpriteInfo;
-    [key: string]: DirectionalSpriteInfo;
-  }
-}
-
 export type DirectionalSprite = {
   up?: Sprite;
   down: Sprite;
@@ -28,21 +20,12 @@ export type DirectionalSprite = {
   right?: Sprite;
 }
 
-interface ObjectPrototype {
-  name: string;
-  options?: ObjectOptions;
-  _container?: Container;
-  _dir: Direction;
-  _directionalSprite?: DirectionalSprite;
-  _directionalSpriteMap?: { [key: string]: DirectionalSprite };
-  _init(name: string, options: ObjectOptions): void;
-  getContainer(): Container;
-  load(): Promise<void>;
-  _setDirectionalSprite(key: string): void;
-  getSprite(): Sprite;
-  setPos(x: number, y:number): ObjectPrototype;
-  getPos(): { x: number, y: number };
-  setDirection(dir: Direction): ObjectPrototype;
+export interface ObjectOptions {
+  imgUrl: string;
+  spriteInfoMap: {
+    default: DirectionalSpriteInfo;
+    [key: string]: DirectionalSpriteInfo;
+  }
 }
 
 let spriteNamePrefix = 1;
@@ -111,9 +94,28 @@ async function getDirectionalSpriteMap(imgUrl: string, key: string, info: Direct
   };
 }
 
+interface ObjectPrototype {
+  name: string;
+  options?: ObjectOptions;
+  _container?: Container;
+  _dir: Direction;
+  _directionalSprite: string;
+  _directionalSpriteMap?: { [key: string]: DirectionalSprite };
+  _init(name: string, options: ObjectOptions): void;
+  getContainer(): Container;
+  load(): Promise<void>;
+  _setDirectionalSprite(key: string): void;
+  getSprite(): Sprite;
+  getCollisionMod(): Area;
+  setPos(x: number, y:number): ObjectPrototype;
+  getPos(): { x: number, y: number };
+  setDirection(dir: Direction): ObjectPrototype;
+}
+
 const ObjectPrototype: ObjectPrototype = {
   name: '',
   _dir: 'down' as Direction,
+  _directionalSprite: 'default',
   _init(name: string, options: ObjectOptions) {
     this.name = name;
     this.options = options;
@@ -143,23 +145,34 @@ const ObjectPrototype: ObjectPrototype = {
     this._setDirectionalSprite('default');
   },
   _setDirectionalSprite(key: string) {
-    const ds = this._directionalSpriteMap?.[key];
-    if (!ds) {
+    if (!this._directionalSpriteMap?.[key]) {
       throw new Error(`[object.setDirectionSprite] no directionalSprite. ${this.name}:${key}`);
     }
-    this._directionalSprite = ds;
+    this._directionalSprite = key;
     this.setDirection(this._dir);
   },
   getSprite() {
-    const sprite = this._directionalSprite?.[this._dir];
+    const sprite = this._directionalSpriteMap?.[this._directionalSprite]?.[this._dir];
     if (!sprite) {
       throw new Error(`[object.getSprite] Fail to get sprite. ${this.name}:${this._dir}`);
     }
     return sprite;
   },
+  getCollisionMod() {
+    const spriteInfo = this.options?.spriteInfoMap[this._directionalSprite][this._dir];
+    if (!spriteInfo) {
+      throw new Error('[object.getCollisionArea] No sprite info');
+    }
+    if (spriteInfo.collisionArea) {
+      return spriteInfo.collisionArea;
+    }
+    const { w, h } = spriteInfo.areaList[0];
+    return { x: 0, y: 0, w, h };
+  },
   setPos(x: number, y: number) {
-    this.getContainer().x = x;
-    this.getContainer().y = y;
+    const { x: modX, y: modY } = this.getCollisionMod();
+    this.getContainer().x = x - modX;
+    this.getContainer().y = y - modY;
     return this;
   },
   getPos() {
@@ -169,12 +182,12 @@ const ObjectPrototype: ObjectPrototype = {
   setDirection(dir: Direction) {
     const container = this.getContainer();
     // remove last sprite
-    if (this._directionalSprite) {
-      const lastSprite = this._directionalSprite[this._dir];
+    if (this._directionalSpriteMap) {
+      const lastSprite = this._directionalSpriteMap[this._directionalSprite][this._dir];
       if (lastSprite) {
         container.removeChild(lastSprite);
       }
-      const nextSprite = this._directionalSprite[dir];
+      const nextSprite = this._directionalSpriteMap[this._directionalSprite][dir];
       if (!nextSprite) {
         throw new Error(`[object.setDirection] no sprite. ${this.name}:${dir}`);
       }

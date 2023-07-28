@@ -15,6 +15,6 @@ const Inheritor: TilePrototype = {
   }
 };
 
-const TilePrototype = Object.assign(Object.create(ObjectPrototype), Inheritor) as typeof Inheritor;
+const TilePrototype = Object.assign(Object.create(ObjectPrototype), Inheritor) as TilePrototype;
 
 export { TilePrototype };
