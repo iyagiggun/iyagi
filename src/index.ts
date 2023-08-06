@@ -1,9 +1,9 @@
 import application from './application';
-import { DirectorPrototype } from './director';
-import { ObjectOptions, ObjectPrototype } from './object';
-import { CharacterOptions, CharacterPrototype } from './object/character';
-import { TileOptions, TilePrototype } from './object/tile';
-import { ScenePrototype } from './scene';
+import { create_director } from './director';
+import { ObjectProps, create_object } from './object';
+import { create_character } from './object/character';
+import { create_tile } from './object/tile';
+import { SceneProps, create_scene } from './scene';
 import { DevTools } from './utils';
 import { Area, Direction } from './utils/area';
 
@@ -14,31 +14,21 @@ type IyagiOptions = {
 const IyagiPrototype = {
   _init () {
   },
-  createDirector () {
-    const i = Object.create(DirectorPrototype) as DirectorPrototype;
-    i._init();
-    return i;
+  create_director () {
+    return create_director();
   },
-  createScene (name: string, objectList: ObjectPrototype[]) {
-    const i = Object.create(ScenePrototype) as ScenePrototype;
-    i._init(name, objectList);
-    return i;
+  create_scene (props: SceneProps) {
+    return create_scene(props);
   },
-  createObject (name: string, options: ObjectOptions) {
-    const i = Object.create(ObjectPrototype) as ObjectPrototype;
-    i._init(name, options);
-    return i;
+  create_object (props: ObjectProps) {
+    return create_object(props);
   },
-  createTile (name: string, options: TileOptions) {
-    const i = Object.create(TilePrototype) as TilePrototype;
-    i._init(name, options);
-    return i;
+  create_tile (props: ObjectProps) {
+    return create_tile(props);
   },
-  createCharacter (name: string, options: CharacterOptions) {
-    const i = Object.create(CharacterPrototype) as CharacterPrototype;
-    i._init(name, options);
-    return i;
-  }
+  create_character (props: ObjectProps) {
+    return create_character(props);
+  },
 };
 
 function iyagi (canvas: HTMLCanvasElement, options?: IyagiOptions) {

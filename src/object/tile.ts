@@ -1,20 +1,8 @@
-import { ObjectOptions, ObjectPrototype } from '.';
+import { ObjectProps, create_object } from '.';
 
-export type TileOptions = ObjectOptions & {
-  test: 1
-}
-
-interface TilePrototype extends ObjectPrototype {
-  _init(name: string, options: TileOptions): void
-}
-
-const Inheritor: TilePrototype = {
-  ...{} as typeof ObjectPrototype,
-  _init(name: string, options: TileOptions) {
-    ObjectPrototype._init.call(this, name, options);
-  }
+export const create_tile = (props: ObjectProps) => {
+  const obj = create_object(props);
+  return {
+    ...obj
+  };
 };
-
-const TilePrototype = Object.assign(Object.create(ObjectPrototype), Inheritor) as TilePrototype;
-
-export { TilePrototype };

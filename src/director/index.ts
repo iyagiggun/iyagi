@@ -1,25 +1,17 @@
 import application from '../application';
-import { ScenePrototype } from '../scene';
+import { SceneType } from '../scene';
 
-interface DirectorPrototype {
-  scene?: ScenePrototype;
-  _init(): void;
-  play(scene: ScenePrototype): Promise<void>;
-}
-
-const DirectorPrototype: DirectorPrototype = {
-  _init () {
-  },
-  async play (scene: ScenePrototype) {
-    if(this.scene) {
-      this.scene = scene;
-      application.get().stage.removeChild(scene.getContainer());
+export const create_director = () => {
+  let cur_scene: SceneType | undefined;
+  return {
+    async play(scene: SceneType) {
+      if (cur_scene) {
+        application.get().stage.removeChild(cur_scene.container);
+      }
+      cur_scene = scene;
+      await cur_scene.load();
+      cur_scene.setup();
+      application.get().stage.addChild(cur_scene.container);
     }
-    await scene.load();
-    scene.setup();
-    application.get().stage.addChild(scene.getContainer());
-  }
+  };
 };
-
-export { DirectorPrototype };
-

@@ -1,41 +1,26 @@
 import { Container } from 'pixi.js';
-import { ObjectPrototype } from '../object';
+import { ObjectType } from '../object';
 
-interface ScenePrototype {
+export type SceneProps = {
   name: string;
-  _objectList?: ObjectPrototype[];
-  _container?: Container;
-  _init(name: string, objectList: ObjectPrototype[]): void;
-  getContainer(): Container;
-  load(): Promise<void>;
-  setup(): void;
+  object_list: ObjectType[];
 }
 
-const ScenePrototype: ScenePrototype = {
-  name: '',
-  _init(name: string, objectList: ObjectPrototype[]) {
-    this.name = name;
-    this._objectList = objectList;
-    this._container = new Container();
-  },
-  getContainer() {
-    if (!this._container) {
-      throw new Error(`[scene.getContainer] no container. ${this.name}`);
+export const create_scene = ({
+  // name,
+  object_list
+}:SceneProps) => {
+  return {
+    container: new Container(),
+    load() {
+      return Promise.all(object_list.map((obj) => obj.load()));
+    },
+    setup() {
+      object_list.forEach((obj) => {
+        this.container.addChild(obj.container);
+      });
     }
-    return this._container;
-  },
-  async load() {
-    const objectList = this._objectList;
-    if (!objectList) {
-      throw new Error('[Scene.load] not inited.');
-    }
-    await Promise.all(objectList.map((obj) => obj.load()));
-  },
-  setup() {
-    this._objectList?.forEach((obj) => {
-      this._container?.addChild(obj.getContainer());
-    });
-  }
+  };
 };
 
-export { ScenePrototype };
+export type SceneType = ReturnType<typeof create_scene>;

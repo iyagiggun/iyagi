@@ -1,20 +1,8 @@
-import { ObjectOptions, ObjectPrototype } from '.';
+import { ObjectProps, create_object } from '.';
 
-export interface CharacterOptions extends ObjectOptions {
-
-}
-
-interface CharacterPrototype extends ObjectPrototype {
-  _init(name: string, options: CharacterOptions): void;
-}
-
-const Inheritor: CharacterPrototype = {
-  ...{} as typeof ObjectPrototype,
-  _init(name: string, options: CharacterOptions) {
-    ObjectPrototype._init.call(this, name, options);
-  }
+export const create_character = (props: ObjectProps) => {
+  const obj = create_object(props);
+  return {
+    ...obj
+  };
 };
-
-const CharacterPrototype = Object.assign(Object.create(ObjectPrototype), Inheritor) as CharacterPrototype;
-
-export { CharacterPrototype };
