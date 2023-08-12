@@ -1,21 +1,21 @@
 import { Application, Container } from 'pixi.js';
 import { ObjectType } from '../object';
+import { wait } from '../utils';
 
 export type SceneProps = {
   name: string;
   object_list: ObjectType[];
 }
 
-type SceneEvent = 'start';
-
 export const create_scene = (application: Application, {
   // name,
-  object_list
+  object_list: _object_list
 }:SceneProps) => {
 
   const container = new Container;
-  const event_target = new EventTarget();
+  let object_list = _object_list.slice();
   const take_list: (() => Promise<void>)[] = [];
+  // const event_target = new EventTarget();
 
   return {
 
@@ -44,18 +44,35 @@ export const create_scene = (application: Application, {
         });
     },
 
-    add_take_list(_take_list: (() => Promise<void>)[]) {
-      take_list.push(..._take_list);
+    add_take(take: (() => Promise<void>)) {
+      take_list.push(take);
     },
 
-    on(evt: SceneEvent, handler: () => void) {
-      event_target.addEventListener(evt, handler);
+    remove_object(target: ObjectType) {
+      if (!object_list.includes(target)) {
+        throw new Error(`[scene.remove_object] no object. ${target.name}`);
+      }
+      object_list = object_list.filter((each) => each !== target);
+      container.removeChild(target.container);
     },
 
-    off(evt: SceneEvent, handler: () => void) {
-      event_target.removeEventListener(evt,handler);
-    }
+    add_object(target: ObjectType) {
+      if (object_list.includes(target)) {
+        return;
+      }
+      object_list.push(target);
+      container.addChild(target.container);
+    },
 
+    // on(evt: SceneEvent, handler: () => void) {
+    //   event_target.addEventListener(evt, handler);
+    // },
+
+    // off(evt: SceneEvent, handler: () => void) {
+    //   event_target.removeEventListener(evt,handler);
+    // }
+
+    wait
   };
 };
 

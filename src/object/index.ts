@@ -121,6 +121,10 @@ export const create_object = ({
       this.change_direction(cur_direction);
     },
 
+    is_loaded() {
+      return loaded;
+    },
+
     change_direction(next_direction: Direction) {
       if (!loaded) {
         cur_direction = next_direction;
