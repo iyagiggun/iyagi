@@ -1,6 +1,8 @@
 import { Application, Container } from 'pixi.js';
 import { ObjectType } from '../object';
+import { CharacterType } from '../object/character';
 import { wait } from '../utils';
+import { show_message } from './messenger';
 
 export type SceneProps = {
   name: string;
@@ -62,6 +64,14 @@ export const create_scene = (application: Application, {
       }
       object_list.push(target);
       container.addChild(target.container);
+    },
+
+    show_message(speaker: CharacterType, message: string) {
+      show_message({
+        application,
+        speaker,
+        message
+      });
     },
 
     // on(evt: SceneEvent, handler: () => void) {

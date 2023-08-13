@@ -1,6 +1,6 @@
 import { Application } from 'pixi.js';
 import { ObjectProps, create_object } from './object';
-import { create_character } from './object/character';
+import { CharacterProps, create_character } from './object/character';
 import { create_tile } from './object/tile';
 import { SceneProps, create_scene } from './scene';
 import { DevTools } from './utils';
@@ -37,7 +37,7 @@ function create_iyagi(canvas: HTMLCanvasElement, options?: IyagiOptions) {
       return create_tile(props);
     },
 
-    create_character (props: ObjectProps) {
+    create_character (props: CharacterProps) {
       return create_character(props);
     },
   };

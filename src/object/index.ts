@@ -38,7 +38,7 @@ const get_texture = (imgUrl: string) => {
 
 export type ObjectProps = {
   name: string;
-  img_url: string;
+  sprite_url: string;
   sprite_info_map:{
     default: DirectionalSpriteInfo;
     [key: string]: DirectionalSpriteInfo;
@@ -47,7 +47,7 @@ export type ObjectProps = {
 
 export const create_object = ({
   name,
-  img_url,
+  sprite_url,
   sprite_info_map
 }: ObjectProps) => {
 
@@ -115,7 +115,7 @@ export const create_object = ({
             scale: '1'
           }
         });
-      const sheet = new Spritesheet(get_texture(img_url), data);
+      const sheet = new Spritesheet(get_texture(sprite_url), data);
       await sheet.parse();
       loaded = true;
       this.change_direction(cur_direction);
