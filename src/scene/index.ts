@@ -67,7 +67,7 @@ export const create_scene = (application: Application, {
     },
 
     show_message(speaker: CharacterType, message: string) {
-      show_message({
+      return show_message({
         application,
         speaker,
         message

@@ -25,7 +25,7 @@ export const create_character = (props: CharacterProps) => {
             texture
           }));
       });
-    Promise.all(promise_list).then((result_list) => {
+    return Promise.all(promise_list).then((result_list) => {
       photo_texture_map = result_list.reduce<{ [key: string]: Texture }>((acc, result) => {
         return {
           ...acc,
