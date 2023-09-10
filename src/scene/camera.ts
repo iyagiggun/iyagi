@@ -1,9 +1,10 @@
 import { Application, Container } from 'pixi.js';
 
+const MAX_CAMERA_MOVE_SPEED = 99999;
+
 export const create_camera = (app: Application, container: Container) => {
 
-  const move_to = (x: number, y: number, _speed: number) => new Promise<void>((resolve) => {
-    console.debug('target', x, y );
+  const move_to = (x: number, y: number, _speed = MAX_CAMERA_MOVE_SPEED) => new Promise<void>((resolve) => {
     const { width: app_width, height: app_height } = app.view;
     const dest_x = Math.round((app_width / 2) - x);
     const dest_y = Math.round((app_height / 2) - y);

@@ -1,5 +1,6 @@
 import { AnimatedSprite, BaseTexture, Container, Sprite, Spritesheet, Texture } from 'pixi.js';
 import { Area, Direction } from '../utils/area';
+import { FRAMES_PER_SECOND } from '../utils';
 
 type SpriteInfo = {
   area_list: Area[];
@@ -13,20 +14,7 @@ type DirectionalSpriteInfo = {
   right?: SpriteInfo;
 }
 
-export type DirectionalSprite = {
-  up?: Sprite;
-  down: Sprite;
-  left?: Sprite;
-  right?: Sprite;
-}
-
-export interface ObjectOptions {
-  imgUrl: string;
-  spriteInfoMap: {
-    default: DirectionalSpriteInfo;
-    [key: string]: DirectionalSpriteInfo;
-  }
-}
+const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
 
 const TEXTURE_CACHE_MAP: { [key: string] : BaseTexture } = {};
 const get_texture = (imgUrl: string) => {
@@ -42,20 +30,23 @@ export type ObjectProps = {
   sprite_info_map:{
     default: DirectionalSpriteInfo;
     [key: string]: DirectionalSpriteInfo;
-  }
+  },
+  z?: number;
 }
 
 export const create_object = ({
   name,
   sprite_url,
-  sprite_info_map
+  sprite_info_map,
+  z: _z
 }: ObjectProps) => {
 
   const container = new Container();
 
   let loaded = false;
-  const cur_sprite_key = 'default';
+  let cur_sprite_key = 'default';
   let cur_direction: Direction = 'down';
+  let z = _z ?? 1;
 
   const get_sprite_info = (_sprite_key?: string, _dir?: Direction) => {
     const sprite_key = _sprite_key ?? cur_sprite_key;
@@ -102,7 +93,7 @@ export const create_object = ({
     return { mod_x: 0, mod_y: 0};
   };
 
-  const change_direction = (next_direction: Direction) => {
+  const set_direction = (next_direction: Direction) => {
     if (!loaded) {
       cur_direction = next_direction;
       return;
@@ -111,8 +102,25 @@ export const create_object = ({
       // return;
     }
     const last_sprite = get_current_sprite();
+    if (last_sprite instanceof AnimatedSprite) {
+      last_sprite.stop();
+    }
     container.removeChild(last_sprite);
     cur_direction = next_direction;
+    const next_sprite = get_current_sprite();
+    container.addChild(next_sprite);
+  };
+
+  const change_sprite = (next_sprite_key: string) => {
+    if (!Object.prototype.hasOwnProperty.call(sprite_info_map, next_sprite_key)) {
+      throw new Error(`[object.change_sprite] "${name}" does not have sprite ${next_sprite_key}.`);
+    }
+    const last_sprite = get_current_sprite();
+    container.removeChild(last_sprite);
+    if (last_sprite instanceof AnimatedSprite) {
+      last_sprite.stop();
+    }
+    cur_sprite_key = next_sprite_key;
     const next_sprite = get_current_sprite();
     container.addChild(next_sprite);
   };
@@ -146,22 +154,26 @@ export const create_object = ({
     const sheet = new Spritesheet(get_texture(sprite_url), data);
     await sheet.parse();
     loaded = true;
-    change_direction(cur_direction);
+    set_direction(cur_direction);
   };
 
   const is_loaded = () => loaded;
 
-  const set_position = (x: number, y: number) => {
+  const set_position = (x: number, y: number, _z?: number) => {
     const { mod_x, mod_y } = get_collision_mod();
     container.x = x - mod_x;
     container.y = y - mod_y;
+    if (_z !== undefined) {
+      z = _z;
+    }
   };
 
   const get_position = () => {
     const { mod_x, mod_y } = get_collision_mod();
     return {
       x: container.x + mod_x,
-      y: container.y + mod_y
+      y: container.y + mod_y,
+      z: z
     };
   };
 
@@ -183,9 +195,35 @@ export const create_object = ({
     return sprite_info.area_list[0].h;
   };
 
+  const get_area = () => {
+    const { x, y, z } = get_position();
+    const w = get_width();
+    const h = get_height();
+    return { x, y, z, w, h };
+  };
+
   const get_center_position = () => {
     const { x, y } = get_position();
     return { x: x + get_width() / 2, y: y + get_height() / 2 };
+  };
+
+  const play = (speed = 1) => {
+    if (!loaded) {
+      throw new Error(`[object.play] "${name}" is not loaded.`);
+    }
+    const sprite = get_current_sprite();
+    if (sprite instanceof AnimatedSprite && !sprite.playing) {
+      sprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+      sprite.loop = true;
+      sprite.play();
+    }
+  };
+
+  const stop = () => {
+    const sprite = get_current_sprite();
+    if (sprite instanceof AnimatedSprite && sprite.playing) {
+      sprite.stop();
+    }
   };
 
   return Object.freeze({
@@ -193,12 +231,16 @@ export const create_object = ({
     container,
     load,
     is_loaded,
-    change_direction,
+    set_direction,
+    change_sprite,
     set_position,
     get_position,
     get_width,
     get_height,
+    get_area,
     get_center_position,
+    play,
+    stop,
   });
 };
 
