@@ -5,6 +5,7 @@ import { wait } from '../utils';
 import { create_messenger } from './messenger';
 import { create_camera } from './camera';
 import { get_direction_by_delta, is_overlap } from '../utils/area';
+import { create_controller } from './controller';
 
 export type SceneProps = {
   name: string;
@@ -23,6 +24,7 @@ export const create_scene = (app: Application, {
 
   const camera = create_camera(app, container);
   const messenger = create_messenger(app);
+  const controller = create_controller(app);
 
   const play = () => Promise.all(object_list.map((obj) => obj.load())) // load object list
     .then(() => {
@@ -107,6 +109,13 @@ export const create_scene = (app: Application, {
     return dest_y;
   };
 
+  const move = (target: ObjectType, delta_x: number, delta_y:number) => {
+    const next_x = get_next_x(target, delta_x);
+    const next_y = get_next_y(target, delta_y);
+    target.set_position(next_x, next_y);
+    target.set_direction(get_direction_by_delta(delta_x, delta_y));
+  };
+
   const move_object = (target: ObjectType, x: number, y: number, options?: {
     speed?: number
     focusing?: boolean
@@ -125,14 +134,11 @@ export const create_scene = (app: Application, {
       } else {
         const delta_x = speed * (diff_x / distance);
         const delta_y = speed * (diff_y / distance);
-        const next_x = get_next_x(target, delta_x);
-        const next_y = get_next_y(target, delta_y);
-        target.set_position(next_x, next_y);
-        target.set_direction(get_direction_by_delta(delta_x, delta_y));
+        move(target, delta_x, delta_y);
+        target.play(speed);
         if (options?.focusing) {
           focus(target);
         }
-        target.play(speed);
       }
 
       if (arrived) {
@@ -145,15 +151,27 @@ export const create_scene = (app: Application, {
     ticker.add(tick);
   });
 
+  const control = (player: CharacterType) => {
+    controller.control();
+    controller.on('move', (data) => {
+      move(player, data.delta_x, data.delta_y);
+      player.play(data.delta_level);
+    });
+    controller.on('stop', () => {
+      player.stop();
+    });
+  };
+
   return Object.freeze({
     container,
     play,
     add_take,
-    remove_object,
     add_object,
+    remove_object,
     show_message,
     focus,
     move_object,
+    control,
 
     wait
   });
