@@ -17,10 +17,10 @@ const is_overlap_in_1d = (x1: number, x2: number, y1: number, y2: number) => {
   return true;
 };
 
-export const is_overlap = (a1: Area, a2: Area) => is_overlap_in_1d(a1.x, a1.x + a1.w, a2.x, a2.x + a2.w)
-        && is_overlap_in_1d(a1.y, a1.y + a1.h, a2.y, a2.y + a2.w);
+export const isOverlap = (a1: Area, a2: Area) => is_overlap_in_1d(a1.x, a1.x + a1.w, a2.x, a2.x + a2.w)
+        && is_overlap_in_1d(a1.y, a1.y + a1.h, a2.y, a2.y + a2.h);
 
-export const get_direction_by_delta = (delta_x: number, delta_y: number) => {
+export const getDirectionByDelta = (delta_x: number, delta_y: number) => {
   if (Math.abs(delta_x) > Math.abs(delta_y)) {
     return delta_x > 0 ? 'right' : 'left';
   }

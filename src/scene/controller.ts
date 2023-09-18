@@ -117,7 +117,7 @@ const create_controller = (app: Application) => {
 
   const control = () => {
     app.stage.addChild(controller);
-    controller.interactive = true;
+    controller.eventMode = 'static';
   };
 
   const on: AddEventListener = (event_type, handler) => {

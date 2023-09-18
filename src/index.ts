@@ -1,8 +1,8 @@
 import { Application } from 'pixi.js';
-import { ObjectProps, create_object } from './object';
-import { CharacterProps, create_character } from './object/character';
-import { create_tile } from './object/tile';
-import { SceneProps, create_scene } from './scene';
+import { createObject } from './object';
+import { createCharacter } from './object/character';
+import { createTile } from './object/tile';
+import { SceneParams, createScene } from './scene';
 import { DevTools } from './utils';
 import { Area, Direction } from './utils/area';
 
@@ -10,13 +10,13 @@ type IyagiOptions = {
   debug?: boolean;
 }
 
-function create_iyagi(canvas: HTMLCanvasElement, options?: IyagiOptions) {
+function createIyagi(canvas: HTMLCanvasElement, options?: IyagiOptions) {
 
   if (options?.debug === true) {
     DevTools.enableDebug();
   }
 
-  const application = new Application({
+  const app = new Application({
     view: canvas,
     backgroundColor: 0x000000,
     width: parseInt(getComputedStyle(canvas).width, 10),
@@ -24,25 +24,18 @@ function create_iyagi(canvas: HTMLCanvasElement, options?: IyagiOptions) {
   });
 
   return {
-
-    create_scene (props: SceneProps) {
-      return create_scene(application, props);
+    createScene(params: SceneParams) {
+      return createScene(app, params);
     },
-
-    create_object (props: ObjectProps) {
-      return create_object(props);
-    },
-
-    create_tile (props: ObjectProps) {
-      return create_tile(props);
-    },
-
-    create_character (props: CharacterProps) {
-      return create_character(props);
-    },
+    createObject,
+    createCharacter,
+    createTile,
   };
 }
+
 export {
   Area,
-  Direction, create_iyagi
+  Direction,
+  createIyagi
 };
+

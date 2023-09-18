@@ -1,16 +1,16 @@
 import { Assets, Texture } from 'pixi.js';
-import { ObjectProps, create_object } from '.';
+import { ObjectParams, createObject } from '.';
 import { TRANSPARENT_1PX_IMG } from '../utils';
 
-export type CharacterProps = ObjectProps & {
+export type CharacterParams = ObjectParams & {
   photo_map?: {
     default: string;
     [key: string]: string;
   }
 }
 
-export const create_character = (props: CharacterProps) => {
-  const obj = create_object(props);
+export const createCharacter = (props: CharacterParams) => {
+  const obj = createObject(props);
 
   const cur_photo_key = 'default';
   const photo_map = props.photo_map || { default: TRANSPARENT_1PX_IMG };
@@ -54,4 +54,4 @@ export const create_character = (props: CharacterProps) => {
   };
 };
 
-export type CharacterType = ReturnType<typeof create_character>;
+export type CharacterType = ReturnType<typeof createCharacter>;

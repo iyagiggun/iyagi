@@ -1,10 +1,11 @@
-import { ObjectProps, create_object } from '.';
+import { ObjectParams, createObject } from '.';
 
-export const create_tile = (props: ObjectProps) => {
-  const obj = create_object(props);
-  const z = props.z ?? 0;
+export function createTile(params: ObjectParams) {
+  const obj = createObject({
+    ...params,
+    z: params.z ?? 0,
+  });
   return {
     ...obj,
-    z
   };
-};
+}

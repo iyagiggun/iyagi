@@ -2,136 +2,123 @@ import { AnimatedSprite, BaseTexture, Container, Sprite, Spritesheet, Texture } 
 import { Area, Direction } from '../utils/area';
 import { FRAMES_PER_SECOND } from '../utils';
 
-type SpriteInfo = {
-  area_list: Area[];
-  collision_area?: Area;
-}
-
-type DirectionalSpriteInfo = {
-  up?: SpriteInfo;
-  down: SpriteInfo;
-  left?: SpriteInfo;
-  right?: SpriteInfo;
-}
-
 const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
+const Z_INDEX_MOD = 10000;
 
 const TEXTURE_CACHE_MAP: { [key: string] : BaseTexture } = {};
-const get_texture = (imgUrl: string) => {
-  if (!TEXTURE_CACHE_MAP[imgUrl]) {
-    TEXTURE_CACHE_MAP[imgUrl] = BaseTexture.from(imgUrl);
-  }
-  return TEXTURE_CACHE_MAP[imgUrl];
-};
 
-export type ObjectProps = {
+export type ObjectParams = {
   name: string;
-  sprite_url: string;
-  sprite_info_map:{
-    default: DirectionalSpriteInfo;
-    [key: string]: DirectionalSpriteInfo;
-  },
+  sprite: {
+    url: string;
+    motions: {
+      default: DirectionalSpriteInfo;
+      [key: string]: DirectionalSpriteInfo;
+    }
+  };
   z?: number;
 }
 
-export const create_object = ({
+export function createObject({
   name,
-  sprite_url,
-  sprite_info_map,
+  sprite: {
+    url,
+    motions
+  },
   z: _z
-}: ObjectProps) => {
+}: ObjectParams) {
 
   const container = new Container();
 
   let loaded = false;
-  let cur_sprite_key = 'default';
-  let cur_direction: Direction = 'down';
+  let curMotionKey = 'default';
+  let curSprite: undefined | Sprite;
+  let curDirection: Direction = 'down';
   let z = _z ?? 1;
 
-  const get_sprite_info = (_sprite_key?: string, _dir?: Direction) => {
-    const sprite_key = _sprite_key ?? cur_sprite_key;
-    const dir = _dir ?? cur_direction;
-    const info = sprite_info_map[sprite_key][dir];
+  const SPRITE_CACHE_MAP: { [key: string]: Sprite } = {};
+
+  const getMotionInfo = (_key?: string, _dir?: Direction) => {
+    const key = _key ?? curMotionKey;
+    const dir = _dir ?? curDirection;
+    const info = motions[key][dir];
     if (!info) {
-      throw new Error(`[object.set_position] no sprite info. ${name}:${cur_sprite_key}:${cur_direction}`);
+      throw new Error(`[object.getMotionInfo] no motion info. ${name}:${curMotionKey}:${curDirection}`);
     }
     return info;
   };
 
-  const get_frames = (sprite_key: string, dir: Direction) => {
-    return get_sprite_info(sprite_key, dir).area_list.map((area, idx) => ({
-      key: `${name}:${sprite_key}:${dir}:${idx}`,
+  const getFrames = (key: string, dir: Direction) => {
+    return getMotionInfo(key, dir).areaList.map((area, idx) => ({
+      key: `${name}:${key}:${dir}:${idx}`,
       frame: area
     }));
   };
 
-  const SPRITE_CACHE_MAP: { [key: string]: Sprite } = {};
-  const get_current_sprite = () => {
-    const frames = get_frames(cur_sprite_key, cur_direction);
+  const getMotionSprite = (motionKey?: string, dir?:Direction) => {
+    const frames = getFrames(motionKey ?? curMotionKey, dir ?? curDirection);
     const key = frames.map((f) => f.key).join(',');
     if (!SPRITE_CACHE_MAP[key]) {
       if (frames.length === 1) {
         SPRITE_CACHE_MAP[key] = Sprite.from(frames[0].key);
       } else {
-        const animated_sprite = new AnimatedSprite(frames.map((frame) => Texture.from(frame.key)));
-        animated_sprite.loop = true;
+        const sprite = new AnimatedSprite(frames.map((frame) => Texture.from(frame.key)));
+        sprite.loop = true;
         // animated_sprite.onFrameChange = onFrameChange;
-        SPRITE_CACHE_MAP[key] = animated_sprite;
+        SPRITE_CACHE_MAP[key] = sprite;
       }
     }
     return SPRITE_CACHE_MAP[key];
   };
 
-  const get_collision_mod = () => {
-    const info = sprite_info_map[cur_sprite_key][cur_direction];
+  const getCollisionMod = () => {
+    const info = motions[curMotionKey][curDirection];
     if (!info) {
-      throw new Error(`[object.set_position] no sprite info. ${name}:${cur_sprite_key}:${cur_direction}`);
+      throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
     }
-    if (info.collision_area) {
-      return { mod_x: info.collision_area.x, mod_y: info.collision_area.y };
+    if (info.collision) {
+      return { modX: info.collision.x, modY: info.collision.y };
     }
-    return { mod_x: 0, mod_y: 0};
+    return { modX: 0, modY: 0};
   };
 
-  const set_direction = (next_direction: Direction) => {
+  const setDirection = (next: Direction) => {
     if (!loaded) {
-      cur_direction = next_direction;
+      curDirection = next;
       return;
     }
-    if (cur_direction === next_direction) {
-      // return;
+    if (curDirection === next && curSprite) {
+      return;
     }
-    const last_sprite = get_current_sprite();
-    if (last_sprite instanceof AnimatedSprite) {
-      last_sprite.stop();
+    if (curSprite) {
+      stop();
+      container.removeChild(curSprite);
     }
-    container.removeChild(last_sprite);
-    cur_direction = next_direction;
-    const next_sprite = get_current_sprite();
-    container.addChild(next_sprite);
+    curDirection = next;
+    curSprite = getMotionSprite();
+    container.addChild(curSprite);
   };
 
-  const change_sprite = (next_sprite_key: string) => {
-    if (!Object.prototype.hasOwnProperty.call(sprite_info_map, next_sprite_key)) {
-      throw new Error(`[object.change_sprite] "${name}" does not have sprite ${next_sprite_key}.`);
+  const changeMotion = (next: string) => {
+    if (!Object.prototype.hasOwnProperty.call(motions, next)) {
+      throw new Error(`[object.changeMotion] "${name}" does not have sprite ${next}.`);
     }
-    const last_sprite = get_current_sprite();
-    container.removeChild(last_sprite);
-    if (last_sprite instanceof AnimatedSprite) {
-      last_sprite.stop();
+    if (curSprite) {
+      stop();
+      container.removeChild(curSprite);
     }
-    cur_sprite_key = next_sprite_key;
-    const next_sprite = get_current_sprite();
-    container.addChild(next_sprite);
+    curMotionKey = next;
+    curSprite = getMotionSprite();
+    container.addChild(curSprite);
   };
 
   const load = async () => {
-    const data = Object.keys(sprite_info_map)
-      .map((sprite_key) => {
-        const each_frames = Object.keys(sprite_info_map[sprite_key]).map((dir) => {
-          return get_frames(sprite_key, dir as Direction);
+    const data = Object.keys(motions)
+      .map((motionKey) => {
+        const frames = Object.keys(motions[motionKey]).map((dir) => {
+          return getFrames(motionKey, dir as Direction);
         });
-        return each_frames;
+        return frames;
       })
       .flatMap((x) => x)
       .reduce((acc, each_frames) => ({
@@ -151,78 +138,78 @@ export const create_object = ({
           scale: '1'
         }
       });
-    const sheet = new Spritesheet(get_texture(sprite_url), data);
+    const sheet = new Spritesheet(getTexture(url), data);
     await sheet.parse();
     loaded = true;
-    set_direction(cur_direction);
+    setDirection(curDirection);
   };
 
-  const is_loaded = () => loaded;
+  const isLoaded = () => loaded;
 
-  const set_position = (x: number, y: number, _z?: number) => {
-    const { mod_x, mod_y } = get_collision_mod();
-    container.x = x - mod_x;
-    container.y = y - mod_y;
+  const setPosition = (x: number, y: number, _z?: number) => {
+    const { modX, modY } = getCollisionMod();
+    container.x = x - modX;
+    container.y = y - modY;
     if (_z !== undefined) {
       z = _z;
     }
+    const { h } = getArea();
+    container.zIndex = z * Z_INDEX_MOD + container.y + h;
   };
 
-  const get_position = () => {
-    const { mod_x, mod_y } = get_collision_mod();
+  const getPosition = () => {
+    const { modX, modY } = getCollisionMod();
     return {
-      x: container.x + mod_x,
-      y: container.y + mod_y,
+      x: container.x + modX,
+      y: container.y + modY,
       z: z
     };
   };
 
-  const get_width = () => {
-    const sprite_info = get_sprite_info();
-    const collision_area = sprite_info.collision_area;
-    if (collision_area) {
-      return collision_area.w;
+  const getWidth = () => {
+    const info = getMotionInfo();
+    const collision = info.collision;
+    if (collision) {
+      return collision.w;
     }
-    return sprite_info.area_list[0].w;
+    return info.areaList[0].w;
   };
 
-  const get_height = () => {
-    const sprite_info = get_sprite_info();
-    const collision_area = sprite_info.collision_area;
-    if (collision_area) {
-      return collision_area.h;
+  const getHeight = () => {
+    const info = getMotionInfo();
+    const collision = info.collision;
+    if (collision) {
+      return collision.h;
     }
-    return sprite_info.area_list[0].h;
+    return info.areaList[0].h;
   };
 
-  const get_area = () => {
-    const { x, y, z } = get_position();
-    const w = get_width();
-    const h = get_height();
+  const getArea = () => {
+    const { x, y, z } = getPosition();
+    const w = getWidth();
+    const h = getHeight();
     return { x, y, z, w, h };
   };
 
-  const get_center_position = () => {
-    const { x, y } = get_position();
-    return { x: x + get_width() / 2, y: y + get_height() / 2 };
+  const getCenterPosition = () => {
+    const { x, y } = getPosition();
+    return { x: x + getWidth() / 2, y: y + getHeight() / 2 };
   };
 
   const play = (speed = 1) => {
     if (!loaded) {
       throw new Error(`[object.play] "${name}" is not loaded.`);
     }
-    const sprite = get_current_sprite();
-    if (sprite instanceof AnimatedSprite && !sprite.playing) {
-      sprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
-      sprite.loop = true;
-      sprite.play();
+    if (curSprite && curSprite instanceof AnimatedSprite && !curSprite.playing) {
+      curSprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+      curSprite.loop = true;
+      curSprite.play();
     }
   };
 
   const stop = () => {
-    const sprite = get_current_sprite();
-    if (sprite instanceof AnimatedSprite && sprite.playing) {
-      sprite.stop();
+    if (curSprite instanceof AnimatedSprite && curSprite.playing) {
+      curSprite.stop();
     }
   };
 
@@ -230,18 +217,37 @@ export const create_object = ({
     name,
     container,
     load,
-    is_loaded,
-    set_direction,
-    change_sprite,
-    set_position,
-    get_position,
-    get_width,
-    get_height,
-    get_area,
-    get_center_position,
+    isLoaded,
+    setDirection,
+    changeMotion,
+    setPosition,
+    getPosition,
+    getWidth,
+    getHeight,
+    getArea,
+    getCenterPosition,
     play,
     stop,
   });
+}
+
+type SpriteInfo = {
+  areaList: Area[];
+  collision?: Area;
+}
+
+type DirectionalSpriteInfo = {
+  up?: SpriteInfo;
+  down: SpriteInfo;
+  left?: SpriteInfo;
+  right?: SpriteInfo;
+}
+
+const getTexture = (imgUrl: string) => {
+  if (!TEXTURE_CACHE_MAP[imgUrl]) {
+    TEXTURE_CACHE_MAP[imgUrl] = BaseTexture.from(imgUrl);
+  }
+  return TEXTURE_CACHE_MAP[imgUrl];
 };
 
-export type ObjectType = ReturnType<typeof create_object>
+export type ObjType = ReturnType<typeof createObject>
