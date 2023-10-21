@@ -2,6 +2,7 @@ import { Container } from 'pixi.js';
 import IApplication from '../application';
 import ICamera from './camera';
 import { wait } from '../utils';
+import IMessenger from './messenger';
 
 const IScene = {
   /**
@@ -17,6 +18,7 @@ const IScene = {
     const container = new Container();
     const app = IApplication.get();
     const camera = ICamera.create(container);
+    const messenger = IMessenger.create();
 
     /** @type {import('../object/type').IObjectCreated[]} */
     let objectList = [..._objectList || []];
@@ -67,12 +69,23 @@ const IScene = {
       return camera.moveTo(x, y, speed);
     };
 
+    /**
+     * @param {import('../object/character/type').ICharacterCreated} speaker
+     * @param {string} message
+     * @returns
+     */
+    const showMessage = (speaker, message) => messenger.showMessage({
+      speaker,
+      message,
+    });
+
     return Object.freeze({
       name,
       play,
       addTake,
       removeObject,
       focus,
+      showMessage,
 
       wait,
     });

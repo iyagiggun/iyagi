@@ -1,3 +1,4 @@
+import ICharacter from '.';
 import { IObjectParameter } from '../type';
 
 export interface ICharacterParameter extends IObjectParameter {
@@ -6,3 +7,5 @@ export interface ICharacterParameter extends IObjectParameter {
     [key: string]: string;
   }
 }
+
+export type ICharacterCreated = ReturnType<typeof ICharacter.create>;
