@@ -158,6 +158,8 @@ const IObject = {
       container.addChild(curSprite);
     };
 
+    const isLoaded = () => loaded;
+
     const load = () => {
       if (loaded) {
         return Promise.resolve();
@@ -263,6 +265,7 @@ const IObject = {
     return Object.freeze({
       name,
       container,
+      isLoaded,
       load,
       setDirection,
       getWidth,

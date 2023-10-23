@@ -1,13 +1,7 @@
 import IObject from ".";
+import { Area } from "../utils/coordinates/type";
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
-
-interface Area {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
 
 interface SpriteInfo {
   areaList: Area[];
