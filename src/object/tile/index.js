@@ -2,6 +2,7 @@ import IObject from '..';
 
 const ITile = {
   /**
+   * z value is fixed to 0.
    * @param {import('./type').ITileParameter} p
    */
   create: (p) => {

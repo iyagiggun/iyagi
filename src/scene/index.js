@@ -189,7 +189,6 @@ const IScene = {
     });
 
     /**
-     *
      * @param {import('../object/character/type').ICharacterCreated} player
      */
     const control = (player) => {
