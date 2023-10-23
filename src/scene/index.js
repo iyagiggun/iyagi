@@ -4,6 +4,7 @@ import ICamera from './camera';
 import { wait } from '../utils';
 import IMessenger from './messenger';
 import { getDirectionByDelta, isOverlap } from '../utils/coordinates';
+import IController from './controller';
 
 const IScene = {
   /**
@@ -19,6 +20,7 @@ const IScene = {
     const container = new Container();
     const app = IApplication.get();
     const camera = ICamera.create(container);
+    const controller = IController.create();
     const messenger = IMessenger.create();
 
     /** @type {import('../object/type').IObjectCreated[]} */
@@ -187,6 +189,23 @@ const IScene = {
     });
 
     /**
+     *
+     * @param {import('../object/character/type').ICharacterCreated} player
+     */
+    const control = (player) => {
+      controller.control();
+      controller.on('move', (evt) => {
+        move(player, evt.detail.deltaX, evt.detail.deltaY);
+        focus(player);
+        player.play(evt.detail.delta_level);
+      });
+      controller.on('stop', () => {
+        player.stop();
+      });
+      focus(player);
+    };
+
+    /**
      * @param {import('../object/character/type').ICharacterCreated} speaker
      * @param {string} message
      * @returns
@@ -205,6 +224,7 @@ const IScene = {
       focus,
       moveObject,
       showMessage,
+      control,
 
       wait,
     });

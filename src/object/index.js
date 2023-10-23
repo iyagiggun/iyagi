@@ -253,8 +253,7 @@ const IObject = {
       if (_z !== undefined) {
         z = _z;
       }
-      const { h } = getArea();
-      container.zIndex = z * Z_INDEX_MOD + container.y + h;
+      container.zIndex = z * Z_INDEX_MOD + y;
     };
 
     const getCenterPosition = () => {
