@@ -10,16 +10,6 @@ let sprite;
  * @typedef { 'move' | 'stop' } EventType
  */
 
-const getSprite = () => {
-  if (!sprite) {
-    const { width, height } = IApplication.get().view;
-    sprite = Sprite.from(TRANSPARENT_1PX_IMG);
-    sprite.width = width;
-    sprite.height = height;
-  }
-  return sprite;
-};
-
 /**
  * @param {number} distance
  * @returns
@@ -39,9 +29,6 @@ export const getDeltaLevel = (distance) => {
 
 const IController = {
   create: () => {
-    const app = IApplication.get();
-
-    const controller = getSprite();
     const eventTarget = new EventTarget();
 
     /** @type {number | undefined} */
@@ -52,72 +39,84 @@ const IController = {
     let deltaX = 0;
     let deltaY = 0;
 
-    const { ticker } = app;
     const tick = () => {
       eventTarget.dispatchEvent(new CustomEvent('move', { detail: { deltaX, deltaY } }));
     };
 
     const releaseJoystick = () => {
       joystickId = undefined;
-      ticker.remove(tick);
+      IApplication.get().ticker.remove(tick);
     };
 
-    controller.addEventListener('touchstart', (evt) => {
-      const { x, y } = evt.global;
-      if (x < app.view.width / 2) {
-      // case:: joystick on
-        startX = x;
-        startY = y;
-        joystickId = evt.pointerId;
-        ticker.add(tick);
-      } else {
-      // console.error(this.controlMode);
-      // case:: interact
-      // const interaction = this.getInteraction();
-      // if (!interaction) {
-      //   return;
-      // }
-      // controller.interactive = false;
-        releaseJoystick();
-      // player.stop();
-      // ticker.remove(tick);
-      // interaction().then(() => {
-      //   controller.interactive = true;
-      // });
-      }
-    });
-    controller.addEventListener('touchmove', throttle((evt) => {
-      if (joystickId === evt.pointerId) {
-        const { x, y } = evt.global;
-        const diffX = x - startX;
-        const diffY = y - startY;
-        const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
-        if (distance === 0) {
-          return;
-        }
-        deltaLevel = getDeltaLevel(distance);
-        if (deltaLevel === 0) {
-          deltaX = 0;
-          deltaY = 0;
-          return;
-        }
-        deltaX = Math.round((diffX * deltaLevel) / distance);
-        deltaY = Math.round((diffY * deltaLevel) / distance);
+    const getController = () => {
+      if (!sprite) {
+        const { width, height } = IApplication.get().view;
+        sprite = Sprite.from(TRANSPARENT_1PX_IMG);
+        sprite.width = width;
+        sprite.height = height;
 
-        eventTarget.dispatchEvent(new CustomEvent('move', { detail: { deltaX, deltaY } }));
-      // event_emitter.emit('move', { delta_level, delta_x, delta_y });
-      }
-    }, 50));
+        sprite.addEventListener('touchstart', (evt) => {
+          const app = IApplication.get();
+          const { x, y } = evt.global;
+          if (x < app.view.width / 2) {
+            // case:: joystick on
+            startX = x;
+            startY = y;
+            joystickId = evt.pointerId;
+            app.ticker.add(tick);
+          } else {
+            // console.error(this.controlMode);
+            // case:: interact
+            // const interaction = this.getInteraction();
+            // if (!interaction) {
+            //   return;
+            // }
+            // controller.interactive = false;
+            releaseJoystick();
+            // player.stop();
+            // ticker.remove(tick);
+            // interaction().then(() => {
+            //   controller.interactive = true;
+            // });
+          }
+        });
 
-    controller.addEventListener('touchend', (evt) => {
-      if (joystickId === evt.pointerId) {
-        eventTarget.dispatchEvent(new CustomEvent('stop'));
-        releaseJoystick();
+        sprite.addEventListener('touchmove', throttle((evt) => {
+          if (joystickId === evt.pointerId) {
+            const { x, y } = evt.global;
+            const diffX = x - startX;
+            const diffY = y - startY;
+            const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+            if (distance === 0) {
+              return;
+            }
+            deltaLevel = getDeltaLevel(distance);
+            if (deltaLevel === 0) {
+              deltaX = 0;
+              deltaY = 0;
+              return;
+            }
+            deltaX = Math.round((diffX * deltaLevel) / distance);
+            deltaY = Math.round((diffY * deltaLevel) / distance);
+
+            eventTarget.dispatchEvent(new CustomEvent('move', { detail: { deltaX, deltaY } }));
+            // event_emitter.emit('move', { delta_level, delta_x, delta_y });
+          }
+        }, 50));
+
+        sprite.addEventListener('touchend', (evt) => {
+          if (joystickId === evt.pointerId) {
+            eventTarget.dispatchEvent(new CustomEvent('stop'));
+            releaseJoystick();
+          }
+        });
       }
-    });
+      return sprite;
+    };
 
     const control = () => {
-      app.stage.addChild(controller);
+      const controller = getController();
+      IApplication.get().stage.addChild(controller);
       controller.eventMode = 'static';
     };
 

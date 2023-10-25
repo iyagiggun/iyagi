@@ -18,7 +18,6 @@ const IScene = {
   }) => {
     const name = _name;
     const container = new Container();
-    const app = IApplication.get();
     const camera = ICamera.create(container);
     const controller = IController.create();
     const messenger = IMessenger.create();
@@ -37,7 +36,7 @@ const IScene = {
         objectList.forEach((obj) => {
           container.addChild(obj.container);
         });
-        app.stage.addChild(container);
+        IApplication.get().stage.addChild(container);
         return Promise.resolve();
       })
       .then(() => takeList.reduce((last, current) => last.then(() => current()), Promise.resolve()))
@@ -157,7 +156,7 @@ const IScene = {
      * @param {boolean} [options.focusing]
      */
     const moveObject = (target, x, y, options) => new Promise((resolve) => {
-      const { ticker } = app;
+      const { ticker } = IApplication.get();
       const speed = options?.speed ?? 1;
       const tick = () => {
         const { x: curX, y: curY } = target.getPosition();

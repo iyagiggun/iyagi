@@ -24,6 +24,10 @@
     "./object/character": {
       "import": "./src/object/character/index.js",
       "types": "./types/object/character/index.d.ts"
+    },
+    "./nai": {
+      "import": "./src/nai/index.js",
+      "types": "./types/nai/index.d.ts"
     }
   },
   "scripts": {

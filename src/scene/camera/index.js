@@ -9,7 +9,6 @@ const ICamera = {
    * @returns
    */
   create: (container) => {
-    const app = IApplication.get();
     /**
      * @param {number} x
      * @param {number} y
@@ -17,6 +16,7 @@ const ICamera = {
      * @returns
      */
     const moveTo = (x, y, _speed = MAX_CAMERA_MOVE_SPEED) => new Promise((resolve) => {
+      const app = IApplication.get();
       const { width: appWidth, height: appHeight } = app.view;
       const destX = Math.round((appWidth / 2) - x);
       const destY = Math.round((appHeight / 2) - y);
