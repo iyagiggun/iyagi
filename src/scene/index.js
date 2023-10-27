@@ -149,24 +149,23 @@ const IScene = {
 
     /**
      * @param {import('../object/type').IObjectCreated} target
-     * @param {number} x
-     * @param {number} y
+     * @param {import('../utils/coordinates/type').Position} pos
      * @param {Object} [options]
      * @param {number} [options.speed]
      * @param {boolean} [options.focusing]
      */
-    const moveObject = (target, x, y, options) => new Promise((resolve) => {
+    const moveObject = (target, pos, options) => new Promise((resolve) => {
       const { ticker } = IApplication.get();
       const speed = options?.speed ?? 1;
       const tick = () => {
         const { x: curX, y: curY } = target.getPosition();
-        const diffX = x - curX;
-        const diffY = y - curY;
+        const diffX = pos.x - curX;
+        const diffY = pos.y - curY;
         const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
         const arrived = distance < speed;
 
         if (arrived) {
-          target.setPosition(x, y);
+          target.setPosition(pos.x, pos.y);
         } else {
           const deltaX = speed * (diffX / distance);
           const deltaY = speed * (diffY / distance);
