@@ -37,6 +37,7 @@ const ICharacter = {
       }
       return photoTextureMap[curPhotoKey];
     };
+
     return Object.freeze({
       ...obj,
       load: () => Promise.all([obj.load(), loadPhotoMap()]).then(() => undefined),
