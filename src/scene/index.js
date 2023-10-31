@@ -21,6 +21,7 @@ const IScene = {
     const camera = ICamera.create(container);
     const controller = IController.create();
     const messenger = IMessenger.create();
+    const movementStopMap = new WeakMap();
 
     /** @type {import('../object/type').IObjectCreated[]} */
     let objectList = [..._objectList || []];
@@ -148,6 +149,22 @@ const IScene = {
     };
 
     /**
+     * @param {import('../object/type').IObjectCreated} target} target
+     * @param {boolean} [interrupted]
+     * @returns
+     */
+    const stopObject = (target, interrupted) => {
+      const movementStop = movementStopMap.get(target);
+      if (!movementStop) {
+        return;
+      }
+      target.stop();
+      IApplication.get().ticker.remove(movementStop.tick);
+      movementStop.resolve(interrupted || false);
+      movementStopMap.delete(target);
+    };
+
+    /**
      * @param {import('../object/type').IObjectCreated} target
      * @param {import('../utils/coordinates/type').Position} pos
      * @param {Object} [options]
@@ -155,8 +172,10 @@ const IScene = {
      * @param {boolean} [options.focusing]
      */
     const moveObject = (target, pos, options) => new Promise((resolve) => {
-      const { ticker } = IApplication.get();
       const speed = options?.speed ?? 1;
+
+      stopObject(target);
+
       const tick = () => {
         const { x: curX, y: curY } = target.getPosition();
         const diffX = pos.x - curX;
@@ -177,13 +196,12 @@ const IScene = {
         }
 
         if (arrived) {
-          ticker.remove(tick);
-          target.stop();
-          resolve(undefined);
+          stopObject(target);
         }
       };
       target.play(speed);
-      ticker.add(tick);
+      movementStopMap.set(target, { tick, resolve });
+      IApplication.get().ticker.add(tick);
     });
 
     /**
@@ -220,6 +238,7 @@ const IScene = {
       addObject,
       focus,
       moveObject,
+      stopObject,
       showMessage,
       control,
 

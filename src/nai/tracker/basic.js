@@ -16,23 +16,24 @@ export const IBasicTracker = {
     target,
     intervalDelay,
   }) => {
-    let isActing = false;
     // @ts-ignore
     const delay = intervalDelay > 0 ? intervalDelay : 250;
+
+    let isActing = false;
+
     const interval = (() => window.setInterval(() => {
+      const { distance } = getCoordinateRelationship(controlled, target);
+      if (distance < 10) {
+        scene.stopObject(controlled);
+        // onArrived?.();
+        return;
+      }
+
       if (isActing) {
         return;
       }
+
       isActing = true;
-
-      const { distance } = getCoordinateRelationship(controlled, target);
-      if (distance < 10) {
-        // onArrived?.();
-        console.debug('arrived');
-        isActing = false;
-        return;
-      }
-
       const dest = findShortestPos(controlled, target);
       scene.moveObject(controlled, dest).then(() => {
         isActing = false;
