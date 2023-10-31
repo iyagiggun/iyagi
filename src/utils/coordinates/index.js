@@ -109,18 +109,22 @@ export const getCoordinateRelationship = (self, target) => {
 
   // 중심점 간 거리
   const cDistance = Math.sqrt(xDiff ** 2 + yDiff ** 2);
-  // x 축으로 겹쳐 있다면 sin 으로 구해야 함.
-  if (xDiff < halfWidth + tHalfWidth) {
-    const arcSin = Math.abs(cDistance / yDiff);
-    const distance = cDistance - arcSin * halfHeight - arcSin * tHalfHeight;
-    return {
-      distance, xDiff, yDiff,
-    };
-  }
-  // y축으로 겹쳐있거나 나머지의 경우는 cos 으로 구함.
+
+  const dTan = Math.abs(yDiff / xDiff);
+  const sTan = halfHeight / halfWidth;
+  const tTan = tHalfHeight / tHalfWidth;
+
+  const arcSin = Math.abs(cDistance / yDiff);
   const arcCos = Math.abs(cDistance / xDiff);
-  const distance = cDistance - arcCos * halfWidth - arcCos * tHalfWidth;
+
+  const sInnerDistance = dTan > sTan ? arcSin * halfHeight : arcCos * halfWidth;
+  const tInnerDistance = dTan > tTan ? arcSin * tHalfHeight : arcCos * tHalfWidth;
+
+  const distance = cDistance - sInnerDistance - tInnerDistance;
+
   return {
-    distance, xDiff, yDiff,
+    distance,
+    xDiff,
+    yDiff,
   };
 };
