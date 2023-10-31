@@ -1,5 +1,5 @@
-import IBasicNAI from './basic';
+import { IBasicTracker } from './tracker/basic';
 
 export {
-  IBasicNAI,
+  IBasicTracker,
 };
