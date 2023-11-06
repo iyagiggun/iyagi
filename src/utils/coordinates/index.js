@@ -19,6 +19,24 @@ export const isOverlap = (a1, a2) => isOverlapIn1D(a1.x, a1.x + a1.w, a2.x, a2.x
         && isOverlapIn1D(a1.y, a1.y + a1.h, a2.y, a2.y + a2.h);
 
 /**
+ * @param {import('./type').Area} a1
+ * @param {import('./type').Area} a2
+ */
+export const getOverlapArea = (a1, a2) => {
+  if (!isOverlap(a1, a2)) {
+    return null;
+  }
+  const [, x1, x2] = [a1.x, a1.x + a1.w, a2.x, a2.x + a2.w].sort();
+  const [, y1, y2] = [a1.y, a1.y + a1.h, a2.y, a2.y + a2.h].sort();
+  return {
+    x: x1,
+    y: y1,
+    w: x2 - x1,
+    h: y2 - y1,
+  };
+};
+
+/**
  * @param {number} deltaX
  * @param {number} deltaY
  */

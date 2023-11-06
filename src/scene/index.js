@@ -189,7 +189,7 @@ const IScene = {
           const deltaX = speed * (diffX / distance);
           const deltaY = speed * (diffY / distance);
           move(target, deltaX, deltaY);
-          target.play(speed);
+          target.play({ speed });
           if (options?.focusing) {
             focus(target);
           }
@@ -199,7 +199,7 @@ const IScene = {
           stopObject(target);
         }
       };
-      target.play(speed);
+      target.play({ speed });
       movementStopMap.set(target, { tick, resolve });
       IApplication.get().ticker.add(tick);
     });

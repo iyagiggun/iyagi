@@ -88,8 +88,6 @@ const IObject = {
           const info = motions[motionKey ?? curMotionKey];
           const sprite = new AnimatedSprite(frames.map((frame) => Texture.from(frame.key)));
           sprite.loop = info.loop ?? true;
-          sprite.onFrameChange = info.onMotionPlaying;
-          // animated_sprite.onFrameChange = onFrameChange;
           SPRITE_CACHE_MAP[key] = sprite;
         }
       }
@@ -129,12 +127,19 @@ const IObject = {
       container.addChild(curSprite);
     };
 
-    const play = (speed = 1) => {
+    /**
+     * @param {Object} [options]
+     * @param {number} [options.speed]
+     * @param {(frameIndex: number) => void} [options.onFrameChange]
+     */
+    const play = (options) => {
       if (!loaded) {
         throw new Error(`"${name}" is not loaded.`);
       }
+      const speed = options?.speed || 1;
       if (curSprite && curSprite instanceof AnimatedSprite && !curSprite.playing) {
         curSprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+        curSprite.onFrameChange = options?.onFrameChange;
         if (curSprite.loop) {
           curSprite.play();
         } else {
@@ -165,6 +170,8 @@ const IObject = {
       curSprite = getMotionSprite();
       container.addChild(curSprite);
     };
+
+    const getDirection = () => curDirection;
 
     const isLoaded = () => loaded;
 
@@ -276,6 +283,7 @@ const IObject = {
       isLoaded,
       load,
       setDirection,
+      getDirection,
       getWidth,
       getHeight,
       getPosition,

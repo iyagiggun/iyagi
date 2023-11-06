@@ -14,7 +14,6 @@ interface MotionInfo {
   left?: SpriteInfo;
   right?: SpriteInfo;
   loop?: boolean;
-  onMotionPlaying?: (frameIndex: number) => void;
 }
 
 export interface IObjectParameter {
