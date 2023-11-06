@@ -8,36 +8,43 @@ export const IBasicTracker = {
    * @param {import('../../scene/type').ISceneCreated} p.scene
    * @param {import('../../object/character/type').ICharacterCreated} p.controlled
    * @param {import('../../object/character/type').ICharacterCreated} p.target
+   * @param {() => void} [p.onArrived]
    * @param {number} [p.intervalDelay = 250]
    */
   control: ({
     scene,
     controlled,
     target,
+    onArrived,
     intervalDelay,
   }) => {
     // @ts-ignore
-    const delay = intervalDelay > 0 ? intervalDelay : 250;
+    const delay = intervalDelay > 0 ? intervalDelay : 500;
 
-    let isActing = false;
+    let isMoving = false;
+    let lastPos = controlled.getPosition();
 
     const interval = (() => window.setInterval(() => {
+      const currentPos = controlled.getPosition();
       const { distance } = getCoordinateRelationship(controlled, target);
       if (distance < 10) {
         scene.stopObject(controlled);
-        // onArrived?.();
+        isMoving = false;
+        lastPos = currentPos;
+        onArrived?.();
         return;
       }
 
-      if (isActing) {
-        return;
-      }
+      if (!isMoving || (lastPos.x === currentPos.x && lastPos.y === currentPos.y)) {
+        scene.stopObject(controlled);
 
-      isActing = true;
-      const dest = findShortestPos(controlled, target);
-      scene.moveObject(controlled, dest).then(() => {
-        isActing = false;
-      });
+        const dest = findShortestPos(controlled, target);
+        scene.moveObject(controlled, dest).then(() => {
+          isMoving = false;
+        });
+        isMoving = true;
+      }
+      lastPos = currentPos;
     }, delay))();
 
     intervalMap.set(controlled, interval);

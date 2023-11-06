@@ -29,9 +29,9 @@ const IObject = {
     const container = new Container();
     let loaded = false;
 
-    const { motions } = p.sprite;
+    const { actions } = p.sprite;
 
-    let curMotionKey = 'default';
+    let curActionKey = 'default';
     /**
      * @type {import("pixi.js").Sprite | undefined}
      */
@@ -53,12 +53,12 @@ const IObject = {
      * @param {string} [_key]
      * @param {import('./type').Direction} [_dir]
      */
-    const getMotionInfo = (_key, _dir) => {
-      const key = _key ?? curMotionKey;
+    const getActionInfo = (_key, _dir) => {
+      const key = _key ?? curActionKey;
       const dir = _dir ?? curDirection;
-      const info = motions[key][dir];
+      const info = actions[key][dir];
       if (!info) {
-        throw new Error(`[object.getMotionInfo] no motion info. ${name}:${curMotionKey}:${curDirection}`);
+        throw new Error(`[object.getActionInfo] no action info. ${name}:${curActionKey}:${curDirection}`);
       }
       return info;
     };
@@ -68,25 +68,27 @@ const IObject = {
      * @param {import('./type').Direction} dir
      * @returns
      */
-    const getFrames = (key, dir) => getMotionInfo(key, dir).areaList.map((area, idx) => ({
+    const getFrames = (key, dir) => getActionInfo(key, dir).areaList.map((area, idx) => ({
       key: `${name}:${key}:${dir}:${idx}`,
       frame: area,
     }));
 
     /**
-     * @param {string} [motionKey]
+     * @param {string} [actionKey]
      * @param {import('./type').Direction} [dir]
      * @returns
      */
-    const getMotionSprite = (motionKey, dir) => {
-      const frames = getFrames(motionKey ?? curMotionKey, dir ?? curDirection);
+    const getActionSprite = (actionKey, dir) => {
+      const frames = getFrames(actionKey ?? curActionKey, dir ?? curDirection);
       const key = frames.map((f) => f.key).join(',');
       if (!SPRITE_CACHE_MAP[key]) {
         if (frames.length === 1) {
           SPRITE_CACHE_MAP[key] = Sprite.from(frames[0].key);
         } else {
+          const info = actions[actionKey ?? curActionKey];
           const sprite = new AnimatedSprite(frames.map((frame) => Texture.from(frame.key)));
-          sprite.loop = true;
+          sprite.loop = info.loop ?? true;
+          sprite.onFrameChange = info.onAction;
           // animated_sprite.onFrameChange = onFrameChange;
           SPRITE_CACHE_MAP[key] = sprite;
         }
@@ -95,14 +97,36 @@ const IObject = {
     };
 
     const getCollisionMod = () => {
-      const info = motions[curMotionKey][curDirection];
+      const info = actions[curActionKey][curDirection];
       if (!info) {
-        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
+        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curActionKey}:${curDirection}`);
       }
       if (info.collision) {
         return { modX: info.collision.x, modY: info.collision.y };
       }
       return { modX: 0, modY: 0 };
+    };
+
+    const stop = () => {
+      if (curSprite instanceof AnimatedSprite && curSprite.playing) {
+        curSprite.stop();
+      }
+    };
+
+    /**
+     * @param {string} next
+     */
+    const action = (next) => {
+      if (!Object.prototype.hasOwnProperty.call(actions, next)) {
+        throw new Error(`[object.action] "${name}" does not have sprite ${next}.`);
+      }
+      if (curSprite) {
+        stop();
+        container.removeChild(curSprite);
+      }
+      curActionKey = next;
+      curSprite = getActionSprite();
+      container.addChild(curSprite);
     };
 
     const play = (speed = 1) => {
@@ -111,14 +135,14 @@ const IObject = {
       }
       if (curSprite && curSprite instanceof AnimatedSprite && !curSprite.playing) {
         curSprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
-        curSprite.loop = true;
-        curSprite.play();
-      }
-    };
-
-    const stop = () => {
-      if (curSprite instanceof AnimatedSprite && curSprite.playing) {
-        curSprite.stop();
+        if (curSprite.loop) {
+          curSprite.play();
+        } else {
+          curSprite.gotoAndPlay(0);
+          curSprite.onComplete = () => {
+            action('default');
+          };
+        }
       }
     };
 
@@ -138,23 +162,7 @@ const IObject = {
         container.removeChild(curSprite);
       }
       curDirection = next;
-      curSprite = getMotionSprite();
-      container.addChild(curSprite);
-    };
-
-    /**
-   * @param {string} next
-   */
-    const changeMotion = (next) => {
-      if (!Object.prototype.hasOwnProperty.call(motions, next)) {
-        throw new Error(`[object.changeMotion] "${name}" does not have sprite ${next}.`);
-      }
-      if (curSprite) {
-        stop();
-        container.removeChild(curSprite);
-      }
-      curMotionKey = next;
-      curSprite = getMotionSprite();
+      curSprite = getActionSprite();
       container.addChild(curSprite);
     };
 
@@ -164,19 +172,20 @@ const IObject = {
       if (loaded) {
         return Promise.resolve();
       }
-      const data = Object.keys(motions)
-        .map((motionKey) => {
-          const frames = Object.keys(motions[motionKey]).map((dir) => {
-            switch (dir) {
-              case 'up':
-              case 'down':
-              case 'left':
-              case 'right':
-                return getFrames(motionKey, dir);
-              default:
-                throw new Error(`invalid direction in ${name}. ${dir}`);
-            }
-          });
+      const data = Object.keys(actions)
+        .map((actionKey) => {
+          const frames = Object.keys(actions[actionKey])
+            .map((dir) => {
+              switch (dir) {
+                case 'up':
+                case 'down':
+                case 'left':
+                case 'right':
+                  return getFrames(actionKey, dir);
+                default:
+                  return [];
+              }
+            });
           return frames;
         })
         .flatMap((x) => x)
@@ -215,7 +224,7 @@ const IObject = {
     };
 
     const getWidth = () => {
-      const info = getMotionInfo();
+      const info = getActionInfo();
       const { collision } = info;
       if (collision) {
         return collision.w;
@@ -224,7 +233,7 @@ const IObject = {
     };
 
     const getHeight = () => {
-      const info = getMotionInfo();
+      const info = getActionInfo();
       const { collision } = info;
       if (collision) {
         return collision.h;
@@ -274,7 +283,7 @@ const IObject = {
       getArea,
       getCollisionMod,
       getCenterPosition,
-      changeMotion,
+      action,
       play,
       stop,
     });

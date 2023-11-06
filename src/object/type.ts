@@ -8,19 +8,22 @@ interface SpriteInfo {
   collision?: Area;
 }
 
-interface DirectionalSpriteInfo {
+interface ActionInfo {
   up?: SpriteInfo;
-  'down': SpriteInfo;
+  down: SpriteInfo;
   left?: SpriteInfo;
   right?: SpriteInfo;
+  loop?: boolean;
+  onAction?: (frameIndex: number) => void;
 }
 
 export interface IObjectParameter {
   name?: string;
   sprite: {
     url: string;
-    motions: {
-      [key:string]: DirectionalSpriteInfo;
+    actions: {
+      default: ActionInfo;
+      [key:string]: ActionInfo;
     };
   };
   z?: number;
