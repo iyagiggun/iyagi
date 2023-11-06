@@ -29,9 +29,9 @@ const IObject = {
     const container = new Container();
     let loaded = false;
 
-    const { actions } = p.sprite;
+    const { motions } = p.sprite;
 
-    let curActionKey = 'default';
+    let curMotionKey = 'default';
     /**
      * @type {import("pixi.js").Sprite | undefined}
      */
@@ -53,12 +53,12 @@ const IObject = {
      * @param {string} [_key]
      * @param {import('./type').Direction} [_dir]
      */
-    const getActionInfo = (_key, _dir) => {
-      const key = _key ?? curActionKey;
+    const getMotionInfo = (_key, _dir) => {
+      const key = _key ?? curMotionKey;
       const dir = _dir ?? curDirection;
-      const info = actions[key][dir];
+      const info = motions[key][dir];
       if (!info) {
-        throw new Error(`[object.getActionInfo] no action info. ${name}:${curActionKey}:${curDirection}`);
+        throw new Error(`[object.getMotionInfo] no motion info. ${name}:${curMotionKey}:${curDirection}`);
       }
       return info;
     };
@@ -68,27 +68,27 @@ const IObject = {
      * @param {import('./type').Direction} dir
      * @returns
      */
-    const getFrames = (key, dir) => getActionInfo(key, dir).areaList.map((area, idx) => ({
+    const getFrames = (key, dir) => getMotionInfo(key, dir).areaList.map((area, idx) => ({
       key: `${name}:${key}:${dir}:${idx}`,
       frame: area,
     }));
 
     /**
-     * @param {string} [actionKey]
+     * @param {string} [motionKey]
      * @param {import('./type').Direction} [dir]
      * @returns
      */
-    const getActionSprite = (actionKey, dir) => {
-      const frames = getFrames(actionKey ?? curActionKey, dir ?? curDirection);
+    const getMotionSprite = (motionKey, dir) => {
+      const frames = getFrames(motionKey ?? curMotionKey, dir ?? curDirection);
       const key = frames.map((f) => f.key).join(',');
       if (!SPRITE_CACHE_MAP[key]) {
         if (frames.length === 1) {
           SPRITE_CACHE_MAP[key] = Sprite.from(frames[0].key);
         } else {
-          const info = actions[actionKey ?? curActionKey];
+          const info = motions[motionKey ?? curMotionKey];
           const sprite = new AnimatedSprite(frames.map((frame) => Texture.from(frame.key)));
           sprite.loop = info.loop ?? true;
-          sprite.onFrameChange = info.onAction;
+          sprite.onFrameChange = info.onMotionPlaying;
           // animated_sprite.onFrameChange = onFrameChange;
           SPRITE_CACHE_MAP[key] = sprite;
         }
@@ -97,9 +97,9 @@ const IObject = {
     };
 
     const getCollisionMod = () => {
-      const info = actions[curActionKey][curDirection];
+      const info = motions[curMotionKey][curDirection];
       if (!info) {
-        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curActionKey}:${curDirection}`);
+        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
       }
       if (info.collision) {
         return { modX: info.collision.x, modY: info.collision.y };
@@ -116,16 +116,16 @@ const IObject = {
     /**
      * @param {string} next
      */
-    const action = (next) => {
-      if (!Object.prototype.hasOwnProperty.call(actions, next)) {
-        throw new Error(`[object.action] "${name}" does not have sprite ${next}.`);
+    const changeMotion = (next) => {
+      if (!Object.prototype.hasOwnProperty.call(motions, next)) {
+        throw new Error(`[object.changeMotion] "${name}" does not have sprite ${next}.`);
       }
       if (curSprite) {
         stop();
         container.removeChild(curSprite);
       }
-      curActionKey = next;
-      curSprite = getActionSprite();
+      curMotionKey = next;
+      curSprite = getMotionSprite();
       container.addChild(curSprite);
     };
 
@@ -140,7 +140,7 @@ const IObject = {
         } else {
           curSprite.gotoAndPlay(0);
           curSprite.onComplete = () => {
-            action('default');
+            changeMotion('default');
           };
         }
       }
@@ -162,7 +162,7 @@ const IObject = {
         container.removeChild(curSprite);
       }
       curDirection = next;
-      curSprite = getActionSprite();
+      curSprite = getMotionSprite();
       container.addChild(curSprite);
     };
 
@@ -172,16 +172,16 @@ const IObject = {
       if (loaded) {
         return Promise.resolve();
       }
-      const data = Object.keys(actions)
-        .map((actionKey) => {
-          const frames = Object.keys(actions[actionKey])
+      const data = Object.keys(motions)
+        .map((motionKey) => {
+          const frames = Object.keys(motions[motionKey])
             .map((dir) => {
               switch (dir) {
                 case 'up':
                 case 'down':
                 case 'left':
                 case 'right':
-                  return getFrames(actionKey, dir);
+                  return getFrames(motionKey, dir);
                 default:
                   return [];
               }
@@ -224,7 +224,7 @@ const IObject = {
     };
 
     const getWidth = () => {
-      const info = getActionInfo();
+      const info = getMotionInfo();
       const { collision } = info;
       if (collision) {
         return collision.w;
@@ -233,7 +233,7 @@ const IObject = {
     };
 
     const getHeight = () => {
-      const info = getActionInfo();
+      const info = getMotionInfo();
       const { collision } = info;
       if (collision) {
         return collision.h;
@@ -283,7 +283,7 @@ const IObject = {
       getArea,
       getCollisionMod,
       getCenterPosition,
-      action,
+      changeMotion,
       play,
       stop,
     });

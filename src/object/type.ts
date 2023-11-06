@@ -8,22 +8,22 @@ interface SpriteInfo {
   collision?: Area;
 }
 
-interface ActionInfo {
+interface MotionInfo {
   up?: SpriteInfo;
   down: SpriteInfo;
   left?: SpriteInfo;
   right?: SpriteInfo;
   loop?: boolean;
-  onAction?: (frameIndex: number) => void;
+  onMotionPlaying?: (frameIndex: number) => void;
 }
 
 export interface IObjectParameter {
   name?: string;
   sprite: {
     url: string;
-    actions: {
-      default: ActionInfo;
-      [key:string]: ActionInfo;
+    motions: {
+      default: MotionInfo;
+      [key:string]: MotionInfo;
     };
   };
   z?: number;
