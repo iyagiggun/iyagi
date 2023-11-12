@@ -1,5 +1,6 @@
 import { Application } from 'pixi.js';
 import IApplication from '../application';
+import Debuger from '../utils/debugger';
 
 const Iyagi = {
   /**
@@ -8,7 +9,7 @@ const Iyagi = {
    * @param {boolean} [options.debug]
    */
   create: (canvas, options) => {
-    console.debug(options);
+    Debuger.enable(options?.debug ?? false);
     const app = new Application({
       view: canvas,
       backgroundColor: 0x000000,
