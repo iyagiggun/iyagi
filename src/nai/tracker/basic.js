@@ -23,6 +23,7 @@ export const IBasicTracker = {
 
     let isMoving = false;
     let lastPos = controlled.getPosition();
+    let directionWhenArrived = 'down';
 
     const interval = (() => window.setInterval(() => {
       const currentPos = controlled.getPosition();
@@ -31,6 +32,7 @@ export const IBasicTracker = {
         scene.stopObject(controlled);
         isMoving = false;
         lastPos = currentPos;
+        controlled.setDirection(directionWhenArrived);
         onArrived?.();
         return;
       }
@@ -39,6 +41,7 @@ export const IBasicTracker = {
         scene.stopObject(controlled);
 
         const dest = findShortestPos(controlled, target);
+        directionWhenArrived = dest.direction;
         scene.moveObject(controlled, dest).then(() => {
           isMoving = false;
         });
