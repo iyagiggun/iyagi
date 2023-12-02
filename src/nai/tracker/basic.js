@@ -6,7 +6,7 @@ export const IBasicTracker = {
   /**
    * @param {Object} p
    * @param {import('../../scene/type').ISceneCreated} p.scene
-   * @param {import('../../object/character/type').ICharacterCreated} p.controlled
+   * @param {ReturnType<typeof import('../../object/character').ICharacter.create>} p.controlled
    * @param {import('../../object/character/type').ICharacterCreated} p.target
    * @param {() => void} [p.onArrived]
    * @param {number} [p.intervalDelay = 250]

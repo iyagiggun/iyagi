@@ -3,14 +3,14 @@ import IApplication from '../application';
 import ICamera from './camera';
 import { wait } from '../utils';
 import IMessenger from './messenger';
-import { getDirectionByDelta, isOverlap } from '../utils/coordinates';
+import { getDirectionByDelta, getOverlappingArea } from '../utils/coordinates';
 import IController from './controller';
 
 const IScene = {
   /**
    * @param {Object} param
    * @param {string} [param.name]
-   * @param {import('../object/type').IObjectCreated[]} [param.objectList]
+   * @param {import('../object').IObjectCreated[]} [param.objectList]
    */
   create: ({
     name: _name,
@@ -100,7 +100,7 @@ const IScene = {
         if (each === object || each.getPosition().z !== z) {
           return false;
         }
-        return isOverlap({
+        return !!getOverlappingArea({
           x: destX, y, w, h,
         }, each.getArea());
       });
@@ -125,7 +125,7 @@ const IScene = {
         if (each === object || each.getPosition().z !== z) {
           return false;
         }
-        return isOverlap({
+        return !!getOverlappingArea({
           x, y: destY, w, h,
         }, each.getArea());
       });
@@ -221,6 +221,12 @@ const IScene = {
     };
 
     /**
+     * @param {import('../utils/coordinates/type').Area} area
+     */
+    const getOverlappingObjectList = (area) => objectList
+      .filter((object) => !!getOverlappingArea(object.getArea(), area));
+
+    /**
      * @param {import('../object/character/type').ICharacterCreated} speaker
      * @param {string} message
      * @returns
@@ -232,6 +238,7 @@ const IScene = {
 
     return Object.freeze({
       name,
+      container,
       play,
       addTake,
       removeObject,
@@ -241,6 +248,7 @@ const IScene = {
       stopObject,
       showMessage,
       control,
+      getOverlappingObjectList,
 
       wait,
     });

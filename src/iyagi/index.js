@@ -10,14 +10,16 @@ const Iyagi = {
    */
   create: (canvas, options) => {
     Debuger.enable(options?.debug ?? false);
-    const app = new Application({
+    const application = new Application({
       view: canvas,
       backgroundColor: 0x000000,
       width: parseInt(getComputedStyle(canvas).width, 10),
       height: parseInt(getComputedStyle(canvas).height, 10),
     });
-    IApplication.set(app);
-    return {};
+    IApplication.set(application);
+    return {
+      application,
+    };
   },
 };
 

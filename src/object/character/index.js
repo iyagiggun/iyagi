@@ -2,9 +2,23 @@ import { Assets } from 'pixi.js';
 import IObject from '..';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
 
+/**
+ * @template T
+ */
+
+/**
+ * @typedef {Object} AdditionalParameter
+ * @property {Object<string, string>} [AdditionalParameter.photoMap]
+ * - The required property with the key "default"
+ */
+
+/**
+ * @typedef {import('..').IObjectParameter & AdditionalParameter} CharacterParameter
+ */
+
 const ICharacter = {
   /**
-   * @param {import('./type').ICharacterParameter} p
+   * @param {CharacterParameter} p
    */
   create: (p) => {
     const obj = IObject.create(p);
@@ -12,8 +26,8 @@ const ICharacter = {
     const curPhotoKey = 'default';
     const photoMap = p.photoMap || { default: TRANSPARENT_1PX_IMG };
     /**
-   * @type Object.<string, import('pixi.js').Texture> | undefined
-   */
+     * @type Object.<string, import('pixi.js').Texture> | undefined
+     */
     let photoTextureMap;
 
     const loadPhotoMap = () => {

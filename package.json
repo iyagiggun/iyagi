@@ -30,6 +30,11 @@
       "require": "./src/object/character/index.js",
       "types": "./types/object/character/index.d.ts"
     },
+    "./object/character/status": {
+      "import": "./src/object/character/status/index.js",
+      "require": "./src/object/character/status/index.js",
+      "types": "./types/object/character/status/index.d.ts"
+    },
     "./nai": {
       "import": "./src/nai/index.js",
       "require": "./src/nai/index.js",
@@ -39,6 +44,11 @@
       "import": "./src/utils/debugger/index.js",
       "require": "./src/utils/debugger/index.js",
       "types": "./types/utils/debugger/index.d.ts"
+    },
+    "./external": {
+      "import": "./src/external.js",
+      "require": "./src/external.js",
+      "types": "./types/external.d.ts"
     }
   },
   "scripts": {
@@ -63,6 +73,7 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
+    "events": "^3.3.0",
     "lodash-es": "^4.17.21",
     "pixi.js": "^7.3.1"
   }

@@ -20,13 +20,47 @@ const getTexture = (imgUrl) => {
   return TEXTURE_CACHE_MAP[imgUrl];
 };
 
+/**
+ * @typedef {'up' | 'down' | 'left' | 'right'} Direction
+ */
+
+/**
+ * @typedef {Object} SpriteInfo
+ * @property {import('../utils/coordinates/type').Area[]} areaList
+ * @property {import('../utils/coordinates/type').Area} collision
+ */
+
+/**
+ * @typedef {Object} MotionInfo
+ * @property {SpriteInfo} [up]
+ * @property {SpriteInfo} down
+ * @property {SpriteInfo} [left]
+ * @property {SpriteInfo} [right]
+ * @property {boolean} [loop]
+ */
+
+/**
+ * @typedef {Object} IObjectParameter
+ * @property {string} [ObjectParameter.name]
+ * @property {Object} ObjectParameter.sprite
+ * @property {string} ObjectParameter.sprite.url
+ * @property {Object<'default', MotionInfo>} ObjectParameter.sprite.motions
+ * @property {number} [ObjectParameter.z]
+ */
+
+/**
+ * @typedef {ReturnType<typeof IObject.create>} IObjectCreated
+ */
+
 const IObject = {
   /**
-   * @param {import('./type').IObjectParameter} p
+   * @param {IObjectParameter} p
    */
   create: (p) => {
     const { name } = p;
+
     const container = new Container();
+
     let loaded = false;
 
     const { motions } = p.sprite;
@@ -37,7 +71,7 @@ const IObject = {
      */
     let curSprite;
     /**
-     * @type {import('./type').Direction}
+     * @type {Direction}
      */
     let curDirection = 'down';
     /**
