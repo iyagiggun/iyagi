@@ -23,7 +23,7 @@ const IScene = {
     const messenger = IMessenger.create();
     const movementStopMap = new WeakMap();
 
-    /** @type {import('../object/type').IObjectCreated[]} */
+    /** @type {import('../object').IObjectCreated[]} */
     let objectList = [..._objectList || []];
 
     /** @type {(() => Promise<void>)[]} */
@@ -53,7 +53,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} object
+     * @param {import('../object').IObjectCreated} object
      */
     const removeObject = (object) => {
       if (!objectList.includes(object)) {
@@ -64,7 +64,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} object
+     * @param {import('../object').IObjectCreated} object
      */
     const addObject = (object) => {
       if (!object.isLoaded()) {
@@ -78,7 +78,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} target
+     * @param {import('../object').IObjectCreated} target
      * @param {number} [speed]
      */
     const focus = (target, speed) => {
@@ -87,7 +87,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} object
+     * @param {import('../object').IObjectCreated} object
      * @param {number} deltaX
      * @returns
      */
@@ -112,7 +112,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} object
+     * @param {import('../object').IObjectCreated} object
      * @param {number} deltaY
      * @returns
      */
@@ -137,7 +137,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} target
+     * @param {import('../object').IObjectCreated} target
      * @param {number} deltaX
      * @param {number} deltaY
      */
@@ -149,7 +149,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} target} target
+     * @param {import('../object').IObjectCreated} target} target
      * @param {boolean} [interrupted]
      * @returns
      */
@@ -165,8 +165,8 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/type').IObjectCreated} target
-     * @param {import('../utils/coordinates/type').Position} pos
+     * @param {import('../object').IObjectCreated} target
+     * @param {import('../utils/coordinates').Position} pos
      * @param {Object} [options]
      * @param {number} [options.speed]
      * @param {boolean} [options.focusing]
@@ -205,7 +205,7 @@ const IScene = {
     });
 
     /**
-     * @param {import('../object/character/type').ICharacterCreated} player
+     * @param {import('../object/character').ICharacterCreated} player
      */
     const control = (player) => {
       controller.control();
@@ -221,13 +221,13 @@ const IScene = {
     };
 
     /**
-     * @param {import('../utils/coordinates/type').Area} area
+     * @param {import('../utils/coordinates').Area} area
      */
     const getOverlappingObjectList = (area) => objectList
       .filter((object) => !!getOverlappingArea(object.getArea(), area));
 
     /**
-     * @param {import('../object/character/type').ICharacterCreated} speaker
+     * @param {import('../object/character').ICharacterCreated} speaker
      * @param {string} message
      * @returns
      */

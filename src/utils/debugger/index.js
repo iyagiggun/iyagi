@@ -18,7 +18,7 @@ const Debuger = {
   /**
    *
    * @param {import("../../scene/type").ISceneCreated} scene
-   * @param {import("../coordinates/type").Area} area
+   * @param {import("../coordinates").Area} area
    * @param {Object} [options]
    * @param {string} [options.color]
    */

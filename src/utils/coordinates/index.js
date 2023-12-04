@@ -1,6 +1,20 @@
 /**
- * @param {import('./type').Area} a1
- * @param {import('./type').Area} a2
+ * @typedef {Object} Position
+ * @property {number} x
+ * @property {number} y
+ */
+
+/**
+ * @typedef {Object} Area
+ * @property {number} x
+ * @property {number} y
+ * @property {number} w
+ * @property {number} h
+ */
+
+/**
+ * @param {Area} a1
+ * @param {Area} a2
  */
 export const getOverlappingArea = (a1, a2) => {
   const x1 = a1.x;
@@ -46,15 +60,15 @@ export const getDirectionByDelta = (deltaX, deltaY) => {
 };
 
 /**
- * @param {import('./type').Position} p1
- * @param {import('./type').Position} p2
+ * @param {Position} p1
+ * @param {Position} p2
  */
 export const getDistance = (p1, p2) => Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p2.y) ** 2);
 
 /**
  *
- * @param {import('../../object/character/type').ICharacterCreated} attacker
- * @param {import('../../object/character/type').ICharacterCreated} target
+ * @param {import('../../object/character').ICharacterCreated} attacker
+ * @param {import('../../object/character').ICharacterCreated} target
  */
 export const findShortestPos = (attacker, target) => {
   const attackerPos = attacker.getPosition();
@@ -98,8 +112,8 @@ export const findShortestPos = (attacker, target) => {
 };
 
 /**
- * @param {import('../../object/type').IObjectCreated} self
- * @param {import('../../object/type').IObjectCreated} target
+ * @param {import('../../object').IObjectCreated} self
+ * @param {import('../../object').IObjectCreated} target
  */
 export const getCoordinateRelationship = (self, target) => {
   const { x, y } = self.getCenterPosition();

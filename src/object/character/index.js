@@ -16,6 +16,10 @@ import { TRANSPARENT_1PX_IMG } from '../../utils';
  * @typedef {import('..').IObjectParameter & AdditionalParameter} CharacterParameter
  */
 
+/**
+ * @typedef {ReturnType<typeof ICharacter.create>} ICharacterCreated
+ */
+
 const ICharacter = {
   /**
    * @param {CharacterParameter} p

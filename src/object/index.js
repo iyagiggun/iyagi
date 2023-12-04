@@ -26,8 +26,8 @@ const getTexture = (imgUrl) => {
 
 /**
  * @typedef {Object} SpriteInfo
- * @property {import('../utils/coordinates/type').Area[]} areaList
- * @property {import('../utils/coordinates/type').Area} collision
+ * @property {import('../utils/coordinates').Area[]} areaList
+ * @property {import('../utils/coordinates').Area} collision
  */
 
 /**
