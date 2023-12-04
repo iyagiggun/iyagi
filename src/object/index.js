@@ -41,11 +41,11 @@ const getTexture = (imgUrl) => {
 
 /**
  * @typedef {Object} IObjectParameter
- * @property {string} [ObjectParameter.name]
- * @property {Object} ObjectParameter.sprite
- * @property {string} ObjectParameter.sprite.url
- * @property {Object<'default', MotionInfo>} ObjectParameter.sprite.motions
- * @property {number} [ObjectParameter.z]
+ * @property {string} [name]
+ * @property {Object} sprite
+ * @property {string} sprite.url
+ * @property {Object<string, MotionInfo>} sprite.motions
+ * @property {number} [z]
  */
 
 /**
@@ -128,207 +128,182 @@ const IObject = {
       return SPRITE_CACHE_MAP[key];
     };
 
-    const getCollisionMod = () => {
-      const info = motions[curMotionKey][curDirection];
-      if (!info) {
-        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
-      }
-      if (info.collision) {
-        return { modX: info.collision.x, modY: info.collision.y };
-      }
-      return { modX: 0, modY: 0 };
-    };
-
-    const stop = () => {
-      if (curSprite instanceof AnimatedSprite && curSprite.playing) {
-        curSprite.stop();
-      }
-    };
-
-    /**
-     * @param {string} next
-     */
-    const changeMotion = (next) => {
-      if (!Object.prototype.hasOwnProperty.call(motions, next)) {
-        throw new Error(`[object.changeMotion] "${name}" does not have sprite ${next}.`);
-      }
-      if (curSprite) {
-        stop();
-        container.removeChild(curSprite);
-      }
-      curMotionKey = next;
-      curSprite = getMotionSprite();
-      container.addChild(curSprite);
-    };
-
-    /**
-     * @param {Object} [options]
-     * @param {number} [options.speed]
-     * @param {(frameIndex: number) => void} [options.onFrameChange]
-     */
-    const play = (options) => {
-      if (!loaded) {
-        throw new Error(`"${name}" is not loaded.`);
-      }
-      const speed = options?.speed || 1;
-      if (curSprite && curSprite instanceof AnimatedSprite && !curSprite.playing) {
-        curSprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
-        curSprite.onFrameChange = options?.onFrameChange;
-        if (curSprite.loop) {
-          curSprite.play();
-        } else {
-          curSprite.gotoAndPlay(0);
-          curSprite.onComplete = () => {
-            changeMotion('default');
-          };
-        }
-      }
-    };
-
-    /**
-     * @param {Direction} next
-     */
-    const setDirection = (next) => {
-      if (!loaded) {
-        curDirection = next;
-        return;
-      }
-      if (curDirection === next && curSprite) {
-        return;
-      }
-      if (curSprite) {
-        stop();
-        container.removeChild(curSprite);
-      }
-      curDirection = next;
-      curSprite = getMotionSprite();
-      container.addChild(curSprite);
-    };
-
-    const getDirection = () => curDirection;
-
-    const isLoaded = () => loaded;
-
-    const load = () => {
-      if (loaded) {
-        return Promise.resolve();
-      }
-      const data = Object.keys(motions)
-        .map((motionKey) => {
-          const frames = Object.keys(motions[motionKey])
-            .map((dir) => {
-              switch (dir) {
-                case 'up':
-                case 'down':
-                case 'left':
-                case 'right':
-                  return getFrames(motionKey, dir);
-                default:
-                  return [];
-              }
-            });
-          return frames;
-        })
-        .flatMap((x) => x)
-        .reduce((acc, eachFrame) => ({
-          ...acc,
-          frames: {
-            ...acc.frames,
-            ...eachFrame.reduce((eachAcc, info) => ({
-              ...eachAcc,
-              [`${info.key}`]: {
-                frame: info.frame,
-              },
-            }), {}),
-          },
-        }), {
-          frames: {},
-          meta: {
-            scale: '1',
-          },
-        });
-
-      const sheet = new Spritesheet(getTexture(p.sprite.url), data);
-      return sheet.parse().then(() => {
-        loaded = true;
-        setDirection(curDirection);
-      });
-    };
-
-    const getPosition = () => {
-      const { modX, modY } = getCollisionMod();
-      return {
-        x: container.x + modX,
-        y: container.y + modY,
-        z,
-      };
-    };
-
-    const getWidth = () => {
-      const info = getMotionInfo();
-      const { collision } = info;
-      if (collision) {
-        return collision.w;
-      }
-      return info.areaList[0].w;
-    };
-
-    const getHeight = () => {
-      const info = getMotionInfo();
-      const { collision } = info;
-      if (collision) {
-        return collision.h;
-      }
-      return info.areaList[0].h;
-    };
-
-    const getArea = () => {
-      const { x, y, z: _z } = getPosition();
-      const w = getWidth();
-      const h = getHeight();
-      return {
-        x, y, z: _z, w, h,
-      };
-    };
-
-    /**
-   * @param {number} x
-   * @param {number} y
-   * @param {number} [_z]
-   */
-    const setPosition = (x, y, _z) => {
-      const { modX, modY } = getCollisionMod();
-      container.x = x - modX;
-      container.y = y - modY;
-      if (_z !== undefined) {
-        z = _z;
-      }
-      container.zIndex = z * Z_INDEX_MOD + y;
-    };
-
-    const getCenterPosition = () => {
-      const { x, y } = getPosition();
-      return { x: x + getWidth() / 2, y: y + getHeight() / 2 };
-    };
-
-    return Object.freeze({
+    const retObj = {
       name,
       container,
-      isLoaded,
-      load,
-      setDirection,
-      getDirection,
-      getWidth,
-      getHeight,
-      getPosition,
-      setPosition,
-      getArea,
-      getCollisionMod,
-      getCenterPosition,
-      changeMotion,
-      play,
-      stop,
-    });
+      isLoaded: () => loaded,
+      load: () => {
+        if (loaded) {
+          return Promise.resolve();
+        }
+        const data = Object.keys(motions)
+          .map((motionKey) => {
+            const frames = Object.keys(motions[motionKey])
+              .map((dir) => {
+                switch (dir) {
+                  case 'up':
+                  case 'down':
+                  case 'left':
+                  case 'right':
+                    return getFrames(motionKey, dir);
+                  default:
+                    return [];
+                }
+              });
+            return frames;
+          })
+          .flatMap((x) => x)
+          .reduce((acc, eachFrame) => ({
+            ...acc,
+            frames: {
+              ...acc.frames,
+              ...eachFrame.reduce((eachAcc, info) => ({
+                ...eachAcc,
+                [`${info.key}`]: {
+                  frame: info.frame,
+                },
+              }), {}),
+            },
+          }), {
+            frames: {},
+            meta: {
+              scale: '1',
+            },
+          });
+
+        const sheet = new Spritesheet(getTexture(p.sprite.url), data);
+        return sheet.parse().then(() => {
+          loaded = true;
+          retObj.setDirection(curDirection);
+        });
+      },
+      /**
+       * @param {Direction} next
+       */
+      setDirection: (next) => {
+        if (!loaded) {
+          curDirection = next;
+          return;
+        }
+        if (curDirection === next && curSprite) {
+          return;
+        }
+        if (curSprite) {
+          retObj.stop();
+          container.removeChild(curSprite);
+        }
+        curDirection = next;
+        curSprite = getMotionSprite();
+        container.addChild(curSprite);
+      },
+      getDirection: () => curDirection,
+
+      getWidth: () => {
+        const info = getMotionInfo();
+        const { collision } = info;
+        if (collision) {
+          return collision.w;
+        }
+        return info.areaList[0].w;
+      },
+      getHeight: () => {
+        const info = getMotionInfo();
+        const { collision } = info;
+        if (collision) {
+          return collision.h;
+        }
+        return info.areaList[0].h;
+      },
+      getPosition: () => {
+        const { modX, modY } = retObj.getCollisionMod();
+        return {
+          x: container.x + modX,
+          y: container.y + modY,
+          z,
+        };
+      },
+      /**
+       * @param {number} x
+       * @param {number} y
+       * @param {number} [_z]
+       */
+      setPosition: (x, y, _z) => {
+        const { modX, modY } = retObj.getCollisionMod();
+        container.x = x - modX;
+        container.y = y - modY;
+        if (_z !== undefined) {
+          z = _z;
+        }
+        container.zIndex = z * Z_INDEX_MOD + y;
+      },
+      getArea: () => {
+        const { x, y, z: _z } = retObj.getPosition();
+        const w = retObj.getWidth();
+        const h = retObj.getHeight();
+        return {
+          x, y, z: _z, w, h,
+        };
+      },
+      getCollisionMod: () => {
+        const info = motions[curMotionKey][curDirection];
+        if (!info) {
+          throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
+        }
+        if (info.collision) {
+          return { modX: info.collision.x, modY: info.collision.y };
+        }
+        return { modX: 0, modY: 0 };
+      },
+      getCenterPosition: () => {
+        const { x, y } = retObj.getPosition();
+        return { x: x + retObj.getWidth() / 2, y: y + retObj.getHeight() / 2 };
+      },
+      /**
+       * @param {string} next
+       */
+      changeMotion: (next) => {
+        if (!Object.prototype.hasOwnProperty.call(motions, next)) {
+          throw new Error(`[object.changeMotion] "${name}" does not have sprite ${next}.`);
+        }
+        if (curSprite) {
+          retObj.stop();
+          container.removeChild(curSprite);
+        }
+        curMotionKey = next;
+        curSprite = getMotionSprite();
+        container.addChild(curSprite);
+      },
+      /**
+       * @param {Object} [options]
+       * @param {number} [options.speed]
+       * @param {(frameIndex: number) => void} [options.onFrameChange]
+       */
+      play: (options) => {
+        if (!loaded) {
+          throw new Error(`"${name}" is not loaded.`);
+        }
+        const speed = options?.speed || 1;
+        if (curSprite && curSprite instanceof AnimatedSprite && !curSprite.playing) {
+          curSprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+          curSprite.onFrameChange = options?.onFrameChange;
+          if (curSprite.loop) {
+            curSprite.play();
+          } else {
+            curSprite.gotoAndPlay(0);
+            curSprite.onComplete = () => {
+              retObj.changeMotion('default');
+            };
+          }
+        }
+      },
+      stop: () => {
+        if (curSprite instanceof AnimatedSprite && curSprite.playing) {
+          curSprite.stop();
+        }
+      },
+    };
+
+    return Object.freeze(retObj);
   },
 };
 
