@@ -28,7 +28,7 @@ const IMessenger = {
     /**
      *
      * @param {Object} p
-     * @param {import('../../object/character/type').ICharacterCreated} p.speaker
+     * @param {import('../../object/character').ICharacterCreated} p.speaker
      * @param {string} p.message
      * @param {number} [p.width]
      * @param {number} [p.height]

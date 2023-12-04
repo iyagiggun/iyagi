@@ -85,7 +85,7 @@ const IObject = {
 
     /**
      * @param {string} [_key]
-     * @param {import('./type').Direction} [_dir]
+     * @param {Direction} [_dir]
      */
     const getMotionInfo = (_key, _dir) => {
       const key = _key ?? curMotionKey;
@@ -99,7 +99,7 @@ const IObject = {
 
     /**
      * @param {string} key
-     * @param {import('./type').Direction} dir
+     * @param {Direction} dir
      * @returns
      */
     const getFrames = (key, dir) => getMotionInfo(key, dir).areaList.map((area, idx) => ({
@@ -109,7 +109,7 @@ const IObject = {
 
     /**
      * @param {string} [motionKey]
-     * @param {import('./type').Direction} [dir]
+     * @param {Direction} [dir]
      * @returns
      */
     const getMotionSprite = (motionKey, dir) => {
@@ -186,7 +186,7 @@ const IObject = {
     };
 
     /**
-     * @param {import('./type').Direction} next
+     * @param {Direction} next
      */
     const setDirection = (next) => {
       if (!loaded) {
