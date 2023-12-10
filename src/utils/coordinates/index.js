@@ -13,6 +13,18 @@
  */
 
 /**
+ *
+ * @param {Position} pos
+ * @param {Area} area
+ * @returns
+ */
+export const isPosInArea = (pos, area) => {
+  const withinX = pos.x >= area.x && pos.x <= (area.x + area.w);
+  const withinY = pos.y >= area.y && pos.y <= (area.y + area.h);
+  return withinX && withinY;
+};
+
+/**
  * @param {Area} a1
  * @param {Area} a2
  */

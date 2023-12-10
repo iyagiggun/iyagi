@@ -27,7 +27,7 @@ const getTexture = (imgUrl) => {
 /**
  * @typedef {Object} SpriteInfo
  * @property {import('../utils/coordinates').Area[]} areaList
- * @property {import('../utils/coordinates').Area} collision
+ * @property {import('../utils/coordinates').Area} [collision]
  */
 
 /**
@@ -128,6 +128,17 @@ const IObject = {
       return SPRITE_CACHE_MAP[key];
     };
 
+    const getCollisionMod = () => {
+      const info = motions[curMotionKey][curDirection];
+      if (!info) {
+        throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
+      }
+      if (info.collision) {
+        return { modX: info.collision.x, modY: info.collision.y };
+      }
+      return { modX: 0, modY: 0 };
+    };
+
     const retObj = {
       name,
       container,
@@ -215,7 +226,7 @@ const IObject = {
         return info.areaList[0].h;
       },
       getPosition: () => {
-        const { modX, modY } = retObj.getCollisionMod();
+        const { modX, modY } = getCollisionMod();
         return {
           x: container.x + modX,
           y: container.y + modY,
@@ -228,7 +239,7 @@ const IObject = {
        * @param {number} [_z]
        */
       setPosition: (x, y, _z) => {
-        const { modX, modY } = retObj.getCollisionMod();
+        const { modX, modY } = getCollisionMod();
         container.x = x - modX;
         container.y = y - modY;
         if (_z !== undefined) {
@@ -243,16 +254,6 @@ const IObject = {
         return {
           x, y, z: _z, w, h,
         };
-      },
-      getCollisionMod: () => {
-        const info = motions[curMotionKey][curDirection];
-        if (!info) {
-          throw new Error(`[Object.getCollisionMod] no sprite info. ${name}:${curMotionKey}:${curDirection}`);
-        }
-        if (info.collision) {
-          return { modX: info.collision.x, modY: info.collision.y };
-        }
-        return { modX: 0, modY: 0 };
       },
       getCenterPosition: () => {
         const { x, y } = retObj.getPosition();

@@ -10,10 +10,12 @@ const IScene = {
   /**
    * @param {Object} param
    * @param {string} [param.name]
+   * @param {import('../object/tile').ITileCreated[]} param.tileList
    * @param {import('../object').IObjectCreated[]} [param.objectList]
    */
   create: ({
     name: _name,
+    tileList,
     objectList: _objectList,
   }) => {
     const name = _name;
@@ -31,10 +33,10 @@ const IScene = {
 
     container.sortableChildren = true;
 
-    const play = () => Promise.all(objectList.map((obj) => obj.load())) // load object list
+    const play = () => Promise.all([...tileList, ...objectList].map((obj) => obj.load()))
       .then(() => {
         // draw map
-        objectList.forEach((obj) => {
+        [...tileList, ...objectList].forEach((obj) => {
           container.addChild(obj.container);
         });
         IApplication.get().stage.addChild(container);
@@ -142,10 +144,41 @@ const IScene = {
      * @param {number} deltaY
      */
     const move = (target, deltaX, deltaY) => {
+      const {
+        x: curX, y: curY, w, h,
+      } = target.getArea();
       const nextX = getNextX(target, deltaX);
       const nextY = getNextY(target, deltaY);
       target.setPosition(nextX, nextY);
       target.setDirection(getDirectionByDelta(deltaX, deltaY));
+
+      tileList
+        .forEach((tile) => {
+          if (tile.hasHandler('in')) {
+            const tileArea = tile.getArea();
+            const beforeIn = getOverlappingArea(tileArea, {
+              x: curX, y: curY, w, h,
+            });
+            const afterIn = getOverlappingArea(tileArea, {
+              x: nextX, y: nextY, w, h,
+            });
+            if (!beforeIn && afterIn) {
+              tile.emit('in', { target });
+            }
+          }
+          if (tile.hasHandler('out')) {
+            const tileArea = tile.getArea();
+            const beforeIn = getOverlappingArea(tileArea, {
+              x: curX, y: curY, w, h,
+            });
+            const afterIn = getOverlappingArea(tileArea, {
+              x: nextX, y: nextY, w, h,
+            });
+            if (beforeIn && !afterIn) {
+              tile.emit('out', { target });
+            }
+          }
+        });
     };
 
     /**

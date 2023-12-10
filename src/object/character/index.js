@@ -49,18 +49,18 @@ const ICharacter = {
       });
     };
 
-    const getPhotoTexture = () => {
-      if (!photoTextureMap) {
-        throw new Error('[character.get_photo_texture] not loaded');
-      }
-      return photoTextureMap[curPhotoKey];
-    };
-
-    return Object.freeze({
+    const retObj = {
       ...obj,
       load: () => Promise.all([obj.load(), loadPhotoMap()]).then(() => undefined),
-      getPhotoTexture,
-    });
+      getPhotoTexture: () => {
+        if (!photoTextureMap) {
+          throw new Error('[character.get_photo_texture] not loaded');
+        }
+        return photoTextureMap[curPhotoKey];
+      },
+    };
+
+    return Object.freeze(retObj);
   },
 };
 
