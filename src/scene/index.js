@@ -6,17 +6,23 @@ import IMessenger from './messenger';
 import { getDirectionByDelta, getOverlappingArea } from '../utils/coordinates';
 import IController from './controller';
 
+/**
+ * @typedef {ReturnType<typeof IScene.create>} ISceneCreated
+ */
+
 const IScene = {
   /**
    * @param {Object} param
    * @param {string} [param.name]
    * @param {import('../object/tile').ITileCreated[]} param.tileList
    * @param {import('../object').IObjectCreated[]} [param.objectList]
+   * @param {() => Promise<void>} param.take
    */
   create: ({
     name: _name,
     tileList,
     objectList: _objectList,
+    take,
   }) => {
     const name = _name;
     const container = new Container();
@@ -27,9 +33,6 @@ const IScene = {
 
     /** @type {import('../object').IObjectCreated[]} */
     let objectList = [..._objectList || []];
-
-    /** @type {(() => Promise<void>)[]} */
-    const takeList = [];
 
     container.sortableChildren = true;
 
@@ -42,17 +45,10 @@ const IScene = {
         IApplication.get().stage.addChild(container);
         return Promise.resolve();
       })
-      .then(() => takeList.reduce((last, current) => last.then(() => current()), Promise.resolve()))
+      .then(() => take())
       .then(() => {
         console.error('end!!');
       });
-
-    /**
-     * @param {() => Promise<void>} take
-     */
-    const addTake = (take) => {
-      takeList.push(take);
-    };
 
     /**
      * @param {import('../object').IObjectCreated} object
@@ -273,7 +269,6 @@ const IScene = {
       name,
       container,
       play,
-      addTake,
       removeObject,
       addObject,
       focus,

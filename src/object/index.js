@@ -60,6 +60,7 @@ const IObject = {
     const { name } = p;
 
     const container = new Container();
+    container.sortableChildren = true;
 
     let loaded = false;
 

@@ -34,7 +34,15 @@ const ITile = {
 
     const ret = {
       ...obj,
-      hasHandler: (key) => ee.eventNames().includes(key),
+      /**
+       * @param {string} [key]
+       */
+      hasHandler: (key) => {
+        if (!key) {
+          return ee.eventNames().length > 0;
+        }
+        return ee.eventNames().includes(key);
+      },
       /**
        * @param {'in' | 'out'} eventName
        * @param {{ target: import('..').IObjectCreated }} data
