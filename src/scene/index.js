@@ -16,7 +16,7 @@ const IScene = {
    * @param {string} [param.name]
    * @param {import('../object/tile').ITileCreated[]} param.tileList
    * @param {import('../object').IObjectCreated[]} [param.objectList]
-   * @param {() => Promise<void>} param.take
+   * @param {() => Promise<ISceneCreated> | PromiseLike} param.take
    */
   create: ({
     name: _name,
@@ -36,19 +36,17 @@ const IScene = {
 
     container.sortableChildren = true;
 
-    const play = () => Promise.all([...tileList, ...objectList].map((obj) => obj.load()))
-      .then(() => {
-        // draw map
-        [...tileList, ...objectList].forEach((obj) => {
-          container.addChild(obj.container);
-        });
-        IApplication.get().stage.addChild(container);
-        return Promise.resolve();
-      })
-      .then(() => take())
-      .then(() => {
-        console.error('end!!');
+    const load = () => Promise.all([...tileList, ...objectList].map((obj) => obj.load()));
+
+    const play = async () => {
+      await load();
+      [...tileList, ...objectList].forEach((obj) => {
+        container.addChild(obj.container);
       });
+      IApplication.get().stage.addChild(container);
+      const next = await take();
+      return next;
+    };
 
     /**
      * @param {import('../object').IObjectCreated} object
@@ -265,7 +263,7 @@ const IScene = {
       message,
     });
 
-    return Object.freeze({
+    const ret = {
       name,
       container,
       play,
@@ -279,7 +277,9 @@ const IScene = {
       getOverlappingObjectList,
 
       wait,
-    });
+    };
+
+    return Object.freeze(ret);
   },
 };
 

@@ -1,24 +1,11 @@
 import {
-  AnimatedSprite, BaseTexture, Container, Sprite, Spritesheet, Texture,
+  AnimatedSprite, Assets,
+  Container, Sprite, Spritesheet, Texture,
 } from 'pixi.js';
 import { FRAMES_PER_SECOND } from '../const';
 
 const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
 const Z_INDEX_MOD = 10000;
-/**
- * @type {Object.<string, import("pixi.js").BaseTexture>}
- */
-const TEXTURE_CACHE_MAP = {};
-
-/**
- * @param {string} imgUrl
- */
-const getTexture = (imgUrl) => {
-  if (!TEXTURE_CACHE_MAP[imgUrl]) {
-    TEXTURE_CACHE_MAP[imgUrl] = BaseTexture.from(imgUrl);
-  }
-  return TEXTURE_CACHE_MAP[imgUrl];
-};
 
 /**
  * @typedef {'up' | 'down' | 'left' | 'right'} Direction
@@ -44,7 +31,7 @@ const getTexture = (imgUrl) => {
  * @property {string} [name]
  * @property {Object} sprite
  * @property {string} sprite.url
- * @property {Object<string, MotionInfo>} sprite.motions
+ * @property {Object<string, MotionInfo>} [sprite.motions]
  * @property {number} [z]
  */
 
@@ -148,46 +135,56 @@ const IObject = {
         if (loaded) {
           return Promise.resolve();
         }
-        const data = Object.keys(motions)
-          .map((motionKey) => {
-            const frames = Object.keys(motions[motionKey])
-              .map((dir) => {
-                switch (dir) {
-                  case 'up':
-                  case 'down':
-                  case 'left':
-                  case 'right':
-                    return getFrames(motionKey, dir);
-                  default:
-                    return [];
-                }
-              });
-            return frames;
-          })
-          .flatMap((x) => x)
-          .reduce((acc, eachFrame) => ({
-            ...acc,
-            frames: {
-              ...acc.frames,
-              ...eachFrame.reduce((eachAcc, info) => ({
-                ...eachAcc,
-                [`${info.key}`]: {
-                  frame: info.frame,
-                },
-              }), {}),
-            },
-          }), {
-            frames: {},
-            meta: {
-              scale: '1',
-            },
-          });
+        return Assets.load(p.sprite.url)
+          .then((texture) => {
+            if (!p.sprite.motions) {
+              curSprite = Sprite.from(texture);
+              container.addChild(curSprite);
+              return Promise.resolve();
+            }
 
-        const sheet = new Spritesheet(getTexture(p.sprite.url), data);
-        return sheet.parse().then(() => {
-          loaded = true;
-          retObj.setDirection(curDirection);
-        });
+            const data = Object.keys(motions)
+              .map((motionKey) => {
+                const frames = Object.keys(motions[motionKey])
+                  .map((dir) => {
+                    switch (dir) {
+                      case 'up':
+                      case 'down':
+                      case 'left':
+                      case 'right':
+                        return getFrames(motionKey, dir);
+                      default:
+                        return [];
+                    }
+                  });
+                return frames;
+              })
+              .flatMap((x) => x)
+              .reduce((acc, eachFrame) => ({
+                ...acc,
+                frames: {
+                  ...acc.frames,
+                  ...eachFrame.reduce((eachAcc, info) => ({
+                    ...eachAcc,
+                    [`${info.key}`]: {
+                      frame: info.frame,
+                    },
+                  }), {}),
+                },
+              }), {
+                frames: {},
+                meta: {
+                  scale: '1',
+                },
+              });
+
+            return new Spritesheet(texture, data).parse().then(() => {
+              retObj.setDirection(curDirection);
+              return Promise.resolve();
+            });
+          }).then(() => {
+            loaded = true;
+          });
       },
       /**
        * @param {Direction} next
