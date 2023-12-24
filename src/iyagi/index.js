@@ -34,7 +34,7 @@ const Iyagi = {
 
         return scene.play().then((next) => {
           IApplication.get().stage.removeChild(scene.container);
-          scene = next;
+          scene = next ?? title;
           return ret.play();
         });
       },

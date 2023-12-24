@@ -16,7 +16,7 @@ const IScene = {
    * @param {string} [param.name]
    * @param {import('../object/tile').ITileCreated[]} param.tileList
    * @param {import('../object').IObjectCreated[]} [param.objectList]
-   * @param {() => Promise<ISceneCreated> | PromiseLike} param.take
+   * @param {() => Promise<ISceneCreated | null>} param.take
    */
   create: ({
     name: _name,
