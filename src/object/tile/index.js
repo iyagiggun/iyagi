@@ -1,18 +1,16 @@
 import EventEmitter from 'events';
-import IObject from '..';
+import IObject from '../directional';
 
 /**
- * @typedef {import('..').IObjectCreated} IObjectCreated
+ * @typedef {import('../directional').IObjectCreated} IObjectCreated
  */
 
 /**
  * @typedef {Object} AdditionalParameter
- * @property {0} [AdditionalParameter.z]
- * @property {boolean} [interactable]
  */
 
 /**
- * @typedef {import('..').IObjectParameter & AdditionalParameter} TileParameter
+ * @typedef {import('../directional').IObjectParameter & AdditionalParameter} TileParameter
  */
 
 /**
@@ -45,21 +43,21 @@ const ITile = {
       },
       /**
        * @param {'in' | 'out'} eventName
-       * @param {{ target: import('..').IObjectCreated }} data
+       * @param {{ target: import('../directional').IObjectCreated }} data
        */
       emit: (eventName, data) => {
         ee.emit(eventName, data);
       },
       /**
        * @param {'in' | 'out'} eventName
-       * @param {(data: { target: import('..').IObjectCreated }) => void } handler
+       * @param {(data: { target: import('../directional').IObjectCreated }) => void } handler
        */
       on: (eventName, handler) => {
         ee.on(eventName, handler);
       },
       /**
        * @param {'in' | 'out'} eventName
-       * @param {(data: { target: import('..').IObjectCreated }) => void } handler
+       * @param {(data: { target: import('../directional').IObjectCreated }) => void } handler
        */
       once: (eventName, handler) => {
         ee.once(eventName, handler);

@@ -15,7 +15,7 @@ const IScene = {
    * @param {Object} param
    * @param {string} [param.name]
    * @param {import('../object/tile').ITileCreated[]} param.tileList
-   * @param {import('../object').IObjectCreated[]} [param.objectList]
+   * @param {import('../object/directional').IObjectCreated[]} [param.objectList]
    * @param {() => Promise<ISceneCreated | null>} param.take
    */
   create: ({
@@ -31,7 +31,7 @@ const IScene = {
     const messenger = IMessenger.create();
     const movementStopMap = new WeakMap();
 
-    /** @type {import('../object').IObjectCreated[]} */
+    /** @type {import('../object/directional').IObjectCreated[]} */
     let objectList = [..._objectList || []];
 
     container.sortableChildren = true;
@@ -49,7 +49,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} object
+     * @param {import('../object/directional').IObjectCreated} object
      */
     const removeObject = (object) => {
       if (!objectList.includes(object)) {
@@ -60,7 +60,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} object
+     * @param {import('../object/directional').IObjectCreated} object
      */
     const addObject = (object) => {
       if (!object.isLoaded()) {
@@ -74,7 +74,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} target
+     * @param {import('../object/directional').IObjectCreated} target
      * @param {number} [speed]
      */
     const focus = (target, speed) => {
@@ -83,7 +83,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} object
+     * @param {import('../object/directional').IObjectCreated} object
      * @param {number} deltaX
      * @returns
      */
@@ -108,7 +108,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} object
+     * @param {import('../object/directional').IObjectCreated} object
      * @param {number} deltaY
      * @returns
      */
@@ -133,7 +133,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} target
+     * @param {import('../object/directional').IObjectCreated} target
      * @param {number} deltaX
      * @param {number} deltaY
      */
@@ -176,7 +176,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} target} target
+     * @param {import('../object/directional').IObjectCreated} target} target
      * @param {boolean} [interrupted]
      * @returns
      */
@@ -192,7 +192,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object').IObjectCreated} target
+     * @param {import('../object/directional').IObjectCreated} target
      * @param {import('../utils/coordinates').Position} pos
      * @param {Object} [options]
      * @param {number} [options.speed]

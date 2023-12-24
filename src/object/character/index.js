@@ -1,5 +1,5 @@
 import { Assets } from 'pixi.js';
-import IObject from '..';
+import IObject from '../directional';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
 
 /**
@@ -13,7 +13,7 @@ import { TRANSPARENT_1PX_IMG } from '../../utils';
  */
 
 /**
- * @typedef {import('..').IObjectParameter & AdditionalParameter} CharacterParameter
+ * @typedef {import('../directional').IObjectParameter & AdditionalParameter} CharacterParameter
  */
 
 /**
