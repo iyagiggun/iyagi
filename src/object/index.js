@@ -137,11 +137,15 @@ const IObject = {
         }
         return Assets.load(p.sprite.url)
           .then((texture) => {
+            // case no motions
             if (!p.sprite.motions) {
               curSprite = Sprite.from(texture);
               container.addChild(curSprite);
+              loaded = true;
               return Promise.resolve();
             }
+
+            // case has motions
 
             const data = Object.keys(motions)
               .map((motionKey) => {
@@ -179,11 +183,10 @@ const IObject = {
               });
 
             return new Spritesheet(texture, data).parse().then(() => {
+              loaded = true;
               retObj.setDirection(curDirection);
               return Promise.resolve();
             });
-          }).then(() => {
-            loaded = true;
           });
       },
       /**

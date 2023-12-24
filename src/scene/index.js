@@ -43,7 +43,7 @@ const IScene = {
       [...tileList, ...objectList].forEach((obj) => {
         container.addChild(obj.container);
       });
-      IApplication.get().stage.addChild(container);
+
       const next = await take();
       return next;
     };

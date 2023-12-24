@@ -26,19 +26,18 @@ const Iyagi = {
     const ret = {
       application,
       /**
-       * @param {import('../scene').ISceneCreated} next
-       */
-      changeScene: (next) => {
-        scene = next;
-      },
-      /**
        * scene 의 play 에서 scene 을 return 받아서 계속 play 하도록 처리
        * 값이 없으면 title 로 넘어갈 것
        */
-      play: () => scene.play().then((next) => {
-        ret.changeScene(next);
-        return ret.play();
-      }),
+      play: () => {
+        IApplication.get().stage.addChild(scene.container);
+
+        return scene.play().then((next) => {
+          IApplication.get().stage.removeChild(scene.container);
+          scene = next;
+          return ret.play();
+        });
+      },
     };
     return Object.freeze(ret);
   },
