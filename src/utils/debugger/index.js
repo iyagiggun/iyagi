@@ -41,7 +41,7 @@ const Debuger = {
     }, 3000);
   },
   /**
-   * @param {import('../../object/directional').IObjectCreated} object
+   * @param {import('../../object').IObject} object
    * @param {Object} [options]
    * @param {Object} [options.key]
    * @param {string} [options.color]

@@ -124,8 +124,8 @@ export const findShortestPos = (attacker, target) => {
 };
 
 /**
- * @param {import('../../object/directional').IObjectCreated} self
- * @param {import('../../object/directional').IObjectCreated} target
+ * @param {import('../../object').IObject} self
+ * @param {import('../../object').IObject} target
  */
 export const getCoordinateRelationship = (self, target) => {
   const { x, y } = self.getCenterPosition();
