@@ -21,15 +21,17 @@ const getFrameId = () => {
 
 /**
  * @param {string} image
- * @param {import('../../utils/coordinates').Area[]} [frames]
+ * @param {Object} options
+ * @param {import('../../utils/coordinates').Area} [frames]
+ * @param {boolean} [loop]
  */
-const createSprite = async (image, frames) => {
+const createSprite = async (image, options) => {
   const texture = await Assets.load(image);
-  if (!frames || frames.length === 0) {
+  if (!options || !options.frames || options.frames.length === 0) {
     return Sprite.from(texture);
   }
   const sheet = {
-    frames: frames.reduce((acc, frame) => ({
+    frames: options.frames.reduce((acc, frame) => ({
       ...acc,
       [getFrameId()]: {
         frame,
@@ -41,10 +43,12 @@ const createSprite = async (image, frames) => {
   };
   await new Spritesheet(texture, sheet).parse();
   const textures = Object.keys(sheet.frames).map((key) => Texture.from(key));
-  if (frames.length === 1) {
+  if (options.frames.length === 1) {
     return new Sprite(textures[0]);
   }
-  return new AnimatedSprite(textures);
+  const sp = new AnimatedSprite(textures);
+  sp.loop = options.loop ?? true;
+  return sp;
 };
 
 /**
@@ -174,13 +178,15 @@ class IObject {
           leftSprite,
           rightSprite,
         ] = await Promise.all([
-          up ? await createSprite(up.image ?? defaultImage, up.frames) : Promise.resolve(null),
-          await createSprite(down.image ?? defaultImage, down.frames),
+          up
+            ? await createSprite(up.image ?? defaultImage, { frames: up.frames, loop })
+            : Promise.resolve(null),
+          await createSprite(down.image ?? defaultImage, { frames: down.frames, loop }),
           left
-            ? await createSprite(left.image ?? defaultImage, left.frames)
+            ? await createSprite(left.image ?? defaultImage, { frames: left.frames, loop })
             : Promise.resolve(null),
           right
-            ? await createSprite(right.image ?? defaultImage, right.frames)
+            ? await createSprite(right.image ?? defaultImage, { frames: right.frames, loop })
             : Promise.resolve(null),
         ]);
         this.#motions[motionKey] = {
@@ -312,13 +318,8 @@ class IObject {
     this.container.addChild(this.#getSprite());
   }
 
-  /**
-   * @deprecated
-   * @return {Direction}
-   */
   getDirection() {
-    console.error(this.name);
-    return 'down';
+    return this.#dir;
   }
 
   /**
