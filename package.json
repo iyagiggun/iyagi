@@ -30,6 +30,11 @@
       "require": "./src/nai/index.js",
       "types": "./types/nai/index.d.ts"
     },
+    "./utils": {
+      "import": "./src/utils/index.js",
+      "require": "./src/utils/index.js",
+      "types": "./types/utils/index.d.ts"
+    },
     "./debugger": {
       "import": "./src/utils/debugger/index.js",
       "require": "./src/utils/debugger/index.js",

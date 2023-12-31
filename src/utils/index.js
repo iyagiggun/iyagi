@@ -6,4 +6,4 @@ export const FRAMES_PER_SECOND = 60;
  * @returns
  */
 // eslint-disable-next-line max-len
-export const wait = (seconds) => new Promise((resolve) => { window.setTimeout(() => resolve(undefined), seconds * 1000); });
+export const wait = (seconds) => new Promise((resolve) => { window.setTimeout(() => resolve(), seconds * 1000); });
