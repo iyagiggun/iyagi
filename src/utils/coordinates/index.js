@@ -79,8 +79,8 @@ export const getDistance = (p1, p2) => Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p2
 
 /**
  *
- * @param {import('../../object/character').ICharacterCreated} attacker
- * @param {import('../../object/character').ICharacterCreated} target
+ * @param {import('../../object').ICharacter} attacker
+ * @param {import('../../object').ICharacter} target
  */
 export const findShortestPos = (attacker, target) => {
   const attackerPos = attacker.getPosition();

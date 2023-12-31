@@ -5,9 +5,9 @@ const intervalMap = new WeakMap();
 export const IBasicTracker = {
   /**
    * @param {Object} p
-   * @param {import('../../scene').ISceneCreated} p.scene
-   * @param {ReturnType<typeof import('../../object/character').ICharacter.create>} p.controlled
-   * @param {import('../../object/character').ICharacterCreated} p.target
+   * @param {import('../../scene').default} p.scene
+   * @param {import('../../object/').ICharacter} p.controlled
+   * @param {import('../../object/').ICharacter} p.target
    * @param {() => void} [p.onArrived]
    * @param {number} [p.intervalDelay = 250]
    */
@@ -53,7 +53,7 @@ export const IBasicTracker = {
     intervalMap.set(controlled, interval);
   },
   /**
-   * @param {import('../../object/character').ICharacterCreated} target
+   * @param {import('../../object/').ICharacter} target
    */
   release: (target) => {
     const interval = intervalMap.get(target);

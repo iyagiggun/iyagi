@@ -5,10 +5,6 @@ import ICamera from './camera';
 import IController from './controller';
 import IMessenger from './messenger';
 
-/**
- * @typedef {ReturnType<typeof IScene.create>} ISceneCreated
- */
-
 class IScene {
   name;
 
@@ -33,7 +29,7 @@ class IScene {
    * @param {string} param.name
    * @param {import('../object').ITile[]} param.tileList
    * @param {import('../object').IObject[]} [param.objectList]
-   * @param {() => Promise<ISceneCreated | null>} param.take
+   * @param {() => Promise<IScene | null>} param.take
    */
   constructor({
     name,
@@ -252,7 +248,7 @@ class IScene {
   }
 
   /**
-   * @param {import('../object/character').ICharacterCreated} player
+   * @param {import('../object').ICharacter} player
    */
   control(player) {
     this.#controller.control();
@@ -276,7 +272,7 @@ class IScene {
   }
 
   /**
-     * @param {import('../object/character').ICharacterCreated} speaker
+     * @param {import('../object').ICharacter} speaker
      * @param {string} message
      * @returns
     */

@@ -14,7 +14,7 @@ const Debuger = {
   },
   /**
    *
-   * @param {import("../../scene").ISceneCreated} scene
+   * @param {import("../../scene").default} scene
    * @param {import("../coordinates").Area} area
    * @param {Object} [options]
    * @param {string} [options.color]
