@@ -1,7 +1,7 @@
 const { default: IObject } = require('./base');
 
 /**
- * @typedef ISimpleObjectParameter
+ * @typedef IMonoObjectParameter
  * @property {string} name
  * @property {string} image
  * @property {import('../utils/coordinates').Area[]} [frames]
@@ -11,7 +11,7 @@ const { default: IObject } = require('./base');
 
 class IMonoObject extends IObject {
   /**
-   * @param {ISimpleObjectParameter} p
+   * @param {IMonoObjectParameter} p
    */
   constructor({
     name, image, frames, hitbox, z,
