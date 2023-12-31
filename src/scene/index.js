@@ -1,180 +1,222 @@
 import { Container } from 'pixi.js';
 import IApplication from '../application';
+import { getDirectionByDelta, getOverlappingArea } from '../utils/coordinates';
 import ICamera from './camera';
-import { wait } from '../utils';
-import IMessenger from './messenger';
-import { getDirectionByDelta, isOverlap } from '../utils/coordinates';
 import IController from './controller';
+import IMessenger from './messenger';
 
-const IScene = {
+class IScene {
+  name;
+
+  container = new Container();
+
+  objectList;
+
+  tileList;
+
+  take;
+
+  #camera;
+
+  #controller;
+
+  #messenger;
+
+  #movementStopMap = new WeakMap();
+
   /**
    * @param {Object} param
-   * @param {string} [param.name]
-   * @param {import('../object/type').IObjectCreated[]} [param.objectList]
+   * @param {string} param.name
+   * @param {import('../object').ITile[]} param.tileList
+   * @param {import('../object').IObject[]} [param.objectList]
+   * @param {() => Promise<IScene | null>} param.take
    */
-  create: ({
-    name: _name,
-    objectList: _objectList,
-  }) => {
-    const name = _name;
-    const container = new Container();
-    const camera = ICamera.create(container);
-    const controller = IController.create();
-    const messenger = IMessenger.create();
-    const movementStopMap = new WeakMap();
+  constructor({
+    name,
+    tileList,
+    objectList,
+    take,
+  }) {
+    this.name = name;
+    this.#camera = ICamera.create(this.container);
+    this.#controller = IController.create();
+    this.#messenger = IMessenger.create();
 
-    /** @type {import('../object/type').IObjectCreated[]} */
-    let objectList = [..._objectList || []];
+    this.container.sortableChildren = true;
+    this.objectList = objectList ?? [];
+    this.tileList = tileList ?? [];
+    this.take = take;
+  }
 
-    /** @type {(() => Promise<void>)[]} */
-    const takeList = [];
+  load() {
+    return Promise.all([...this.tileList, ...this.objectList].map((o) => o.load()));
+  }
 
-    container.sortableChildren = true;
+  async play() {
+    await this.load();
+    [...this.tileList, ...this.objectList].forEach((obj) => {
+      this.container.addChild(obj.container);
+    });
 
-    const play = () => Promise.all(objectList.map((obj) => obj.load())) // load object list
-      .then(() => {
-        // draw map
-        objectList.forEach((obj) => {
-          container.addChild(obj.container);
-        });
-        IApplication.get().stage.addChild(container);
-        return Promise.resolve();
-      })
-      .then(() => takeList.reduce((last, current) => last.then(() => current()), Promise.resolve()))
-      .then(() => {
-        console.error('end!!');
-      });
+    const next = await this.take();
+    return next;
+  }
 
-    /**
-     * @param {() => Promise<void>} take
-     */
-    const addTake = (take) => {
-      takeList.push(take);
-    };
+  /**
+   * @param {import('../object').IObject} object
+   */
+  removeObject(object) {
+    if (!this.objectList.includes(object)) {
+      return;
+    }
+    this.objectList = this.objectList.filter((each) => each !== object);
+    this.container.removeChild(object.container);
+  }
 
-    /**
-     * @param {import('../object/type').IObjectCreated} object
-     */
-    const removeObject = (object) => {
-      if (!objectList.includes(object)) {
-        throw new Error(`[scene.remove_object] no object. ${object.name}`);
+  /**
+   * @param {import('../object').IObject} object
+   */
+  addObject(object) {
+    if (!object.isLoaded()) {
+      throw new Error(`'${object.name}' object is not loaded.`);
+    }
+    if (this.objectList.includes(object)) {
+      return;
+    }
+    this.objectList.push(object);
+    this.container.addChild(object.container);
+  }
+
+  /**
+   * @param {import('../object').IObject} target
+   * @param {number} [speed]
+   */
+  focus(target, speed) {
+    const { x, y } = target.getCenterPosition();
+    return this.#camera.moveTo(x, y, speed);
+  }
+
+  /**
+   * @param {import('../object').IObject} object
+   * @param {number} deltaX
+   * @returns
+   */
+  getNextX(object, deltaX) {
+    const {
+      x, y, z, w, h,
+    } = object.getArea();
+    const destX = x + deltaX;
+    const blocking = this.objectList.find((each) => {
+      if (each === object || each.getPosition().z !== z) {
+        return false;
       }
-      objectList = objectList.filter((each) => each !== object);
-      container.removeChild(object.container);
-    };
+      return !!getOverlappingArea({
+        x: destX, y, w, h,
+      }, each.getArea());
+    });
+    if (blocking) {
+      const { x: blockingX, w: blockingW } = blocking.getArea();
+      return x < blockingX ? blockingX - w : blockingX + blockingW;
+    }
+    return destX;
+  }
 
-    /**
-     * @param {import('../object/type').IObjectCreated} object
-     */
-    const addObject = (object) => {
-      if (!object.isLoaded()) {
-        throw new Error(`'${name}' object is not loaded.`);
+  /**
+   * @param {import('../object').IObject} object
+   * @param {number} deltaY
+   * @returns
+   */
+  #getNextY(object, deltaY) {
+    const {
+      x, y, z, w, h,
+    } = object.getArea();
+    const destY = y + deltaY;
+    const blocking = this.objectList.find((each) => {
+      if (each === object || each.getPosition().z !== z) {
+        return false;
       }
-      if (objectList.includes(object)) {
-        return;
-      }
-      objectList.push(object);
-      container.addChild(object.container);
-    };
+      return !!getOverlappingArea({
+        x, y: destY, w, h,
+      }, each.getArea());
+    });
+    if (blocking) {
+      const { y: blockingY, h: blockingH } = blocking.getArea();
+      return y < blockingY ? blockingY - h : blockingY + blockingH;
+    }
+    return destY;
+  }
 
-    /**
-     * @param {import('../object/type').IObjectCreated} target
-     * @param {number} [speed]
-     */
-    const focus = (target, speed) => {
-      const { x, y } = target.getCenterPosition();
-      return camera.moveTo(x, y, speed);
-    };
+  /**
+   * @param {import('../object').IObject} target
+   * @param {number} deltaX
+   * @param {number} deltaY
+   */
+  #move(target, deltaX, deltaY) {
+    const {
+      x: curX, y: curY, w, h,
+    } = target.getArea();
+    const nextX = this.getNextX(target, deltaX);
+    const nextY = this.#getNextY(target, deltaY);
+    target.setPosition(nextX, nextY);
+    target.setDirection(getDirectionByDelta(deltaX, deltaY));
 
-    /**
-     * @param {import('../object/type').IObjectCreated} object
-     * @param {number} deltaX
-     * @returns
-     */
-    const getNextX = (object, deltaX) => {
-      const {
-        x, y, z, w, h,
-      } = object.getArea();
-      const destX = x + deltaX;
-      const blocking = objectList.find((each) => {
-        if (each === object || each.getPosition().z !== z) {
-          return false;
+    this.tileList
+      .forEach((tile) => {
+        if (tile.hasHandler('in')) {
+          const tileArea = tile.getArea();
+          const beforeIn = getOverlappingArea(tileArea, {
+            x: curX, y: curY, w, h,
+          });
+          const afterIn = getOverlappingArea(tileArea, {
+            x: nextX, y: nextY, w, h,
+          });
+          if (!beforeIn && afterIn) {
+            tile.emit('in', { target });
+          }
         }
-        return isOverlap({
-          x: destX, y, w, h,
-        }, each.getArea());
-      });
-      if (blocking) {
-        const { x: blockingX, w: blockingW } = blocking.getArea();
-        return x < blockingX ? blockingX - w : blockingX + blockingW;
-      }
-      return destX;
-    };
-
-    /**
-     * @param {import('../object/type').IObjectCreated} object
-     * @param {number} deltaY
-     * @returns
-     */
-    const getNextY = (object, deltaY) => {
-      const {
-        x, y, z, w, h,
-      } = object.getArea();
-      const destY = y + deltaY;
-      const blocking = objectList.find((each) => {
-        if (each === object || each.getPosition().z !== z) {
-          return false;
+        if (tile.hasHandler('out')) {
+          const tileArea = tile.getArea();
+          const beforeIn = getOverlappingArea(tileArea, {
+            x: curX, y: curY, w, h,
+          });
+          const afterIn = getOverlappingArea(tileArea, {
+            x: nextX, y: nextY, w, h,
+          });
+          if (beforeIn && !afterIn) {
+            tile.emit('out', { target });
+          }
         }
-        return isOverlap({
-          x, y: destY, w, h,
-        }, each.getArea());
       });
-      if (blocking) {
-        const { y: blockingY, h: blockingH } = blocking.getArea();
-        return y < blockingY ? blockingY - h : blockingY + blockingH;
-      }
-      return destY;
-    };
+  }
 
-    /**
-     * @param {import('../object/type').IObjectCreated} target
-     * @param {number} deltaX
-     * @param {number} deltaY
-     */
-    const move = (target, deltaX, deltaY) => {
-      const nextX = getNextX(target, deltaX);
-      const nextY = getNextY(target, deltaY);
-      target.setPosition(nextX, nextY);
-      target.setDirection(getDirectionByDelta(deltaX, deltaY));
-    };
+  /**
+   * @param {import('../object').IObject} target} target
+   * @param {boolean} [interrupted]
+   * @returns
+   */
+  stopObject(target, interrupted) {
+    const movementStop = this.#movementStopMap.get(target);
+    if (!movementStop) {
+      return;
+    }
+    target.stop();
+    IApplication.get().ticker.remove(movementStop.tick);
+    movementStop.resolve(interrupted || false);
+    this.#movementStopMap.delete(target);
+  }
 
-    /**
-     * @param {import('../object/type').IObjectCreated} target} target
-     * @param {boolean} [interrupted]
-     * @returns
-     */
-    const stopObject = (target, interrupted) => {
-      const movementStop = movementStopMap.get(target);
-      if (!movementStop) {
-        return;
-      }
-      target.stop();
-      IApplication.get().ticker.remove(movementStop.tick);
-      movementStop.resolve(interrupted || false);
-      movementStopMap.delete(target);
-    };
-
-    /**
-     * @param {import('../object/type').IObjectCreated} target
-     * @param {import('../utils/coordinates/type').Position} pos
-     * @param {Object} [options]
-     * @param {number} [options.speed]
-     * @param {boolean} [options.focusing]
-     */
-    const moveObject = (target, pos, options) => new Promise((resolve) => {
+  /**
+   * @param {import('../object').IObject} target
+   * @param {import('../utils/coordinates').Position} pos
+   * @param {Object} [options]
+   * @param {number} [options.speed]
+   * @param {boolean} [options.focusing]
+   */
+  moveObject(target, pos, options) {
+    return new Promise((resolve) => {
       const speed = options?.speed ?? 1;
 
-      stopObject(target);
+      this.stopObject(target);
 
       const tick = () => {
         const { x: curX, y: curY } = target.getPosition();
@@ -188,63 +230,58 @@ const IScene = {
         } else {
           const deltaX = speed * (diffX / distance);
           const deltaY = speed * (diffY / distance);
-          move(target, deltaX, deltaY);
+          this.#move(target, deltaX, deltaY);
           target.play({ speed });
           if (options?.focusing) {
-            focus(target);
+            this.focus(target);
           }
         }
 
         if (arrived) {
-          stopObject(target);
+          this.stopObject(target);
         }
       };
       target.play({ speed });
-      movementStopMap.set(target, { tick, resolve });
+      this.#movementStopMap.set(target, { tick, resolve });
       IApplication.get().ticker.add(tick);
     });
+  }
 
-    /**
-     * @param {import('../object/character/type').ICharacterCreated} player
-     */
-    const control = (player) => {
-      controller.control();
-      controller.on('move', (evt) => {
-        move(player, evt.detail.deltaX, evt.detail.deltaY);
-        focus(player);
-        player.play(evt.detail.delta_level);
-      });
-      controller.on('stop', () => {
-        player.stop();
-      });
-      focus(player);
-    };
+  /**
+   * @param {import('../object').ICharacter} player
+   */
+  control(player) {
+    this.#controller.control();
+    this.#controller.on('move', (evt) => {
+      this.#move(player, evt.detail.deltaX, evt.detail.deltaY);
+      this.focus(player);
+      player.play(evt.detail.delta_level);
+    });
+    this.#controller.on('stop', () => {
+      player.stop();
+    });
+    this.focus(player);
+  }
 
-    /**
-     * @param {import('../object/character/type').ICharacterCreated} speaker
+  /**
+   * @param {import('../utils/coordinates').Area} area
+   */
+  getOverlappingObjectList(area) {
+    return this.objectList
+      .filter((o) => !!this.getOverlappingArea(o.getArea(), area));
+  }
+
+  /**
+     * @param {import('../object').ICharacter} speaker
      * @param {string} message
      * @returns
-     */
-    const showMessage = (speaker, message) => messenger.showMessage({
+    */
+  showMessage(speaker, message) {
+    return this.#messenger.showMessage({
       speaker,
       message,
     });
-
-    return Object.freeze({
-      name,
-      play,
-      addTake,
-      removeObject,
-      addObject,
-      focus,
-      moveObject,
-      stopObject,
-      showMessage,
-      control,
-
-      wait,
-    });
-  },
-};
+  }
+}
 
 export default IScene;

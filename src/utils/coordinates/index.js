@@ -1,39 +1,63 @@
 /**
- * @param {number} x1
- * @param {number} x2 must be greater than x1
- * @param {number} y1
- * @param {number} y2 must be greater than y1
+ * @typedef {Object} Position
+ * @property {number} x
+ * @property {number} y
  */
-const isOverlapIn1D = (x1, x2, y1, y2) => {
-  if (x2 <= y1 || x1 >= y2) {
-    return false;
-  }
-  return true;
+
+/**
+ * @typedef {Object} Area
+ * @property {number} x
+ * @property {number} y
+ * @property {number} w
+ * @property {number} h
+ */
+
+/**
+ *
+ * @param {Position} pos
+ * @param {Area} area
+ * @returns
+ */
+export const isPosInArea = (pos, area) => {
+  const withinX = pos.x >= area.x && pos.x <= (area.x + area.w);
+  const withinY = pos.y >= area.y && pos.y <= (area.y + area.h);
+  return withinX && withinY;
 };
 
 /**
- * @param {import('./type').Area} a1
- * @param {import('./type').Area} a2
+ * @param {Area} a1
+ * @param {Area} a2
  */
-export const isOverlap = (a1, a2) => isOverlapIn1D(a1.x, a1.x + a1.w, a2.x, a2.x + a2.w)
-        && isOverlapIn1D(a1.y, a1.y + a1.h, a2.y, a2.y + a2.h);
+export const getOverlappingArea = (a1, a2) => {
+  const x1 = a1.x;
+  const y1 = a1.y;
+  const w1 = a1.w;
+  const h1 = a1.h;
 
-/**
- * @param {import('./type').Area} a1
- * @param {import('./type').Area} a2
- */
-export const getOverlapArea = (a1, a2) => {
-  if (!isOverlap(a1, a2)) {
-    return null;
+  const x2 = a2.x;
+  const y2 = a2.y;
+  const w2 = a2.w;
+  const h2 = a2.h;
+
+  // 겹치는 영역의 좌표 계산
+  const xOverlap = Math.max(0, Math.min(x1 + w1, x2 + w2) - Math.max(x1, x2));
+  const yOverlap = Math.max(0, Math.min(y1 + h1, y2 + h2) - Math.max(y1, y2));
+
+  // 겹치는 영역이 있는지 확인
+  if (xOverlap > 0 && yOverlap > 0) {
+    // 겹치는 영역의 좌표와 크기 계산
+    const xOverlapCoord = Math.max(x1, x2);
+    const yOverlapCoord = Math.max(y1, y2);
+    const overlapWidth = Math.min(x1 + w1, x2 + w2) - xOverlapCoord;
+    const overlapHeight = Math.min(y1 + h1, y2 + h2) - yOverlapCoord;
+
+    // 겹치는 영역 객체 반환
+    return {
+      x: xOverlapCoord, y: yOverlapCoord, w: overlapWidth, h: overlapHeight,
+    };
   }
-  const [, x1, x2] = [a1.x, a1.x + a1.w, a2.x, a2.x + a2.w].sort();
-  const [, y1, y2] = [a1.y, a1.y + a1.h, a2.y, a2.y + a2.h].sort();
-  return {
-    x: x1,
-    y: y1,
-    w: x2 - x1,
-    h: y2 - y1,
-  };
+  // 겹치는 영역이 없을 경우 null 반환
+  return null;
 };
 
 /**
@@ -48,15 +72,15 @@ export const getDirectionByDelta = (deltaX, deltaY) => {
 };
 
 /**
- * @param {import('./type').Position} p1
- * @param {import('./type').Position} p2
+ * @param {Position} p1
+ * @param {Position} p2
  */
 export const getDistance = (p1, p2) => Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p2.y) ** 2);
 
 /**
  *
- * @param {import('../../object/character/type').ICharacterCreated} attacker
- * @param {import('../../object/character/type').ICharacterCreated} target
+ * @param {import('../../object').ICharacter} attacker
+ * @param {import('../../object').ICharacter} target
  */
 export const findShortestPos = (attacker, target) => {
   const attackerPos = attacker.getPosition();
@@ -68,21 +92,25 @@ export const findShortestPos = (attacker, target) => {
   const posList = [
     // 타겟의 위
     {
+      direction: 'down',
       x: tCX,
       y: tCY + tHeight,
     },
     // 타겟의 아래
     {
+      direction: 'up',
       x: tCX,
       y: tCY - tHeight,
     },
     // 타겟의 오른쪽
     {
+      direction: 'left',
       x: tCX + tWidth,
       y: tCY,
     },
     // 타겟의 왼쪽
     {
+      direction: 'right',
       x: tCX - tWidth,
       y: tCY,
     },
@@ -96,8 +124,8 @@ export const findShortestPos = (attacker, target) => {
 };
 
 /**
- * @param {import('../../object/type').IObjectCreated} self
- * @param {import('../../object/type').IObjectCreated} target
+ * @param {import('../../object').IObject} self
+ * @param {import('../../object').IObject} target
  */
 export const getCoordinateRelationship = (self, target) => {
   const { x, y } = self.getCenterPosition();

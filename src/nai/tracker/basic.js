@@ -5,9 +5,9 @@ const intervalMap = new WeakMap();
 export const IBasicTracker = {
   /**
    * @param {Object} p
-   * @param {import('../../scene/type').ISceneCreated} p.scene
-   * @param {import('../../object/character/type').ICharacterCreated} p.controlled
-   * @param {import('../../object/character/type').ICharacterCreated} p.target
+   * @param {import('../../scene').default} p.scene
+   * @param {import('../../object/').ICharacter} p.controlled
+   * @param {import('../../object/').ICharacter} p.target
    * @param {() => void} [p.onArrived]
    * @param {number} [p.intervalDelay = 250]
    */
@@ -23,6 +23,7 @@ export const IBasicTracker = {
 
     let isMoving = false;
     let lastPos = controlled.getPosition();
+    let directionWhenArrived = 'down';
 
     const interval = (() => window.setInterval(() => {
       const currentPos = controlled.getPosition();
@@ -31,6 +32,7 @@ export const IBasicTracker = {
         scene.stopObject(controlled);
         isMoving = false;
         lastPos = currentPos;
+        controlled.setDirection(directionWhenArrived);
         onArrived?.();
         return;
       }
@@ -39,6 +41,7 @@ export const IBasicTracker = {
         scene.stopObject(controlled);
 
         const dest = findShortestPos(controlled, target);
+        directionWhenArrived = dest.direction;
         scene.moveObject(controlled, dest).then(() => {
           isMoving = false;
         });
@@ -50,7 +53,7 @@ export const IBasicTracker = {
     intervalMap.set(controlled, interval);
   },
   /**
-   * @param {import('../../object/character/type').ICharacterCreated} target
+   * @param {import('../../object/').ICharacter} target
    */
   release: (target) => {
     const interval = intervalMap.get(target);
