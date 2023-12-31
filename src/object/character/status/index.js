@@ -1,58 +1,59 @@
 import EventEmitter from 'events';
 import IStatusBarBasic from './bar';
 
-const IStatus = {
+/**
+ * @template T
+ */
+
+class IStatus {
+  status;
+
+  #ee = new EventEmitter();
+
   /**
-   * @template T
-   * @param {T} init
+   * @param {T} initData
    */
-  create: (init) => {
-    const ee = new EventEmitter();
+  constructor(initData) {
+    this.status = { ...initData };
+  }
 
-    let status = {
-      ...init,
+  get() {
+    return {
+      ...this.status,
     };
+  }
 
-    const get = () => ({
-      ...status,
-    });
-
-    /**
+  /**
      * @param {Partial<T>} next
      */
-    const set = (next) => {
-      const before = get();
-      const after = { ...status, ...next };
-      ee.emit('before-change', { before, after });
-      status = after;
-      ee.emit('change', { before, after: get() });
-    };
+  set(next) {
+    const before = this.get();
+    const after = { ...this.status, ...next };
+    this.#ee.emit('before-change', { before, after });
+    this.status = after;
+    this.#ee.emit('change', { before, after: this.get() });
+  }
 
-    /**
-     * @typedef {(
-     *    key: 'change',
-     *    handler: (data: { before: T, after: T }) => void
-     *  ) => void
-     * } ChangeHandler
-     * @typedef {(
-     *    key: 'before-change',
-     *    handler: (before: number) => void
-     *  ) => void
-     * } BeforeChangeHandler
-     */
+  /**
+   * @typedef {(
+   *    key: 'change',
+   *    handler: (data: { before: T, after: T }) => void
+   *  ) => void
+   * } ChangeHandler
+   * @typedef {(
+   *    key: 'before-change',
+   *    handler: (before: number) => void
+   *  ) => void
+   * } BeforeChangeHandler
+   */
 
-    return Object.freeze({
-      get,
-      set,
-      /**
-       * @type {ChangeHandler & BeforeChangeHandler}
-       */
-      on: (key, handler) => {
-        ee.on(key, handler);
-      },
-    });
-  },
-};
+  /**
+   * @type {ChangeHandler}
+   */
+  on(key, handler) {
+    this.#ee.on(key, handler);
+  }
+}
 
 export default IStatus;
 
