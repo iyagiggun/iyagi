@@ -299,10 +299,11 @@ class IObject {
   }
 
   stop() {
-    if (!(this.container instanceof AnimatedSprite)) {
+    const sprite = this.#getSprite();
+    if (!(sprite instanceof AnimatedSprite)) {
       return;
     }
-    this.container.stop();
+    sprite.stop();
   }
 
   /**
@@ -313,9 +314,17 @@ class IObject {
       this.#dir = next;
       return;
     }
-    this.container.removeChild(this.#getSprite());
+    const lastSprite = this.#getSprite();
+    const isPlaying = lastSprite.playing;
+
+    this.stop();
     this.#dir = next;
+
+    this.container.removeChild(lastSprite);
     this.container.addChild(this.#getSprite());
+    if (isPlaying) {
+      this.play();
+    }
   }
 
   getDirection() {
