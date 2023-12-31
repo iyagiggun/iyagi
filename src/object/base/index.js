@@ -277,18 +277,18 @@ class IObject {
     if (!this.isLoaded()) {
       throw this.#error('not loaded.');
     }
-    if (!(this.container instanceof AnimatedSprite)) {
+    const sprite = this.#getSprite();
+    if (!(sprite instanceof AnimatedSprite)) {
       return;
     }
     const speed = options?.speed || 1;
-    console.error(speed);
-    this.container.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
-    this.container.onFrameChange = options?.onFrameChange;
-    if (this.container.loop) {
-      this.container.play();
+    sprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+    sprite.onFrameChange = options?.onFrameChange;
+    if (sprite.loop) {
+      sprite.play();
     } else {
-      this.container.gotoAndPlay(0);
-      this.container.onComplete = options?.onComplete;
+      sprite.gotoAndPlay(0);
+      sprite.onComplete = options?.onComplete;
     }
   }
 
