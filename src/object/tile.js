@@ -1,9 +1,18 @@
 import EventEmitter from 'events';
-import IObject from './base';
 import IMonoObject from './mono';
 
 class ITile extends IMonoObject {
   #ee = new EventEmitter();
+
+  /**
+   * @param {import('./mono').IMonoObjectParameter} p
+   */
+  constructor(p) {
+    super({
+      ...p,
+      z: 0,
+    });
+  }
 
   /**
    * @param {string} key
