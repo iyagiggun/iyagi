@@ -1,10 +1,10 @@
 import { Container } from 'pixi.js';
 import IApplication from '../application';
-import ICamera from './camera';
 import { wait } from '../utils';
-import IMessenger from './messenger';
 import { getDirectionByDelta, getOverlappingArea } from '../utils/coordinates';
+import ICamera from './camera';
 import IController from './controller';
+import IMessenger from './messenger';
 
 /**
  * @typedef {ReturnType<typeof IScene.create>} ISceneCreated
@@ -14,8 +14,8 @@ const IScene = {
   /**
    * @param {Object} param
    * @param {string} [param.name]
-   * @param {import('../object/tile').ITileCreated[]} param.tileList
-   * @param {import('../object/directional').IObjectCreated[]} [param.objectList]
+   * @param {import('../object').ITile[]} param.tileList
+   * @param {import('../object').IObject[]} [param.objectList]
    * @param {() => Promise<ISceneCreated | null>} param.take
    */
   create: ({
@@ -31,7 +31,7 @@ const IScene = {
     const messenger = IMessenger.create();
     const movementStopMap = new WeakMap();
 
-    /** @type {import('../object/directional').IObjectCreated[]} */
+    /** @type {import('../object').IObject[]} */
     let objectList = [..._objectList || []];
 
     container.sortableChildren = true;
@@ -49,7 +49,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} object
+     * @param {import('../object').IObject} object
      */
     const removeObject = (object) => {
       if (!objectList.includes(object)) {
@@ -60,7 +60,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} object
+     * @param {import('../object').IObject} object
      */
     const addObject = (object) => {
       if (!object.isLoaded()) {
@@ -74,7 +74,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} target
+     * @param {import('../object').IObject} target
      * @param {number} [speed]
      */
     const focus = (target, speed) => {
@@ -83,7 +83,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} object
+     * @param {import('../object').IObject} object
      * @param {number} deltaX
      * @returns
      */
@@ -108,7 +108,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} object
+     * @param {import('../object').IObject} object
      * @param {number} deltaY
      * @returns
      */
@@ -133,7 +133,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} target
+     * @param {import('../object').IObject} target
      * @param {number} deltaX
      * @param {number} deltaY
      */
@@ -176,7 +176,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} target} target
+     * @param {import('../object').IObject} target} target
      * @param {boolean} [interrupted]
      * @returns
      */
@@ -192,7 +192,7 @@ const IScene = {
     };
 
     /**
-     * @param {import('../object/directional').IObjectCreated} target
+     * @param {import('../object').IObject} target
      * @param {import('../utils/coordinates').Position} pos
      * @param {Object} [options]
      * @param {number} [options.speed]
