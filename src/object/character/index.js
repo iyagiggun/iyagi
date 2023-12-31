@@ -1,9 +1,9 @@
 import { Assets } from 'pixi.js';
-import IObject from '../directional';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
+import IObject from '../base';
 
 /**
- * @template T
+ * @typedef
  */
 
 /**
@@ -13,55 +13,39 @@ import { TRANSPARENT_1PX_IMG } from '../../utils';
  */
 
 /**
- * @typedef {import('../directional').IObjectParameter & AdditionalParameter} CharacterParameter
+ * @typedef {import('../base').IObjectParameter & AdditionalParameter} ICharacterParameter
  */
 
-/**
- * @typedef {ReturnType<typeof ICharacter.create>} ICharacterCreated
- */
+class ICharacter extends IObject {
+  #p;
 
-const ICharacter = {
+  /** @type {Object<string, import("pixi.js").Texture>} */
+  #photoTextureMap = {};
+
   /**
-   * @param {CharacterParameter} p
+   * @param {ICharacterParameter} p
    */
-  create: (p) => {
-    const obj = IObject.create(p);
+  constructor(p) {
+    super(p);
+    this.#p = p;
+  }
 
-    const curPhotoKey = 'default';
-    const photoMap = p.photoMap || { default: TRANSPARENT_1PX_IMG };
-    /**
-     * @type Object.<string, import('pixi.js').Texture> | undefined
-     */
-    let photoTextureMap;
+  async load() {
+    const photoMap = this.#p.photoMap ?? { default: TRANSPARENT_1PX_IMG };
+    const photoLoadPromises = Object.keys(photoMap).map(async (photoKey) => {
+      const photoUrl = photoMap[photoKey];
+      const texture = await Assets.load(photoUrl);
+      this.#photoTextureMap[photoKey] = texture;
+    });
+    await Promise.all([super.load(), ...photoLoadPromises]);
+  }
 
-    const loadPhotoMap = () => {
-      const promiseList = Object.keys(photoMap)
-        .map((photoKey) => Assets.load(photoMap[photoKey])
-          .then((texture) => ({
-            photo_key: photoKey,
-            texture,
-          })));
-      return Promise.all(promiseList).then((resultList) => {
-        photoTextureMap = resultList.reduce((acc, result) => ({
-          ...acc,
-          [result.photo_key]: result.texture,
-        }), {});
-      });
-    };
-
-    const retObj = {
-      ...obj,
-      load: () => Promise.all([obj.load(), loadPhotoMap()]).then(() => undefined),
-      getPhotoTexture: () => {
-        if (!photoTextureMap) {
-          throw new Error('[character.get_photo_texture] not loaded');
-        }
-        return photoTextureMap[curPhotoKey];
-      },
-    };
-
-    return Object.freeze(retObj);
-  },
-};
+  /**
+   * @param {string} [key]
+   */
+  getPhotoTexture(key) {
+    return this.#photoTextureMap[key ?? 'default'];
+  }
+}
 
 export default ICharacter;

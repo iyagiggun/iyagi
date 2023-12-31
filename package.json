@@ -20,16 +20,6 @@
       "require": "./src/object/index.js",
       "types": "./types/object/index.d.ts"
     },
-    "./object/tile": {
-      "import": "./src/object/tile/index.js",
-      "require": "./src/object/tile/index.js",
-      "types": "./types/object/tile/index.d.ts"
-    },
-    "./object/character": {
-      "import": "./src/object/character/index.js",
-      "require": "./src/object/character/index.js",
-      "types": "./types/object/character/index.d.ts"
-    },
     "./object/character/status": {
       "import": "./src/object/character/status/index.js",
       "require": "./src/object/character/status/index.js",

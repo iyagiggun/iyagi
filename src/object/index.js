@@ -1,4 +1,8 @@
-import IDirectionalObject from './directional';
 import IObject from './base';
+import IMonoObject from './mono';
+import ITile from './tile';
+import ICharacter from './character';
 
-export { IObject, IDirectionalObject };
+export {
+  IMonoObject, IObject, ITile, ICharacter,
+};
