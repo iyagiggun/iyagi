@@ -32,7 +32,7 @@ export const IBasicTracker = {
         scene.stopObject(controlled);
         isMoving = false;
         lastPos = currentPos;
-        controlled.setDirection(directionWhenArrived);
+        controlled.changeDirection(directionWhenArrived);
         onArrived?.();
         return;
       }

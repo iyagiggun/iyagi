@@ -158,7 +158,7 @@ class IScene {
     const nextX = this.getNextX(target, deltaX);
     const nextY = this.#getNextY(target, deltaY);
     target.setPosition(nextX, nextY);
-    target.setDirection(getDirectionByDelta(deltaX, deltaY));
+    target.changeDirection(getDirectionByDelta(deltaX, deltaY));
 
     this.tileList
       .forEach((tile) => {

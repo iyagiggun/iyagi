@@ -309,7 +309,7 @@ class IObject {
   /**
    * @param {Direction} next
    */
-  setDirection(next) {
+  changeDirection(next) {
     if (!this.isLoaded()) {
       this.#dir = next;
       return;
