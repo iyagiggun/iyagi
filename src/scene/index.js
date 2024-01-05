@@ -162,7 +162,7 @@ class IScene {
 
     this.tileList
       .forEach((tile) => {
-        if (tile.hasHandler('in')) {
+        if (typeof tile.events.onObjectIn === 'function') {
           const tileArea = tile.getArea();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
@@ -171,10 +171,10 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (!beforeIn && afterIn) {
-            tile.emit('in', { target });
+            tile.events.onObjectIn({ target });
           }
         }
-        if (tile.hasHandler('out')) {
+        if (typeof tile.events.onObjectOut === 'function') {
           const tileArea = tile.getArea();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
@@ -183,7 +183,7 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (beforeIn && !afterIn) {
-            tile.emit('out', { target });
+            tile.events.onObjectOut({ target });
           }
         }
       });
@@ -268,7 +268,7 @@ class IScene {
    */
   getOverlappingObjectList(area) {
     return this.objectList
-      .filter((o) => !!this.getOverlappingArea(o.getArea(), area));
+      .filter((o) => !!getOverlappingArea(o.getArea(), area));
   }
 
   /**

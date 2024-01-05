@@ -1,14 +1,10 @@
-import EventEmitter from 'events';
 import IStatusBarBasic from './bar';
 
 /**
  * @template T
  */
-
 class IStatus {
   status;
-
-  #ee = new EventEmitter();
 
   /**
    * @param {T} initData
@@ -16,6 +12,13 @@ class IStatus {
   constructor(initData) {
     this.status = { ...initData };
   }
+
+  events = {
+    /** @type {((p: { before: T, after: T}) => void) | null} */
+    onBeforeChange: null,
+    /** @type {((p: { before: T, after: T}) => void) | null} */
+    onChange: null,
+  };
 
   get() {
     return {
@@ -29,29 +32,13 @@ class IStatus {
   set(next) {
     const before = this.get();
     const after = { ...this.status, ...next };
-    this.#ee.emit('before-change', { before, after });
+    if (typeof this.events.onBeforeChange === 'function') {
+      this.events.onBeforeChange({ before, after });
+    }
     this.status = after;
-    this.#ee.emit('change', { before, after: this.get() });
-  }
-
-  /**
-   * @typedef {(
-   *    key: 'change',
-   *    handler: (data: { before: T, after: T }) => void
-   *  ) => void
-   * } ChangeHandler
-   * @typedef {(
-   *    key: 'before-change',
-   *    handler: (before: number) => void
-   *  ) => void
-   * } BeforeChangeHandler
-   */
-
-  /**
-   * @type {ChangeHandler}
-   */
-  on(key, handler) {
-    this.#ee.on(key, handler);
+    if (typeof this.events.onChange === 'function') {
+      this.events.onChange({ before, after });
+    }
   }
 }
 

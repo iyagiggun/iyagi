@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import {
   AnimatedSprite,
   Assets,
@@ -8,6 +7,7 @@ import {
   Texture,
 } from 'pixi.js';
 import { FRAMES_PER_SECOND } from '../../const';
+import IEvents from '../../events';
 
 const Z_INDEX_MOD = 10000;
 const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
@@ -86,6 +86,8 @@ class IObject {
 
   container = new Container();
 
+  events = new IEvents(this.container);
+
   #loaded = false;
 
   #z;
@@ -115,6 +117,19 @@ class IObject {
     this.name = p.name || '(noname)';
     this.#p = p;
     this.#z = p.z ?? 1;
+  }
+
+  /**
+   * @param {(function(): void) | null | undefined} onlongtap
+   */
+  set onlongtap(onlongtap) {
+    if ((typeof onlongtap) !== 'function') {
+      this.container.eventMode = undefined;
+      this.container.ontap = undefined;
+      return;
+    }
+    this.container.eventMode = 'static';
+    this.container.ontap = () => onlongtap();
   }
 
   isLoaded() {
