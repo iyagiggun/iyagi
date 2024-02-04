@@ -1,6 +1,11 @@
 /* eslint-disable no-multi-assign */
 /* eslint-disable no-param-reassign */
 
+/**
+ * @param {number} h
+ * @param {number} s
+ * @param {number} l
+ */
 function hslToRgb(h, s, l) {
   h /= 360;
   s /= 100;
@@ -12,6 +17,11 @@ function hslToRgb(h, s, l) {
   if (s === 0) {
     r = g = b = l;
   } else {
+    /**
+     * @param {number} p
+     * @param {number} q
+     * @param {number} t
+     */
     const hue2rgb = function hue2rgb(p, q, t) {
       if (t < 0) t += 1;
       if (t > 1) t -= 1;
@@ -33,6 +43,10 @@ function hslToRgb(h, s, l) {
 }
 
 // RGB를 16진법 색상 문자열로 변환하는 함수
+/**
+ * @param {number[]} rgb
+ * @returns
+ */
 function rgbToHex(rgb) {
   return `#${rgb.map((component) => {
     const hex = component.toString(16);
@@ -40,6 +54,10 @@ function rgbToHex(rgb) {
   }).join('')}`;
 }
 
+/**
+ * @param {number} maxSaturation
+ * @returns
+ */
 function getRandomHexColorWithLimitedSaturation(maxSaturation) {
   // 랜덤한 Hue(색조) 값 생성 (0부터 360까지)
   const hue = Math.floor(Math.random() * 361);

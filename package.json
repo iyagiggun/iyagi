@@ -15,15 +15,30 @@
       "require": "./src/scene/index.js",
       "types": "./types/scene/index.d.ts"
     },
+    "./stage": {
+      "import": "./src/stage/index.js",
+      "require": "./src/stage/index.js",
+      "types": "./types/stage/index.d.ts"
+    },
     "./object": {
       "import": "./src/object/index.js",
       "require": "./src/object/index.js",
       "types": "./types/object/index.d.ts"
     },
-    "./object/character/status": {
-      "import": "./src/object/character/status/index.js",
-      "require": "./src/object/character/status/index.js",
-      "types": "./types/object/character/status/index.d.ts"
+    "./character": {
+      "import": "./src/object/character/index.js",
+      "require": "./src/object/character/index.js",
+      "types": "./types/object/character/index.d.ts"
+    },
+    "./tile": {
+      "import": "./src/object/tile/index.js",
+      "require": "./src/object/tile/index.js",
+      "types": "./types/object/tile/index.d.ts"
+    },
+    "./status": {
+      "import": "./src/status/index.js",
+      "require": "./src/status/index.js",
+      "types": "./types/status/index.d.ts"
     },
     "./nai": {
       "import": "./src/nai/index.js",
@@ -35,15 +50,20 @@
       "require": "./src/utils/index.js",
       "types": "./types/utils/index.d.ts"
     },
-    "./debugger": {
-      "import": "./src/utils/debugger/index.js",
-      "require": "./src/utils/debugger/index.js",
-      "types": "./types/utils/debugger/index.d.ts"
+    "./devtools": {
+      "import": "./src/utils/devtools/index.js",
+      "require": "./src/utils/devtools/index.js",
+      "types": "./types/utils/devtools/index.d.ts"
     },
     "./external": {
       "import": "./src/external.js",
       "require": "./src/external.js",
       "types": "./types/external.d.ts"
+    },
+    "./test": {
+      "import": "./src/test/index.js",
+      "require": "./src/test/index.js",
+      "types": "./types/test/index.d.ts"
     }
   },
   "scripts": {
@@ -65,7 +85,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.28.1",
     "jest": "^29.7.0",
-    "typescript": "^5.2.2"
+    "typescript": "^5.3.3"
   },
   "dependencies": {
     "events": "^3.3.0",

@@ -1,27 +1,18 @@
 import { Graphics } from 'pixi.js';
 import ColorUtils from './color';
 
-let enable = false;
-
 const colorizeMap = new WeakMap();
 
-const Debuger = {
+const devtools = {
+  enable: false,
   /**
-   * @param {boolean} _enable
-   */
-  enable: (_enable) => {
-    enable = _enable;
-  },
-  /**
-   *
-   * @param {import("../../scene").default} scene
+   * @param {import('../../scene').IScene} scene
    * @param {import("../coordinates").Area} area
    * @param {Object} [options]
    * @param {string} [options.color]
    */
-  showArea: (scene, area, options) => {
-    if (!enable) {
-      console.error('debugging is off ');
+  highlight: (scene, area, options) => {
+    if (!devtools.enable) {
       return;
     }
     const graphics = new Graphics();
@@ -47,15 +38,14 @@ const Debuger = {
    * @param {string} [options.color]
    */
   colorize: (object, options) => {
-    if (!enable) {
-      console.error('debugging is off ');
+    if (!devtools.enable) {
       return;
     }
     const key = options?.key || object;
 
     const {
       w, h,
-    } = object.getArea();
+    } = object.area();
 
     if (!colorizeMap.has(key)) {
       const color = options?.color ?? ColorUtils.getColorful();
@@ -72,4 +62,4 @@ const Debuger = {
   },
 };
 
-export default Debuger;
+export { devtools };

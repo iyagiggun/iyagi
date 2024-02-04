@@ -1,18 +1,33 @@
-import IMonoObject from '../mono';
-import ITileEvents from './events';
+/* eslint-disable no-param-reassign */
 
-class ITile extends IMonoObject {
-  events = new ITileEvents(this.container);
+import { IObject } from '..';
+import { ITileEvent } from './event';
+
+class ITile extends IObject {
+  /** @type {ITileEvent} */
+  event;
 
   /**
-   * @param {import('./mono').IMonoObjectParameter} p
+   * @param {import('..').MonoParameter} p
    */
-  constructor(p) {
+  constructor({
+    name, image, frames, hitbox,
+  }) {
     super({
-      ...p,
+      name,
+      image,
+      motions: {
+        default: {
+          down: {
+            frames,
+          },
+          hitbox,
+        },
+      },
       z: 0,
     });
+    this.event = new ITileEvent(this);
   }
 }
 
-export default ITile;
+export { ITile };

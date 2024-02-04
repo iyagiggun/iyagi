@@ -1,149 +1,47 @@
 import { Container } from 'pixi.js';
-import IApplication from '../application';
-import { getDirectionByDelta, getOverlappingArea } from '../utils/coordinates';
-import ICamera from './camera';
-import IController from './controller';
-import IMessenger from './messenger';
+import {
+  getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
+} from '../utils/coordinates';
+import { devtools } from '../utils/devtools';
+import { BasicController } from './controller';
+import { camera } from './camera';
+
+const _movementStopMap = new WeakMap();
+
+/**
+ * @typedef {Object} SceneParameter
+ * @property {string} name
+ * @property {import('../object/tile').ITile[]} tiles
+ * @property {import('../object').IObject[]} [objects]
+ * @property {() => (Promise<IScene|null>)} take
+ */
 
 class IScene {
   name;
 
+  /** @type {import('../iyagi').Iyagi | null} */
+  iyagi = null;
+
   container = new Container();
 
-  objectList;
+  #loaded = false;
 
-  tileList;
+  /** @type {import('../object/tile').ITile[]} */
+  #tiles = [];
+
+  /** @type {import('../object').IObject[]} */
+  #objects = [];
 
   take;
 
-  #camera;
-
-  #controller;
-
-  #messenger;
-
-  #movementStopMap = new WeakMap();
-
   /**
-   * @param {Object} param
-   * @param {string} param.name
-   * @param {import('../object').ITile[]} param.tileList
-   * @param {import('../object').IObject[]} [param.objectList]
-   * @param {() => Promise<IScene | null>} param.take
+   * @param {SceneParameter} p
    */
-  constructor({
-    name,
-    tileList,
-    objectList,
-    take,
-  }) {
-    this.name = name;
-    this.#camera = ICamera.create(this.container);
-    this.#controller = IController.create();
-    this.#messenger = IMessenger.create();
-
-    this.container.sortableChildren = true;
-    this.objectList = objectList ?? [];
-    this.tileList = tileList ?? [];
-    this.take = take;
-  }
-
-  load() {
-    return Promise.all([...this.tileList, ...this.objectList].map((o) => o.load()));
-  }
-
-  async play() {
-    await this.load();
-    [...this.tileList, ...this.objectList].forEach((obj) => {
-      this.container.addChild(obj.container);
-    });
-
-    const next = await this.take();
-    return next;
-  }
-
-  /**
-   * @param {import('../object').IObject} object
-   */
-  removeObject(object) {
-    if (!this.objectList.includes(object)) {
-      return;
-    }
-    this.objectList = this.objectList.filter((each) => each !== object);
-    this.container.removeChild(object.container);
-  }
-
-  /**
-   * @param {import('../object').IObject} object
-   */
-  addObject(object) {
-    if (!object.isLoaded()) {
-      throw new Error(`'${object.name}' object is not loaded.`);
-    }
-    if (this.objectList.includes(object)) {
-      return;
-    }
-    this.objectList.push(object);
-    this.container.addChild(object.container);
-  }
-
-  /**
-   * @param {import('../object').IObject} target
-   * @param {number} [speed]
-   */
-  focus(target, speed) {
-    const { x, y } = target.getCenterPosition();
-    return this.#camera.moveTo(x, y, speed);
-  }
-
-  /**
-   * @param {import('../object').IObject} object
-   * @param {number} deltaX
-   * @returns
-   */
-  getNextX(object, deltaX) {
-    const {
-      x, y, z, w, h,
-    } = object.getArea();
-    const destX = x + deltaX;
-    const blocking = this.objectList.find((each) => {
-      if (each === object || each.getPosition().z !== z) {
-        return false;
-      }
-      return !!getOverlappingArea({
-        x: destX, y, w, h,
-      }, each.getArea());
-    });
-    if (blocking) {
-      const { x: blockingX, w: blockingW } = blocking.getArea();
-      return x < blockingX ? blockingX - w : blockingX + blockingW;
-    }
-    return destX;
-  }
-
-  /**
-   * @param {import('../object').IObject} object
-   * @param {number} deltaY
-   * @returns
-   */
-  #getNextY(object, deltaY) {
-    const {
-      x, y, z, w, h,
-    } = object.getArea();
-    const destY = y + deltaY;
-    const blocking = this.objectList.find((each) => {
-      if (each === object || each.getPosition().z !== z) {
-        return false;
-      }
-      return !!getOverlappingArea({
-        x, y: destY, w, h,
-      }, each.getArea());
-    });
-    if (blocking) {
-      const { y: blockingY, h: blockingH } = blocking.getArea();
-      return y < blockingY ? blockingY - h : blockingY + blockingH;
-    }
-    return destY;
+  constructor(p) {
+    this.name = p.name;
+    this.#objects = (p.objects ?? []).slice();
+    this.#tiles = p.tiles.slice();
+    this.take = p.take;
   }
 
   /**
@@ -154,16 +52,16 @@ class IScene {
   #move(target, deltaX, deltaY) {
     const {
       x: curX, y: curY, w, h,
-    } = target.getArea();
-    const nextX = this.getNextX(target, deltaX);
-    const nextY = this.#getNextY(target, deltaY);
-    target.setPosition(nextX, nextY);
-    target.changeDirection(getDirectionByDelta(deltaX, deltaY));
+    } = target.area();
+    const nextX = getNextX({ target, delta: deltaX, objects: this.#objects });
+    const nextY = getNextY({ target, delta: deltaY, objects: this.#objects });
+    target.positionAt({ x: nextX, y: nextY });
+    target.directTo(getDirectionByDelta(deltaX, deltaY));
 
-    this.tileList
+    this.#tiles
       .forEach((tile) => {
-        if (typeof tile.events.onObjectIn === 'function') {
-          const tileArea = tile.getArea();
+        if (typeof tile.event.in === 'function') {
+          const tileArea = tile.area();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
           });
@@ -171,11 +69,11 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (!beforeIn && afterIn) {
-            tile.events.onObjectIn({ target });
+            tile.event.in(target);
           }
         }
-        if (typeof tile.events.onObjectOut === 'function') {
-          const tileArea = tile.getArea();
+        if (typeof tile.event.out === 'function') {
+          const tileArea = tile.area();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
           });
@@ -183,105 +81,139 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (beforeIn && !afterIn) {
-            tile.events.onObjectOut({ target });
+            tile.event.out(target);
           }
         }
       });
   }
 
-  /**
-   * @param {import('../object').IObject} target} target
-   * @param {boolean} [interrupted]
-   * @returns
-   */
-  stopObject(target, interrupted) {
-    const movementStop = this.#movementStopMap.get(target);
-    if (!movementStop) {
-      return;
+  async load() {
+    if (!this.#loaded) {
+      await Promise.all([...this.#tiles, ...this.#objects].map((o) => o.load()));
+      this.#loaded = true;
     }
-    target.stop();
-    IApplication.get().ticker.remove(movementStop.tick);
-    movementStop.resolve(interrupted || false);
-    this.#movementStopMap.delete(target);
+    [...this.#tiles, ...this.#objects].forEach((obj) => {
+      this.container.addChild(obj.container);
+      // eslint-disable-next-line no-param-reassign
+      obj.scene = this;
+    });
   }
 
-  /**
-   * @param {import('../object').IObject} target
-   * @param {import('../utils/coordinates').Position} pos
-   * @param {Object} [options]
-   * @param {number} [options.speed]
-   * @param {boolean} [options.focusing]
-   */
-  moveObject(target, pos, options) {
-    return new Promise((resolve) => {
+  release() {
+    [...this.#tiles, ...this.#objects].forEach((obj) => {
+      this.container.removeChild(obj.container);
+      // eslint-disable-next-line no-param-reassign
+      obj.scene = null;
+    });
+  }
+
+  objects = {
+    /**
+     * @param {import('../object').IObject} target
+     */
+    delete: (target) => {
+      if (this.#objects.includes(target)) {
+        this.container.removeChild(target.container);
+        this.#objects = this.#objects.filter((item) => item !== target);
+        return;
+      }
+      if (devtools.enable) {
+        console.warn(`[iyagi:scene] there is no "${target.name}" in "${this.name}" scene.`);
+      }
+    },
+    /**
+     * @param {import('../object').IObject} target
+     */
+    add: (target) => {
+      if (!this.#objects.includes(target)) {
+        this.container.addChild(target.container);
+        this.#objects.push(target);
+        return;
+      }
+      if (devtools.enable) {
+        console.warn(`[iyagi:scene] already "${target.name}" is in "${this.name}" scene.`);
+      }
+    },
+    /**
+     * @param {import('../object').IObject} target} target
+     * @param {boolean} [interrupted]
+     * @returns
+     */
+    stop: (target, interrupted) => {
+      const movementStop = _movementStopMap.get(target);
+      if (!movementStop) {
+        return;
+      }
+      target.stop();
+      this.iyagi?.application.ticker.remove(movementStop.tick);
+      movementStop.resolve(interrupted || false);
+      _movementStopMap.delete(target);
+    },
+    /**
+     * @param {import('../object').IObject} target
+     * @param {import('../utils/coordinates').Position} pos
+     * @param {Object} [options]
+     * @param {number} [options.speed]
+     * @param {boolean} [options.focusing]
+     */
+    move: (target, pos, options) => new Promise((resolve) => {
       const speed = options?.speed ?? 1;
 
-      this.stopObject(target);
+      this.objects.stop(target);
 
       const tick = () => {
-        const { x: curX, y: curY } = target.getPosition();
+        const { x: curX, y: curY } = target.position();
         const diffX = pos.x - curX;
         const diffY = pos.y - curY;
         const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
         const arrived = distance < speed;
 
         if (arrived) {
-          target.setPosition(pos.x, pos.y);
+          target.positionAt({ x: pos.x, y: pos.y });
         } else {
           const deltaX = speed * (diffX / distance);
           const deltaY = speed * (diffY / distance);
           this.#move(target, deltaX, deltaY);
           target.play({ speed });
           if (options?.focusing) {
-            this.focus(target);
+            camera.focus(target);
           }
         }
 
         if (arrived) {
-          this.stopObject(target);
+          this.objects.stop(target);
         }
       };
       target.play({ speed });
-      this.#movementStopMap.set(target, { tick, resolve });
-      IApplication.get().ticker.add(tick);
-    });
-  }
+      _movementStopMap.set(target, { tick, resolve });
+      this.iyagi?.application.ticker.add(tick);
+    }),
+    /**
+     * @param {import('../utils/coordinates').Area} area
+     */
+    overlapped: (area) => [...this.#objects]
+      .filter((o) => !!getOverlappingArea(o.area(), area)),
+  };
 
   /**
-   * @param {import('../object').ICharacter} player
+   * @param {import('../object/character').ICharacter} player
    */
   control(player) {
-    this.#controller.control();
-    this.#controller.on('move', (evt) => {
-      this.#move(player, evt.detail.deltaX, evt.detail.deltaY);
-      this.focus(player);
-      player.play(evt.detail.delta_level);
+    const app = this.iyagi?.application;
+    if (!app) {
+      return;
+    }
+    BasicController.control(app);
+    BasicController.event.move.bind(({ deltaX, deltaY, speed }) => {
+      this.#move(player, deltaX, deltaY);
+      camera.focus(player);
+      player.play({ speed });
     });
-    this.#controller.on('stop', () => {
+    BasicController.event.stop.bind(() => {
       player.stop();
     });
-    this.focus(player);
-  }
-
-  /**
-   * @param {import('../utils/coordinates').Area} area
-   */
-  getOverlappingObjectList(area) {
-    return this.objectList
-      .filter((o) => !!getOverlappingArea(o.getArea(), area));
-  }
-
-  /**
-     * @param {import('../object').ICharacter} speaker
-     * @param {string} message
-     * @returns
-    */
-  showMessage(speaker, message) {
-    return this.#messenger.showMessage({
-      speaker,
-      message,
-    });
+    camera.focus(player);
   }
 }
 
-export default IScene;
+export { IScene, camera };

@@ -23,5 +23,7 @@ module.exports = {
   },
   rules: {
     'import/prefer-default-export': 'off',
+    camelcase: 'off',
+    'no-underscore-dangle': 'off',
   },
 };

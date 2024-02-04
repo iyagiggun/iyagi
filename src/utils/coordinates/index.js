@@ -79,37 +79,41 @@ export const getDistance = (p1, p2) => Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p2
 
 /**
  *
- * @param {import('../../object').ICharacter} attacker
- * @param {import('../../object').ICharacter} target
+ * @param {import('../../object/character').ICharacter} attacker
+ * @param {import('../../object/character').ICharacter} target
  */
 export const findShortestPos = (attacker, target) => {
-  const attackerPos = attacker.getPosition();
-  const { x: tCX, y: tCY } = target.getPosition();
-  const tWidth = target.getWidth();
-  const tHeight = target.getHeight();
+  const attackerPos = attacker.position();
+  const {
+    x: tCX, y: tCY, w: tWidth, h: tHeight,
+  } = target.area();
 
   // 공격 위치 후보군
   const posList = [
     // 타겟의 위
     {
+      /** @type {import('../../object').Direction} */
       direction: 'down',
       x: tCX,
       y: tCY + tHeight,
     },
     // 타겟의 아래
     {
+      /** @type {import('../../object').Direction} */
       direction: 'up',
       x: tCX,
       y: tCY - tHeight,
     },
     // 타겟의 오른쪽
     {
+      /** @type {import('../../object').Direction} */
       direction: 'left',
       x: tCX + tWidth,
       y: tCY,
     },
     // 타겟의 왼쪽
     {
+      /** @type {import('../../object').Direction} */
       direction: 'right',
       x: tCX - tWidth,
       y: tCY,
@@ -128,12 +132,14 @@ export const findShortestPos = (attacker, target) => {
  * @param {import('../../object').IObject} target
  */
 export const getCoordinateRelationship = (self, target) => {
-  const { x, y } = self.getCenterPosition();
-  const halfWidth = self.getWidth() / 2;
-  const halfHeight = self.getHeight() / 2;
-  const { x: tx, y: ty } = target.getCenterPosition();
-  const tHalfWidth = target.getWidth() / 2;
-  const tHalfHeight = target.getHeight() / 2;
+  const { x, y } = self.center();
+  const { w, h } = self.area();
+  const halfWidth = w / 2;
+  const halfHeight = h / 2;
+  const { x: tx, y: ty } = target.center();
+  const { w: tw, h: th } = target.area();
+  const tHalfWidth = tw / 2;
+  const tHalfHeight = th / 2;
 
   const xDiff = tx - x;
   const yDiff = ty - y;
@@ -173,4 +179,64 @@ export const getCoordinateRelationship = (self, target) => {
     xDiff,
     yDiff,
   };
+};
+
+/**
+ * @param {Object} p
+ * @param {import('../../object').IObject[]} p.objects
+ * @param {import('../../object').IObject} p.target
+ * @param {number} p.delta
+ */
+export const getNextX = ({
+  objects,
+  target,
+  delta,
+}) => {
+  const {
+    x, y, z, w, h,
+  } = target.area();
+  const destX = x + delta;
+  const blocking = objects.find((each) => {
+    if (each === target || each.position().z !== z) {
+      return false;
+    }
+    return !!getOverlappingArea({
+      x: destX, y, w, h,
+    }, each.area());
+  });
+  if (blocking) {
+    const { x: blockingX, w: blockingW } = blocking.area();
+    return x < blockingX ? blockingX - w : blockingX + blockingW;
+  }
+  return destX;
+};
+
+/**
+ * @param {Object} p
+ * @param {import('../../object').IObject[]} p.objects
+ * @param {import('../../object').IObject} p.target
+ * @param {number} p.delta
+ */
+export const getNextY = ({
+  objects,
+  target,
+  delta,
+}) => {
+  const {
+    x, y, z, w, h,
+  } = target.area();
+  const destY = y + delta;
+  const blocking = objects.find((each) => {
+    if (each === target || each.position().z !== z) {
+      return false;
+    }
+    return !!getOverlappingArea({
+      x, y: destY, w, h,
+    }, each.area());
+  });
+  if (blocking) {
+    const { y: blockingY, h: blockingH } = blocking.area();
+    return y < blockingY ? blockingY - h : blockingY + blockingH;
+  }
+  return destY;
 };

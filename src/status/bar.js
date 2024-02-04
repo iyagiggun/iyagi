@@ -1,9 +1,13 @@
 import { Graphics } from 'pixi.js';
-import IApplication from '../../../application';
 
 const weakMap = new WeakMap();
 const hideTimeoutWeakMap = new WeakMap();
 
+/**
+ * @param {import('pixi.js').Container} container
+ * @param {string} key
+ * @returns
+ */
 const getGraphics = (container, key) => {
   /**
    * @type {Object<string, Graphics>}
@@ -48,9 +52,9 @@ const getDarkenColor = (colorString, amount) => {
   return resultColor;
 };
 
-const IStatusBarBasic = {
+const BasicStatusBar = {
   /**
-   * @param {import('pixi.js').Container} container
+   * @param {import('../object/character').ICharacter} character
    * @param {Object} status
    * @param {string} status.key
    * @param {number} status.before
@@ -58,9 +62,16 @@ const IStatusBarBasic = {
    * @param {number} status.max
    * @param {string} status.color
    */
-  show: (container, {
+  show: (character, {
     key, before, after, max, color,
   }) => {
+    const ticker = character.scene?.iyagi?.application.ticker;
+    if (!ticker) {
+      return;
+    }
+
+    const { container } = character;
+
     if (hideTimeoutWeakMap.has(container)) {
       window.clearTimeout(hideTimeoutWeakMap.get(container));
     }
@@ -85,7 +96,6 @@ const IStatusBarBasic = {
       diffGraphics.lineTo(lostWidth, 0);
 
       let idx = 0;
-      const { ticker } = IApplication.get();
       const tick = () => {
         if (diffGraphics.y > 5) {
           ticker.remove(tick);
@@ -110,7 +120,6 @@ const IStatusBarBasic = {
 
     hideTimeoutWeakMap.set(container, window.setTimeout(() => { graphics.clear(); }, 5000));
   },
-
 };
 
-export default IStatusBarBasic;
+export { BasicStatusBar };

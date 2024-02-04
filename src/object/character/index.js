@@ -1,29 +1,30 @@
-import { Assets } from 'pixi.js';
+import { Assets, Sprite } from 'pixi.js';
+import { IObject } from '..';
+import messanger from '../../scene/messenger';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
-import IObject from '../base';
-
-/**
- * @typedef
- */
 
 /**
  * @typedef {Object} AdditionalParameter
  * @property {Object<string, string>} [AdditionalParameter.photoMap]
- * - The required property with the key "default"
+ * - "default" key is required
  */
 
 /**
- * @typedef {import('../base').IObjectParameter & AdditionalParameter} ICharacterParameter
+ * @typedef {import('..').ObjectParameter & AdditionalParameter} CharacterParameter
  */
 
 class ICharacter extends IObject {
+  #photo = {
+    key: 'default',
+    /** @type {Object<string, import("pixi.js").Sprite>} */
+    texture: {},
+  };
+
+  /** @type {CharacterParameter} */
   #p;
 
-  /** @type {Object<string, import("pixi.js").Texture>} */
-  #photoTextureMap = {};
-
   /**
-   * @param {ICharacterParameter} p
+   * @param {CharacterParameter} p
    */
   constructor(p) {
     super(p);
@@ -31,21 +32,30 @@ class ICharacter extends IObject {
   }
 
   async load() {
+    if (this.isLoaded()) {
+      return;
+    }
     const photoMap = this.#p.photoMap ?? { default: TRANSPARENT_1PX_IMG };
-    const photoLoadPromises = Object.keys(photoMap).map(async (photoKey) => {
-      const photoUrl = photoMap[photoKey];
-      const texture = await Assets.load(photoUrl);
-      this.#photoTextureMap[photoKey] = texture;
+    const photoLoadPromises = Object.keys(photoMap).map(async (key) => {
+      const photoUrl = photoMap[key];
+      this.#photo.texture[key] = new Sprite(await Assets.load(photoUrl));
     });
     await Promise.all([super.load(), ...photoLoadPromises]);
   }
 
   /**
-   * @param {string} [key]
+   * @param {string} message
    */
-  getPhotoTexture(key) {
-    return this.#photoTextureMap[key ?? 'default'];
+  talk(message) {
+    return messanger.talk({
+      speaker: this,
+      message,
+    });
+  }
+
+  photo() {
+    return this.#photo.texture[this.#photo.key];
   }
 }
 
-export default ICharacter;
+export { ICharacter };
