@@ -174,7 +174,6 @@ class IObject {
 
   /**
    * @param {string} [key]
-   * @returns
    */
   #get_motion(key) {
     const value = this.#motions[key ?? this.#motion];
@@ -189,7 +188,8 @@ class IObject {
    */
   #get_sprite(dir) {
     const d = dir ?? this.#dir;
-    const sprite = this.#get_motion()[d];
+    // const sprite = this.#get_motion()[d];
+    const sprite = this.#motions[this.#motion]?.[d];
     if (!sprite) {
       throw create_error(`No "${d}" sprite.`, this.name);
     }
@@ -277,6 +277,8 @@ class IObject {
       this.#z = z;
     }
     this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y;
+    console.error(this.name, 'zindex', this.container.zIndex);
+    console.error(this.container.parent);
   }
 
   position() {
@@ -386,6 +388,20 @@ class IObject {
       return;
     }
     sprite.stop();
+  }
+
+  /**
+   *
+   * @param {import('../utils/coordinates').Position} pos
+   * @param {Object} [options]
+   * @param {number} [options.speed]
+   * @returns
+   */
+  move(pos, options) {
+    if (!this.scene) {
+      throw new Error('no scene');
+    }
+    return this.scene.objects.move(this, pos, options);
   }
 
   /**

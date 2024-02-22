@@ -43,7 +43,7 @@ export const IBasicTracker = {
 
         const dest = findShortestPos(controlled, target);
         directionWhenArrived = dest.direction;
-        scene.objects.move(controlled, dest).then(() => {
+        controlled.move(dest).then(() => {
           isMoving = false;
         });
         isMoving = true;

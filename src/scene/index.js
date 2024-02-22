@@ -2,18 +2,17 @@ import { Container } from 'pixi.js';
 import {
   getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
 } from '../utils/coordinates';
-import { devtools } from '../utils/devtools';
 import { BasicController } from './controller';
-import { camera } from './camera';
+import { Camera } from './camera';
+import { ITile } from '../object/tile';
 
 const _movementStopMap = new WeakMap();
 
 /**
  * @typedef {Object} SceneParameter
  * @property {string} name
- * @property {import('../object/tile').ITile[]} tiles
- * @property {import('../object').IObject[]} [objects]
- * @property {() => (Promise<IScene|null>)} take
+ * @property {import('../object').IObject[]} objects
+ * @property {() => (Promise<any>)} take resolve next scene key.
  */
 
 class IScene {
@@ -26,11 +25,10 @@ class IScene {
 
   #loaded = false;
 
-  /** @type {import('../object/tile').ITile[]} */
-  #tiles = [];
-
   /** @type {import('../object').IObject[]} */
   #objects = [];
+
+  camera = new Camera(this);
 
   take;
 
@@ -39,9 +37,9 @@ class IScene {
    */
   constructor(p) {
     this.name = p.name;
-    this.#objects = (p.objects ?? []).slice();
-    this.#tiles = p.tiles.slice();
+    this.#objects = p.objects;
     this.take = p.take;
+    this.container.sortableChildren = true;
   }
 
   /**
@@ -58,10 +56,10 @@ class IScene {
     target.positionAt({ x: nextX, y: nextY });
     target.directTo(getDirectionByDelta(deltaX, deltaY));
 
-    this.#tiles
-      .forEach((tile) => {
-        if (typeof tile.event.in === 'function') {
-          const tileArea = tile.area();
+    this.#objects.forEach((obj) => {
+      if (obj instanceof ITile) {
+        if (typeof obj.event.in === 'function') {
+          const tileArea = obj.area();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
           });
@@ -69,11 +67,11 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (!beforeIn && afterIn) {
-            tile.event.in(target);
+            obj.event.in(target);
           }
         }
-        if (typeof tile.event.out === 'function') {
-          const tileArea = tile.area();
+        if (typeof obj.event.out === 'function') {
+          const tileArea = obj.area();
           const beforeIn = getOverlappingArea(tileArea, {
             x: curX, y: curY, w, h,
           });
@@ -81,18 +79,19 @@ class IScene {
             x: nextX, y: nextY, w, h,
           });
           if (beforeIn && !afterIn) {
-            tile.event.out(target);
+            obj.event.out(target);
           }
         }
-      });
+      }
+    });
   }
 
   async load() {
     if (!this.#loaded) {
-      await Promise.all([...this.#tiles, ...this.#objects].map((o) => o.load()));
+      await Promise.all(this.#objects.map((o) => o.load()));
       this.#loaded = true;
     }
-    [...this.#tiles, ...this.#objects].forEach((obj) => {
+    this.#objects.forEach((obj) => {
       this.container.addChild(obj.container);
       // eslint-disable-next-line no-param-reassign
       obj.scene = this;
@@ -100,7 +99,7 @@ class IScene {
   }
 
   release() {
-    [...this.#tiles, ...this.#objects].forEach((obj) => {
+    this.#objects.forEach((obj) => {
       this.container.removeChild(obj.container);
       // eslint-disable-next-line no-param-reassign
       obj.scene = null;
@@ -115,10 +114,6 @@ class IScene {
       if (this.#objects.includes(target)) {
         this.container.removeChild(target.container);
         this.#objects = this.#objects.filter((item) => item !== target);
-        return;
-      }
-      if (devtools.enable) {
-        console.warn(`[iyagi:scene] there is no "${target.name}" in "${this.name}" scene.`);
       }
     },
     /**
@@ -128,10 +123,6 @@ class IScene {
       if (!this.#objects.includes(target)) {
         this.container.addChild(target.container);
         this.#objects.push(target);
-        return;
-      }
-      if (devtools.enable) {
-        console.warn(`[iyagi:scene] already "${target.name}" is in "${this.name}" scene.`);
       }
     },
     /**
@@ -157,7 +148,7 @@ class IScene {
      * @param {boolean} [options.focusing]
      */
     move: (target, pos, options) => new Promise((resolve) => {
-      const speed = options?.speed ?? 1;
+      const speed = (options?.speed ?? 1) * 2;
 
       this.objects.stop(target);
 
@@ -175,8 +166,9 @@ class IScene {
           const deltaY = speed * (diffY / distance);
           this.#move(target, deltaX, deltaY);
           target.play({ speed });
-          if (options?.focusing) {
-            camera.focus(target);
+          if (this.camera.target === target) {
+            this.camera.pointTo(target);
+            this.camera.target = target;
           }
         }
 
@@ -188,6 +180,7 @@ class IScene {
       _movementStopMap.set(target, { tick, resolve });
       this.iyagi?.application.ticker.add(tick);
     }),
+    list: () => this.#objects,
     /**
      * @param {import('../utils/coordinates').Area} area
      */
@@ -206,14 +199,14 @@ class IScene {
     BasicController.control(app);
     BasicController.event.move.bind(({ deltaX, deltaY, speed }) => {
       this.#move(player, deltaX, deltaY);
-      camera.focus(player);
+      this.camera.pointTo(player.center());
       player.play({ speed });
     });
     BasicController.event.stop.bind(() => {
       player.stop();
     });
-    camera.focus(player);
+    this.camera.pointTo(player.center());
   }
 }
 
-export { IScene, camera };
+export { IScene };
