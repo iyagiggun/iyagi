@@ -1,39 +1,14 @@
-/**
- * @typedef {() => void} TapHandler
- */
+import { TouchEvent } from '../../event/touch';
 
-class IObjectEvent {
-  #container;
-
-  /** @type {TapHandler | null} */
-  #tap = null;
+class IObjectEvent extends TouchEvent {
+  #object;
 
   /**
-   * @param {import('../').IObject} obj
+   * @param {import('..').IObject} object
    */
-  constructor(obj) {
-    this.#container = obj.container;
-  }
-
-  /**
-   * @param {TapHandler | null} handler
-   */
-  set tap(handler) {
-    if (!handler) {
-      this.#container.eventMode = 'none';
-      this.#container.ontap = null;
-      this.#tap = null;
-      return;
-    }
-    if (this.#container.eventMode !== 'static') {
-      this.#container.eventMode = 'static';
-    }
-    this.#tap = handler;
-    this.#container.ontap = this.#tap;
-  }
-
-  get tap() {
-    return this.#tap;
+  constructor(object) {
+    super(object.container);
+    this.#object = object;
   }
 }
 

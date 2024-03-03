@@ -1,7 +1,7 @@
 import { Sprite } from 'pixi.js';
 import { throttle } from 'lodash-es';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
-import { event } from '../../event';
+import { event } from '../../event/indexx';
 
 /**
  * @typedef { 'move' | 'stop' } EventType
