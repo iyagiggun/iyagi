@@ -65,7 +65,7 @@ const BasicStatusBar = {
   show: (character, {
     key, before, after, max, color,
   }) => {
-    const ticker = character.scene?.iyagi?.application.ticker;
+    const { ticker } = character.application();
     if (!ticker) {
       return;
     }

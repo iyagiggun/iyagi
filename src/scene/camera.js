@@ -20,7 +20,7 @@ class Camera {
    */
   pointTo(target) {
     this.target = null;
-    const app = this.#scene.iyagi?.application;
+    const app = this.#scene.application();
     if (!app) {
       throw new Error('[scene:camera] there is no iyagi.');
     }
@@ -38,7 +38,7 @@ class Camera {
    */
   move(target, options) {
     this.target = null;
-    const app = this.#scene.iyagi?.application;
+    const app = this.#scene.application();
     if (!app) {
       throw new Error('[scene:camera] there is no iyagi.');
     }

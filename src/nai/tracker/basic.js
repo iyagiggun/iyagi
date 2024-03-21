@@ -30,7 +30,7 @@ export const IBasicTracker = {
       const currentPos = controlled.position();
       const { distance } = getCoordinateRelationship(controlled, target);
       if (distance < 10) {
-        scene.objects.stop(controlled);
+        controlled.stop();
         isMoving = false;
         lastPos = currentPos;
         controlled.directTo(directionWhenArrived);
@@ -39,8 +39,7 @@ export const IBasicTracker = {
       }
 
       if (!isMoving || (lastPos.x === currentPos.x && lastPos.y === currentPos.y)) {
-        scene.objects.stop(controlled);
-
+        controlled.stop();
         const dest = findShortestPos(controlled, target);
         directionWhenArrived = dest.direction;
         controlled.move(dest).then(() => {

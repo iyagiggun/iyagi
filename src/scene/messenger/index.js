@@ -36,7 +36,7 @@ const messanger = {
     width,
     height,
   }) => {
-    const app = speaker.scene?.iyagi?.application;
+    const app = speaker.application();
     if (!app) {
       return Promise.resolve();
     }
