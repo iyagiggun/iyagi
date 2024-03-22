@@ -5,7 +5,6 @@ import {
   getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
 } from '../utils/coordinates';
 import { Camera } from './camera';
-import { IController } from './controller';
 
 /**
  * @typedef {Object} SceneParameter
@@ -168,23 +167,6 @@ class IScene {
   release() {
     this.objects.release();
   }
-
-  // control(player) {
-  // const app = this.iyagi?.application;
-  // if (!app) {
-  //   return;
-  // }
-  // BasicController.control(app);
-  // BasicController.event.move.bind(({ deltaX, deltaY, speed }) => {
-  //   this.#move(player, deltaX, deltaY);
-  //   this.camera.pointTo(player.center());
-  //   player.play({ speed });
-  // });
-  // BasicController.event.stop.bind(() => {
-  //   player.stop();
-  // });
-  // this.camera.pointTo(player.center());
-  // }
 }
 
-export { IController, IScene };
+export { IScene };

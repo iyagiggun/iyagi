@@ -15,10 +15,10 @@
       "require": "./src/scene/index.js",
       "types": "./types/scene/index.d.ts"
     },
-    "./stage": {
-      "import": "./src/stage/index.js",
-      "require": "./src/stage/index.js",
-      "types": "./types/stage/index.d.ts"
+    "./controller": {
+      "import": "./src/controller/index.js",
+      "require": "./src/controller/index.js",
+      "types": "./types/controller/index.d.ts"
     },
     "./object": {
       "import": "./src/object/index.js",

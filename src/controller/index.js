@@ -1,17 +1,23 @@
 import { Joystick } from './joystick';
 
 const { Sprite } = require('pixi.js');
-const { TRANSPARENT_1PX_IMG } = require('../../utils');
+const { TRANSPARENT_1PX_IMG } = require('../utils');
 
 const layer = Sprite.from(TRANSPARENT_1PX_IMG);
 
-const IController = {
+class IPlayerController {
+  #player;
+
   /**
-   * @param {import('../../object/character').ICharacter} player
+   * @param {import('../object/character').ICharacter} player
    */
-  control: (player) => {
-    const app = player.application();
-    const { scene } = player;
+  constructor(player) {
+    this.#player = player;
+  }
+
+  control() {
+    const app = this.#player.application();
+    const { scene } = this.#player;
     if (!scene) {
       throw new Error('No scene.');
     }
@@ -36,7 +42,7 @@ const IController = {
       if (isJoystickArea(x)) {
         Joystick.activate({
           layer,
-          player,
+          player: this.#player,
           pointerId: evt.pointerId,
           start: { x, y },
         });
@@ -54,9 +60,9 @@ const IController = {
     };
 
     app.stage.addChild(layer);
-    scene.camera.pointTo(player);
-    scene.camera.target = player;
-  },
-};
+    scene.camera.pointTo(this.#player);
+    scene.camera.target = this.#player;
+  }
+}
 
-export { IController };
+export { IPlayerController };

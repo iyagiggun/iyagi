@@ -3,9 +3,9 @@ import { throttle } from 'lodash-es';
 /**
  * @typedef JoystickInfo
  * @property {import('pixi.js').DisplayObject} layer
- * @property {import('../../utils/coordinates').Position} start
+ * @property {import('../utils/coordinates').Position} start
  * @property {number} pointerId
- * @property {import('../../object/character').ICharacter} player
+ * @property {import('../object/character').ICharacter} player
  */
 
 /** @type {JoystickInfo | null} */
