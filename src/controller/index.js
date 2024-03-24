@@ -1,17 +1,22 @@
+import EventEmitter from 'events';
+import { GestureDetector } from './gesture';
 import { Joystick } from './joystick';
 
 const { Sprite } = require('pixi.js');
 const { TRANSPARENT_1PX_IMG } = require('../utils');
 
-const layer = Sprite.from(TRANSPARENT_1PX_IMG);
+const listenerMap = new WeakMap();
 
-class IPlayerController {
+class IPlayerController extends EventEmitter {
+  #layer = Sprite.from(TRANSPARENT_1PX_IMG);
+
   #player;
 
   /**
    * @param {import('../object/character').ICharacter} player
    */
   constructor(player) {
+    super();
     this.#player = player;
   }
 
@@ -22,9 +27,9 @@ class IPlayerController {
       throw new Error('No scene.');
     }
     const { width, height } = app.view;
-    layer.width = width;
-    layer.height = height;
-    layer.eventMode = 'static';
+    this.#layer.width = width;
+    this.#layer.height = height;
+    this.#layer.eventMode = 'static';
 
     /**
      * @param {number} x
@@ -37,31 +42,65 @@ class IPlayerController {
      */
     const isActionArea = (x) => x > width / 2;
 
-    layer.ontouchstart = (evt) => {
+    this.#layer.ontouchstart = (evt) => {
       const { x, y } = evt.global;
       if (isJoystickArea(x)) {
         Joystick.activate({
-          layer,
+          layer: this.#layer,
           player: this.#player,
           pointerId: evt.pointerId,
           start: { x, y },
         });
-      } else {
-        // Joystick.release();
       }
       if (isActionArea(x)) {
-        console.error('action start');
+        GestureDetector.activate({
+          layer: this.#layer,
+          player: this.#player,
+          pointerId: evt.pointerId,
+          eventEmitter: this,
+        });
       }
     };
 
-    layer.ontouchend = (evt) => {
+    this.#layer.ontouchend = (evt) => {
       const { pointerId } = evt;
       Joystick.release(pointerId);
+      GestureDetector.release(pointerId);
     };
 
-    app.stage.addChild(layer);
+    app.stage.addChild(this.#layer);
     scene.camera.pointTo(this.#player);
     scene.camera.target = this.#player;
+  }
+
+  /**
+   * @param {string} type tap or /^[→←↑↓]+$/
+   * @param {() => void} listener
+   * @returns
+   */
+  on(type, listener) {
+    if (!listenerMap.has(listener)) {
+      listenerMap.set(listener, () => {
+        listener();
+      });
+    }
+    const l = listenerMap.get(listener);
+    super.on(type, l);
+    return this;
+  }
+
+  /**
+   * @param {string} type tap or /^[→←↑↓]+$/
+   * @param {() => void} listener
+   * @returns
+   */
+  off(type, listener) {
+    const l = listenerMap.get(listener);
+    if (!l) {
+      return this;
+    }
+    super.off(type, l);
+    return this;
   }
 }
 
