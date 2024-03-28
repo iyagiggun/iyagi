@@ -6,8 +6,6 @@ import {
 import { FRAMES_PER_SECOND } from '../const';
 import { IObjectEvent } from './event';
 
-const _movementStopMap = new WeakMap();
-
 /**
  * @typedef {"up" | "down" | "left" | "right"} Direction
  */
@@ -401,67 +399,17 @@ class IObject {
     }
     sprite.stop();
   }
+}
 
+class IMonoObject extends IObject {
   /**
-   * @param {import('../utils/coordinates').Position} pos
-   * @param {Object} [options]
-   * @param {number} [options.speed]
+   * @param {MonoParameter} p
    * @returns
    */
-  move(pos, options) {
-    return new Promise((resolve) => {
-      const { scene } = this;
-      if (!scene) {
-        throw new Error('No scene');
-      }
-      const speed = options?.speed ?? 1;
-      const moveSpeed = speed * 2;
-
-      const tick = () => {
-        const { x: curX, y: curY } = this.position();
-        const diffX = pos.x - curX;
-        const diffY = pos.y - curY;
-        const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
-        const arrived = distance < moveSpeed;
-
-        if (arrived) {
-          this.positionAt({ x: pos.x, y: pos.y });
-        } else {
-          const deltaX = moveSpeed * (diffX / distance);
-          const deltaY = moveSpeed * (diffY / distance);
-          scene.objects.move(this, { x: deltaX, y: deltaY });
-          const { camera } = scene;
-          if (camera && camera.target === this) {
-            camera.pointTo(this);
-          }
-        }
-
-        if (arrived) {
-          this.stop();
-          const movementStop = _movementStopMap.get(this);
-          if (movementStop) {
-            this.application().ticker.remove(movementStop.tick);
-            movementStop.resolve();
-            _movementStopMap.delete(this);
-          }
-        }
-      };
-
-      this.stop();
-      this.play({ speed });
-      _movementStopMap.set(this, { tick, resolve });
-      this.application().ticker.add(tick);
-    });
-  }
-
-  /**
-   * @param {MonoParameter} param0
-   * @returns
-   */
-  static createMono({
+  constructor({
     name, image, frames, hitbox, z,
   }) {
-    return new IObject({
+    super({
       name,
       image,
       motions: {
@@ -477,4 +425,4 @@ class IObject {
   }
 }
 
-export { IObject };
+export { IObject, IMonoObject };

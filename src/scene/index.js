@@ -11,6 +11,7 @@ import { Camera } from './camera';
  * @property {string} name
  * @property {import('../object').IObject[]} objects
  * @property {() => (Promise<any>)} take resolve next scene key.
+ * @property {any} [key]
  */
 
 class SceneObjects {
@@ -116,8 +117,8 @@ class SceneObjects {
   }
 
   /**
-     * @param {import('../utils/coordinates').Area} area
-     */
+   * @param {import('../utils/coordinates').Area} area
+   */
   overlapped(area) {
     return [...this.#objects]
       .filter((o) => !!getOverlappingArea(o.area(), area));
@@ -126,6 +127,8 @@ class SceneObjects {
 
 class IScene {
   name;
+
+  key;
 
   /** @type {import('../iyagi').Iyagi | null} */
   iyagi = null;
@@ -145,6 +148,7 @@ class IScene {
    */
   constructor(p) {
     this.name = p.name;
+    this.key = p.key || this.name;
     this.take = p.take;
     this.container.sortableChildren = true;
     this.objects = new SceneObjects(this, p.objects);

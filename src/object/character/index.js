@@ -3,6 +3,8 @@ import { IObject } from '..';
 import messanger from '../../scene/messenger';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
 
+const _movementStopMap = new WeakMap();
+
 /**
  * @typedef {Object} AdditionalParameter
  * @property {Object<string, string>} [AdditionalParameter.photoMap]
@@ -55,6 +57,59 @@ class ICharacter extends IObject {
 
   photo() {
     return this.#photo.texture[this.#photo.key];
+  }
+
+  /**
+   * @param {import('../../utils/coordinates').Position} pos
+   * @param {Object} [options]
+   * @param {number} [options.speed]
+   * @param {boolean} [options.trace] camera follow
+   * @returns
+   */
+  move(pos, options) {
+    return new Promise((resolve) => {
+      const { scene } = this;
+      if (!scene) {
+        throw new Error('No scene');
+      }
+      const speed = options?.speed ?? 1;
+      const moveSpeed = speed * 2;
+
+      const tick = () => {
+        const { x: curX, y: curY } = this.position();
+        const diffX = pos.x - curX;
+        const diffY = pos.y - curY;
+        const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+        const arrived = distance < moveSpeed;
+
+        if (arrived) {
+          this.positionAt({ x: pos.x, y: pos.y });
+        } else {
+          const deltaX = moveSpeed * (diffX / distance);
+          const deltaY = moveSpeed * (diffY / distance);
+          scene.objects.move(this, { x: deltaX, y: deltaY });
+          const { camera } = scene;
+          if (options?.trace) {
+            camera.pointTo(this);
+          }
+        }
+
+        if (arrived) {
+          this.stop();
+          const movementStop = _movementStopMap.get(this);
+          if (movementStop) {
+            this.application().ticker.remove(movementStop.tick);
+            movementStop.resolve();
+            _movementStopMap.delete(this);
+          }
+        }
+      };
+
+      this.stop();
+      this.play({ speed });
+      _movementStopMap.set(this, { tick, resolve });
+      this.application().ticker.add(tick);
+    });
   }
 }
 

@@ -8,12 +8,16 @@ import { devtools } from '../utils/devtools';
 class Iyagi {
   application;
 
-  #scenes;
+  /** @type {Object<string, IScene>} */
+  #sceneMap = {};
+
+  /** @type {WeakMap<any, IScene>} */
+  #sceneWeakMap = new WeakMap();
 
   /**
    * @param {Object} p
    * @param {HTMLCanvasElement} p.canvas
-   * @param {Object<string, IScene> | WeakMap<any, IScene> | Map<any, IScene>} p.scenes
+   * @param {IScene[]} p.scenes
    * @param {'production' | 'development'} [p.mode] default="production"
    */
   constructor({ canvas, scenes, mode }) {
@@ -24,7 +28,14 @@ class Iyagi {
       height: parseInt(getComputedStyle(canvas).height, 10),
     });
 
-    this.#scenes = scenes;
+    scenes.forEach((scene) => {
+      const { key } = scene;
+      if (typeof key === 'string') {
+        this.#sceneMap[key] = scene;
+      } else {
+        this.#sceneWeakMap.set(key, scene);
+      }
+    });
 
     if (mode === 'development') {
       devtools.enable = true;
@@ -32,14 +43,12 @@ class Iyagi {
   }
 
   /**
-   * @param {any} sceneKey
+   * @param {any} key
    */
-  async play(sceneKey) {
-    const scene = (this.#scenes instanceof WeakMap || this.#scenes instanceof Map)
-      ? this.#scenes.get(sceneKey)
-      : this.#scenes[sceneKey];
+  async play(key) {
+    const scene = typeof key === 'string' ? this.#sceneMap[key] : this.#sceneWeakMap.get(key);
     if (!scene) {
-      throw new Error('Fail to play scene. No the scene');
+      throw new Error('Fail to find scene.');
     }
 
     await scene.load();
