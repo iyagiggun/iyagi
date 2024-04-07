@@ -56,12 +56,14 @@ const onTouchMove = throttle((evt) => {
 }, 50);
 
 const tick = () => {
-  if (!info) {
+  if (!info || (deltaX === 0 && deltaY === 0)) {
     return;
   }
   info.player.scene?.objects.move(info.player, { x: deltaX, y: deltaY });
   info.player.scene?.camera.pointTo(info.player);
 };
+
+let activateTime = -1;
 
 const Joystick = {
   /**
@@ -69,8 +71,10 @@ const Joystick = {
    */
   activate: (_info) => {
     info = _info;
-    info.layer.addEventListener('touchmove', onTouchMove);
-    info.player.application().ticker.add(tick);
+    const { layer, player } = info;
+    player.application().ticker.add(tick);
+    layer.addEventListener('touchmove', onTouchMove);
+    activateTime = performance.now();
   },
   /**
    * @param {number} pointerId
@@ -79,9 +83,16 @@ const Joystick = {
     if (!info || pointerId !== info.pointerId) {
       return;
     }
-    info.player.application().ticker.remove(tick);
-    info.layer.removeEventListener('touchmove', onTouchMove);
-    info.player.stop();
+    const { player, layer } = info;
+    if (performance.now() - activateTime < 200) {
+      info.player.interact();
+    }
+    activateTime = -1;
+    player.application().ticker.remove(tick);
+    layer.removeEventListener('touchmove', onTouchMove);
+    player.stop();
+    deltaX = 0;
+    deltaY = 0;
     info = null;
   },
 };

@@ -122,6 +122,9 @@ class IObject {
 
   #z;
 
+  /** @type {null | (() => Promise<void>)} */
+  interaction = null;
+
   /**
    * @typedef {Object} Motion
    * @property {Sprite | AnimatedSprite | null} up
@@ -284,7 +287,7 @@ class IObject {
     if (typeof z === 'number') {
       this.#z = z;
     }
-    this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y;
+    this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y + modY;
   }
 
   position() {
@@ -401,7 +404,7 @@ class IObject {
   }
 }
 
-class IMonoObject extends IObject {
+class IObjectMono extends IObject {
   /**
    * @param {MonoParameter} p
    * @returns
@@ -425,4 +428,4 @@ class IMonoObject extends IObject {
   }
 }
 
-export { IObject, IMonoObject };
+export { IObject, IObjectMono };

@@ -50,7 +50,11 @@ class ICharacter extends IObject {
    */
   talk(message) {
     return messanger.talk({
-      speaker: this,
+      application: this.application(),
+      speaker: {
+        name: this.name,
+        photo: this.photo(),
+      },
       message,
     });
   }
@@ -110,6 +114,39 @@ class ICharacter extends IObject {
       _movementStopMap.set(this, { tick, resolve });
       this.application().ticker.add(tick);
     });
+  }
+
+  interact() {
+    if (!this.scene) {
+      return Promise.resolve();
+    }
+    const interactionArea = (() => {
+      const {
+        x, y, w, h,
+      } = this.area();
+      switch (this.direction()) {
+        case 'up':
+          return {
+            x, y: y - 5, w, h: h + 5,
+          };
+        case 'down':
+          return {
+            x, y, w, h: h + 5,
+          };
+        case 'left':
+          return {
+            x: x - 5, y, w: w + 5, h,
+          };
+        case 'right':
+          return {
+            x, y, w: w + 5, h,
+          };
+        default:
+          throw new Error('Invalid direction.');
+      }
+    })();
+    const target = this.scene.objects.overlapped(interactionArea).find((o) => !!o.interaction);
+    return target?.interaction?.() || Promise.resolve();
   }
 }
 

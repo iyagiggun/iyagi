@@ -22,26 +22,30 @@ const getMessageStyle = (width) => new TextStyle({
   fill: [0xffffff, 0xaaaaaa],
 });
 
+/**
+ * @typedef Speaker
+ * @property {import('pixi.js').Sprite} photo
+ * @property {string} name
+ */
+
 const messanger = {
   /**
    * @param {Object} p
-   * @param {import('../../object/character').ICharacter} p.speaker
+   * @param {import('pixi.js').Application} p.application
+   * @param {Speaker} p.speaker
    * @param {string} p.message
    * @param {number} [p.width]
    * @param {number} [p.height]
    */
   talk: async ({
+    application,
     speaker,
     message,
     width,
     height,
   }) => {
-    const app = speaker.application();
-    if (!app) {
-      return Promise.resolve();
-    }
-    const appWidth = app.view.width;
-    const appHeight = app.view.height;
+    const appWidth = application.view.width;
+    const appHeight = application.view.height;
 
     const wrapperWidth = width || appWidth;
     const wrapperHeight = height || appHeight / 2 - 48;
@@ -54,7 +58,7 @@ const messanger = {
     wrapper.y = appHeight - wrapperHeight;
 
     const photoSize = Math.min(144, Math.min(appWidth, appHeight) / 2);
-    const photo = speaker.photo();
+    const { photo } = speaker;
     photo.width = photoSize;
     photo.height = photoSize;
     photo.x = 12;
@@ -91,7 +95,7 @@ const messanger = {
       messageStartIdx = messageEndIdx;
     };
 
-    app.stage.addChild(wrapper);
+    application.stage.addChild(wrapper);
 
     showPartedMessage();
 
@@ -100,7 +104,7 @@ const messanger = {
       wrapper.addEventListener('touchstart', (evt) => {
         evt.stopPropagation();
         if (messageEndIdx > messageIdxLimit) {
-          app.stage.removeChild(wrapper);
+          application.stage.removeChild(wrapper);
           resolve(undefined);
         } else {
           showPartedMessage();
