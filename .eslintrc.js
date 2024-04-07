@@ -25,5 +25,14 @@ module.exports = {
     'import/prefer-default-export': 'off',
     camelcase: 'off',
     'no-underscore-dangle': 'off',
+    'max-len': ['error', {
+      code: 120,
+      ignoreComments: true,
+      ignoreTrailingComments: true,
+      ignoreUrls: true,
+      ignoreStrings: true,
+      ignoreTemplateLiterals: true,
+      ignoreRegExpLiterals: true,
+    }],
   },
 };
