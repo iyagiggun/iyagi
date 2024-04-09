@@ -1,5 +1,6 @@
 import { Application } from 'pixi.js';
 import { devtools } from '../utils/devtools';
+import { imessenger } from '../messenger';
 
 /**
  * @typedef {import('../scene').IScene} IScene
@@ -8,8 +9,7 @@ import { devtools } from '../utils/devtools';
 class Iyagi {
   application;
 
-  /** @type {Object<string, IScene>} */
-  #sceneMap = {};
+  messenger;
 
   /** @type {WeakMap<any, IScene>} */
   #sceneWeakMap = new WeakMap();
@@ -17,10 +17,12 @@ class Iyagi {
   /**
    * @param {Object} p
    * @param {HTMLCanvasElement} p.canvas
-   * @param {IScene[]} p.scenes
+   * @param {typeof imessenger} [p.messenger]
    * @param {'production' | 'development'} [p.mode] default="production"
    */
-  constructor({ canvas, scenes, mode }) {
+  constructor({
+    canvas, mode, messenger,
+  }) {
     this.application = new Application({
       view: canvas,
       backgroundColor: 0x000000,
@@ -28,14 +30,7 @@ class Iyagi {
       height: parseInt(getComputedStyle(canvas).height, 10),
     });
 
-    scenes.forEach((scene) => {
-      const { key } = scene;
-      if (typeof key === 'string') {
-        this.#sceneMap[key] = scene;
-      } else {
-        this.#sceneWeakMap.set(key, scene);
-      }
-    });
+    this.messenger = messenger ?? imessenger;
 
     if (mode === 'development') {
       devtools.enable = true;
@@ -44,9 +39,10 @@ class Iyagi {
 
   /**
    * @param {any} key
+   * @param {IScene[]} scenes
    */
-  async play(key) {
-    const scene = typeof key === 'string' ? this.#sceneMap[key] : this.#sceneWeakMap.get(key);
+  async play(key, scenes) {
+    const scene = scenes.find((s) => s.key === key);
     if (!scene) {
       throw new Error('Fail to find scene.');
     }
@@ -58,7 +54,7 @@ class Iyagi {
     const next = await scene.take();
     this.application.stage.removeChild(scene.container);
     scene.release();
-    await this.play(next);
+    await this.play(next, scenes);
   }
 }
 

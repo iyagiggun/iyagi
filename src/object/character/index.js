@@ -1,6 +1,5 @@
 import { Assets, Sprite } from 'pixi.js';
 import { IObject } from '..';
-import messanger from '../../scene/messenger';
 import { TRANSPARENT_1PX_IMG } from '../../utils';
 
 const _movementStopMap = new WeakMap();
@@ -49,7 +48,11 @@ class ICharacter extends IObject {
    * @param {string} message
    */
   talk(message) {
-    return messanger.talk({
+    const messenger = this.scene?.iyagi?.messenger;
+    if (!messenger) {
+      throw new Error('No messanger');
+    }
+    return messenger.talk({
       application: this.application(),
       speaker: {
         name: this.name,

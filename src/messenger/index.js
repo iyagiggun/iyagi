@@ -24,31 +24,27 @@ const getMessageStyle = (width) => new TextStyle({
 
 /**
  * @typedef Speaker
- * @property {import('pixi.js').Sprite} photo
+ * @property {import('pixi.js').Sprite} [photo]
  * @property {string} name
  */
 
-const messanger = {
+const imessenger = {
   /**
    * @param {Object} p
    * @param {import('pixi.js').Application} p.application
    * @param {Speaker} p.speaker
    * @param {string} p.message
-   * @param {number} [p.width]
-   * @param {number} [p.height]
    */
   talk: async ({
     application,
     speaker,
     message,
-    width,
-    height,
   }) => {
     const appWidth = application.view.width;
     const appHeight = application.view.height;
 
-    const wrapperWidth = width || appWidth;
-    const wrapperHeight = height || appHeight / 2 - 48;
+    const wrapperWidth = appWidth;
+    const wrapperHeight = appHeight / 2 - 48;
 
     const wrapper = new Graphics();
     wrapper.beginFill(0x000000, 0.7);
@@ -57,24 +53,36 @@ const messanger = {
     wrapper.x = 0;
     wrapper.y = appHeight - wrapperHeight;
 
-    const photoSize = Math.min(144, Math.min(appWidth, appHeight) / 2);
     const { photo } = speaker;
-    photo.width = photoSize;
-    photo.height = photoSize;
-    photo.x = 12;
-    photo.y = wrapper.height - photoSize - 12;
-    wrapper.addChild(photo);
-
     const name = new Text(speaker.name, NAME_STYLE);
-    name.x = photo.x + photo.width + 12;
-    name.y = 6;
-    wrapper.addChild(name);
+    const messageBox = new Text('');
 
-    const messageBoxWidth = wrapper.width - photoSize - 36;
-    const messageBox = new Text('', getMessageStyle(messageBoxWidth));
-    messageBox.x = photo.x + photo.width + 12;
-    messageBox.y = name.y + name.height + 6;
-    wrapper.addChild(messageBox);
+    if (photo) {
+      const photoSize = Math.min(144, Math.min(appWidth, appHeight) / 2);
+      photo.width = photoSize;
+      photo.height = photoSize;
+      photo.x = 12;
+      photo.y = wrapper.height - photoSize - 12;
+      wrapper.addChild(photo);
+
+      name.x = photo.x + photo.width + 12;
+      name.y = 6;
+      wrapper.addChild(name);
+
+      messageBox.style = getMessageStyle(wrapper.width - photoSize - 36);
+      messageBox.x = photo.x + photo.width + 12;
+      messageBox.y = name.y + name.height + 6;
+      wrapper.addChild(messageBox);
+    } else {
+      name.x = 12;
+      name.y = 6;
+      wrapper.addChild(name);
+
+      messageBox.style = getMessageStyle(wrapper.width - 36);
+      messageBox.x = 12;
+      messageBox.y = name.y + name.height + 6;
+      wrapper.addChild(messageBox);
+    }
 
     const messageIdxLimit = message.length;
     let messageStartIdx = 0;
@@ -114,4 +122,4 @@ const messanger = {
   },
 };
 
-export default messanger;
+export { imessenger };

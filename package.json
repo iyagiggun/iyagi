@@ -40,6 +40,11 @@
       "require": "./src/status/index.js",
       "types": "./types/status/index.d.ts"
     },
+    "./messenger": {
+      "import": "./src/messenger/index.js",
+      "require": "./src/messenger/index.js",
+      "types": "./types/messenger/index.d.ts"
+    },
     "./nai": {
       "import": "./src/nai/index.js",
       "require": "./src/nai/index.js",
