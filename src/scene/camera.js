@@ -18,7 +18,7 @@ class Camera {
   /**
    * @param {Target} target
    */
-  pointTo(target) {
+  point(target) {
     this.target = null;
     const app = this.#scene.application();
     if (!app) {

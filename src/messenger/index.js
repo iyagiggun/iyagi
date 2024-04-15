@@ -1,5 +1,8 @@
+import { TRANSPARENT_1PX_IMG } from '../utils';
+
 const {
   Graphics, TextStyle, Text,
+  Sprite,
 } = require('pixi.js');
 
 const NAME_STYLE = new TextStyle({
@@ -43,45 +46,49 @@ const imessenger = {
     const appWidth = application.view.width;
     const appHeight = application.view.height;
 
-    const wrapperWidth = appWidth;
-    const wrapperHeight = appHeight / 2 - 48;
+    const messageBox = new Graphics();
+    messageBox.beginFill(0x000000, 0.7);
+    messageBox.drawRect(0, 0, appWidth, appHeight / 2 - 48);
+    messageBox.endFill();
+    messageBox.x = 0;
+    messageBox.y = appHeight - messageBox.height;
 
-    const wrapper = new Graphics();
-    wrapper.beginFill(0x000000, 0.7);
-    wrapper.drawRect(0, 0, wrapperWidth, wrapperHeight);
-    wrapper.endFill();
-    wrapper.x = 0;
-    wrapper.y = appHeight - wrapperHeight;
+    const upper = Sprite.from(TRANSPARENT_1PX_IMG);
+    upper.width = appWidth;
+    upper.height = appHeight - messageBox.height;
+    upper.x = 0;
+    upper.y = 0;
+    upper.eventMode = 'static';
 
     const { photo } = speaker;
     const name = new Text(speaker.name, NAME_STYLE);
-    const messageBox = new Text('');
+    const text = new Text('');
 
     if (photo) {
       const photoSize = Math.min(144, Math.min(appWidth, appHeight) / 2);
       photo.width = photoSize;
       photo.height = photoSize;
       photo.x = 12;
-      photo.y = wrapper.height - photoSize - 12;
-      wrapper.addChild(photo);
+      photo.y = messageBox.height - photoSize - 12;
+      messageBox.addChild(photo);
 
       name.x = photo.x + photo.width + 12;
       name.y = 6;
-      wrapper.addChild(name);
+      messageBox.addChild(name);
 
-      messageBox.style = getMessageStyle(wrapper.width - photoSize - 36);
-      messageBox.x = photo.x + photo.width + 12;
-      messageBox.y = name.y + name.height + 6;
-      wrapper.addChild(messageBox);
+      text.style = getMessageStyle(messageBox.width - photoSize - 36);
+      text.x = photo.x + photo.width + 12;
+      text.y = name.y + name.height + 6;
+      messageBox.addChild(text);
     } else {
       name.x = 12;
       name.y = 6;
-      wrapper.addChild(name);
+      messageBox.addChild(name);
 
-      messageBox.style = getMessageStyle(wrapper.width - 36);
-      messageBox.x = 12;
-      messageBox.y = name.y + name.height + 6;
-      wrapper.addChild(messageBox);
+      text.style = getMessageStyle(messageBox.width - 36);
+      text.x = 12;
+      text.y = name.y + name.height + 6;
+      messageBox.addChild(text);
     }
 
     const messageIdxLimit = message.length;
@@ -89,12 +96,12 @@ const imessenger = {
     let messageEndIdx = 0;
     let isMessageOverflowed = false;
 
-    const heightThreshold = wrapper.height;
+    const heightThreshold = messageBox.height;
     const showPartedMessage = () => {
       while (messageEndIdx <= messageIdxLimit && !isMessageOverflowed) {
         messageEndIdx += 1;
-        messageBox.text = message.substring(messageStartIdx, messageEndIdx);
-        if (wrapper.height > heightThreshold) {
+        text.text = message.substring(messageStartIdx, messageEndIdx);
+        if (messageBox.height > heightThreshold) {
           isMessageOverflowed = true;
           messageEndIdx -= 1;
         }
@@ -103,16 +110,18 @@ const imessenger = {
       messageStartIdx = messageEndIdx;
     };
 
-    application.stage.addChild(wrapper);
+    application.stage.addChild(upper);
+    application.stage.addChild(messageBox);
 
     showPartedMessage();
 
     return new Promise((resolve) => {
-      wrapper.eventMode = 'static';
-      wrapper.addEventListener('touchstart', (evt) => {
+      messageBox.eventMode = 'static';
+      messageBox.addEventListener('touchstart', (evt) => {
         evt.stopPropagation();
         if (messageEndIdx > messageIdxLimit) {
-          application.stage.removeChild(wrapper);
+          application.stage.removeChild(upper);
+          application.stage.removeChild(messageBox);
           resolve(undefined);
         } else {
           showPartedMessage();

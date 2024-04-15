@@ -1,5 +1,6 @@
 /* eslint-disable max-classes-per-file */
 import { Container } from 'pixi.js';
+import { isArray } from 'lodash-es';
 import { ITile } from '../object/tile';
 import {
   getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
@@ -7,10 +8,14 @@ import {
 import { Camera } from './camera';
 
 /**
+ * @typedef {import('../object').IObject} IObject
+ */
+
+/**
  * @typedef {Object} SceneParameter
  * @property {string} name
- * @property {import('../object').IObject[]} objects
- * @property {() => (Promise<any>)} take resolve next scene key.
+ * @property {IObject[]} objects
+ * @property {(self: IScene) => (Promise<any>)} take resolve next scene key.
  * @property {any} [key]
  */
 
@@ -32,12 +37,7 @@ class SceneObjects {
 
   async load() {
     if (!this.#loaded) {
-      await Promise.all(this.#objects.map((o) => o.load()));
-      this.#objects.forEach((obj) => {
-        this.#scene.container.addChild(obj.container);
-        // eslint-disable-next-line no-param-reassign
-        obj.scene = this.#scene;
-      });
+      await this.add(this.#objects);
     }
     this.#loaded = true;
   }
@@ -51,7 +51,7 @@ class SceneObjects {
   }
 
   /**
-   * @param {import('../object').IObject} target
+   * @param {IObject} target
    */
   delete(target) {
     if (this.#objects.includes(target)) {
@@ -61,17 +61,29 @@ class SceneObjects {
   }
 
   /**
-   * @param {import('../object').IObject} target
+   * @param { IObject | IObject[] } target
    */
-  add(target) {
+  async add(target) {
+    // case items
+    if (isArray(target)) {
+      await Promise.all(target.map((e) => this.add(e)));
+      return;
+    }
+    // case an item
+
     if (!this.#objects.includes(target)) {
-      this.#scene.container.addChild(target.container);
       this.#objects.push(target);
     }
+    if (!target.isLoaded()) {
+      await target.load();
+    }
+    this.#scene.container.addChild(target.container);
+    // eslint-disable-next-line no-param-reassign
+    target.scene = this.#scene;
   }
 
   /**
-   * @param {import('../object').IObject} target
+   * @param {IObject} target
    * @param {import('../utils/coordinates').Position} delta
    */
   move(target, delta) {
@@ -83,7 +95,7 @@ class SceneObjects {
     const nextX = getNextX({ target, delta: deltaX, objects: this.#objects });
     const nextY = getNextY({ target, delta: deltaY, objects: this.#objects });
 
-    target.positionAt({ x: nextX, y: nextY });
+    target.place({ x: nextX, y: nextY });
     target.directTo(getDirectionByDelta(deltaX, deltaY));
 
     this.#objects.forEach((obj) => {

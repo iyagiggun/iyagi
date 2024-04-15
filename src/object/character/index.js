@@ -90,14 +90,14 @@ class ICharacter extends IObject {
         const arrived = distance < moveSpeed;
 
         if (arrived) {
-          this.positionAt({ x: pos.x, y: pos.y });
+          this.place({ x: pos.x, y: pos.y });
         } else {
           const deltaX = moveSpeed * (diffX / distance);
           const deltaY = moveSpeed * (diffY / distance);
           scene.objects.move(this, { x: deltaX, y: deltaY });
           const { camera } = scene;
           if (options?.trace) {
-            camera.pointTo(this);
+            camera.point(this);
           }
         }
 

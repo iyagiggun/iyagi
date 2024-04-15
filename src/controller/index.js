@@ -69,7 +69,7 @@ class IPlayerController extends EventEmitter {
     };
 
     app.stage.addChild(this.#layer);
-    scene.camera.pointTo(this.#player);
+    scene.camera.point(this.#player);
     scene.camera.target = this.#player;
   }
 

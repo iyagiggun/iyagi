@@ -272,7 +272,7 @@ class IObject {
    * @param {number} [pos.y]
    * @param {number} [pos.z]
    */
-  positionAt({ x, y, z }) {
+  place({ x, y, z }) {
     const {
       modX,
       modY,
@@ -401,6 +401,14 @@ class IObject {
       return;
     }
     sprite.stop();
+  }
+
+  hide() {
+    this.#get_sprite().visible = false;
+  }
+
+  show() {
+    this.#get_sprite().visible = true;
   }
 }
 

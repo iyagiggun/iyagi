@@ -11,9 +11,6 @@ class Iyagi {
 
   messenger;
 
-  /** @type {WeakMap<any, IScene>} */
-  #sceneWeakMap = new WeakMap();
-
   /**
    * @param {Object} p
    * @param {HTMLCanvasElement} p.canvas
@@ -51,7 +48,7 @@ class Iyagi {
     this.application.stage.addChild(scene.container);
     // eslint-disable-next-line no-param-reassign
     scene.iyagi = this;
-    const next = await scene.take();
+    const next = await scene.take(scene);
     this.application.stage.removeChild(scene.container);
     scene.release();
     await this.play(next, scenes);

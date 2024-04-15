@@ -60,7 +60,7 @@ const tick = () => {
     return;
   }
   info.player.scene?.objects.move(info.player, { x: deltaX, y: deltaY });
-  info.player.scene?.camera.pointTo(info.player);
+  info.player.scene?.camera.point(info.player);
 };
 
 let activateTime = -1;
