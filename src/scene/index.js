@@ -96,7 +96,7 @@ class SceneObjects {
     const nextY = getNextY({ target, delta: deltaY, objects: this.#objects });
 
     target.place({ x: nextX, y: nextY });
-    target.directTo(getDirectionByDelta(deltaX, deltaY));
+    target.direct(getDirectionByDelta(deltaX, deltaY));
 
     this.#objects.forEach((obj) => {
       if (obj instanceof ITile) {

@@ -74,7 +74,7 @@ const create_sprite = async (image, options) => {
  * @property {boolean} [loop]
  * @property {import('../utils/coordinates').Area} [hitbox]
  * @property {SpriteInfo} [up]
- * @property {SpriteInfo} down
+ * @property {SpriteInfo} [down]
  * @property {SpriteInfo} [left]
  * @property {SpriteInfo} [right]
  */
@@ -128,7 +128,7 @@ class IObject {
   /**
    * @typedef {Object} Motion
    * @property {Sprite | AnimatedSprite | null} up
-   * @property {Sprite | AnimatedSprite} down
+   * @property {Sprite | AnimatedSprite | null} down
    * @property {Sprite | AnimatedSprite | null} left
    * @property {Sprite | AnimatedSprite | null} right
    * @property {import('../utils/coordinates').Area | undefined} hitbox
@@ -230,10 +230,12 @@ class IObject {
               loop,
             })
             : Promise.resolve(null),
-          await create_sprite(down.image ?? default_image, {
-            frames: down.frames,
-            loop,
-          }),
+          down
+            ? await create_sprite(down.image ?? default_image, {
+              frames: down.frames,
+              loop,
+            })
+            : Promise.resolve(null),
           left
             ? await create_sprite(left.image ?? default_image, {
               frames: left.frames,
@@ -255,6 +257,18 @@ class IObject {
           right: right_sprite,
           hitbox,
         };
+
+        if (!down) {
+          if (up) {
+            this.#dir = 'up';
+          }
+          if (left) {
+            this.#dir = 'left';
+          }
+          if (right) {
+            this.#dir = 'right';
+          }
+        }
       });
     await Promise.all(promises);
 
@@ -305,7 +319,7 @@ class IObject {
   /**
    * @param {Direction} next
    */
-  directTo(next) {
+  direct(next) {
     if (!this.#loaded) {
       this.#dir = next;
       return;
@@ -404,11 +418,11 @@ class IObject {
   }
 
   hide() {
-    this.#get_sprite().visible = false;
+    this.container.visible = false;
   }
 
   show() {
-    this.#get_sprite().visible = true;
+    this.container.visible = true;
   }
 }
 

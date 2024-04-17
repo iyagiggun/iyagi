@@ -33,7 +33,7 @@ export const IBasicTracker = {
         controlled.stop();
         isMoving = false;
         lastPos = currentPos;
-        controlled.directTo(directionWhenArrived);
+        controlled.direct(directionWhenArrived);
         onArrived?.();
         return;
       }
