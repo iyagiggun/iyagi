@@ -281,30 +281,30 @@ class IObject {
   }
 
   /**
-   * @param {Object} pos
-   * @param {number} [pos.x]
-   * @param {number} [pos.y]
-   * @param {number} [pos.z]
+   * @param {{x?: number, y?: number, z?: number}} pos
    */
-  place({ x, y, z }) {
-    const {
-      modX,
-      modY,
-    } = this.#get_mod();
-
+  set xyz({ x, y, z }) {
+    const { modX, modY } = this.#get_mod();
     if (typeof x === 'number') {
       this.container.x = x - modX;
     }
-    if (typeof y === 'number') {
+    const yIsNumber = typeof y === 'number';
+    if (yIsNumber) {
       this.container.y = y - modY;
     }
-    if (typeof z === 'number') {
+    const zIsNumber = typeof z === 'number';
+    if (zIsNumber) {
       this.#z = z;
     }
-    this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y + modY;
+    if (yIsNumber || zIsNumber) {
+      this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y + modY;
+    }
   }
 
-  position() {
+  /**
+   * @return {{ x: number, y: number, z: number}}
+   */
+  get xyz() {
     const {
       modX,
       modY,
@@ -314,6 +314,79 @@ class IObject {
       y: this.container.y + modY,
       z: this.#z,
     };
+  }
+
+  /**
+   * @param {{x? : number, y?: number}} xy
+   */
+  set xy({ x, y }) {
+    const { modX, modY } = this.#get_mod();
+    if (typeof x === 'number') {
+      this.container.x = x - modX;
+    }
+    if (typeof y === 'number') {
+      this.container.y = y - modY;
+      this.container.zIndex = this.#z * Z_INDEX_MOD + this.container.y + modY;
+    }
+  }
+
+  /**
+   * @return {{ x: number, y: number }}
+   */
+  get xy() {
+    const { x, y } = this.xyz;
+    return { x, y };
+  }
+
+  /**
+   * @param {number} x
+   */
+  set x(x) {
+    this.xy = { x };
+  }
+
+  get x() {
+    return this.xyz.x;
+  }
+
+  /**
+   * @param {number} y
+   */
+  set y(y) {
+    this.xy = { y };
+  }
+
+  get y() {
+    return this.xyz.y;
+  }
+
+  /**
+   * @param {number} z
+   */
+  set z(z) {
+    this.xyz = { z };
+  }
+
+  get z() {
+    return this.#z;
+  }
+
+  width() {
+    const hitbox = this.#get_hitbox();
+    const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
+    if (!frame) {
+      throw new Error('No frame');
+    }
+    return hitbox?.w ?? frame.w;
+  }
+
+  height() {
+    const hitbox = this.#get_hitbox();
+    const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
+    if (!frame) {
+      throw new Error('No frame');
+    }
+    return hitbox?.h ?? frame.h;
   }
 
   /**
@@ -359,15 +432,20 @@ class IObject {
   // },
 
   area() {
-    if (!this.#loaded) {
-      throw create_error('fail to measure object. not loaded.', this.name);
-    }
-    const position = this.position();
+    const { x, y, z } = this.xyz;
     const hitbox = this.#get_hitbox();
+    const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0]
+    ?? this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
+    if (!frame) {
+      throw new Error('No frame');
+    }
+
     return {
-      ...position,
-      w: hitbox ? hitbox.w : this.container.width,
-      h: hitbox ? hitbox.h : this.container.height,
+      x,
+      y,
+      z,
+      w: hitbox?.w ?? frame.w,
+      h: hitbox?.h ?? frame.h,
     };
   }
 

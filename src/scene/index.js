@@ -95,7 +95,8 @@ class SceneObjects {
     const nextX = getNextX({ target, delta: deltaX, objects: this.#objects });
     const nextY = getNextY({ target, delta: deltaY, objects: this.#objects });
 
-    target.place({ x: nextX, y: nextY });
+    // eslint-disable-next-line no-param-reassign
+    target.xy = { x: nextX, y: nextY };
     target.direct(getDirectionByDelta(deltaX, deltaY));
 
     this.#objects.forEach((obj) => {

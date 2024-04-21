@@ -83,7 +83,6 @@ export const getDistance = (p1, p2) => Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p2
  * @param {import('../../object/character').ICharacter} target
  */
 export const findShortestPos = (attacker, target) => {
-  const attackerPos = attacker.position();
   const {
     x: tCX, y: tCY, w: tWidth, h: tHeight,
   } = target.area();
@@ -120,7 +119,7 @@ export const findShortestPos = (attacker, target) => {
     },
   ];
 
-  const distanceList = posList.map((pos) => getDistance(attackerPos, pos));
+  const distanceList = posList.map((pos) => getDistance(attacker.xy, pos));
   const minDistance = Math.min(...distanceList);
   const shortestPosIdx = distanceList.findIndex((distance) => distance === minDistance);
 
@@ -197,7 +196,7 @@ export const getNextX = ({
   } = target.area();
   const destX = x + delta;
   const blocking = objects.find((each) => {
-    if (each === target || each.position().z !== z) {
+    if (each === target || each.z !== z) {
       return false;
     }
     return !!getOverlappingArea({
@@ -227,7 +226,7 @@ export const getNextY = ({
   } = target.area();
   const destY = y + delta;
   const blocking = objects.find((each) => {
-    if (each === target || each.position().z !== z) {
+    if (each === target || each.z !== z) {
       return false;
     }
     return !!getOverlappingArea({

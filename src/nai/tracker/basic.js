@@ -22,23 +22,23 @@ export const IBasicTracker = {
     const delay = intervalDelay > 0 ? intervalDelay : 500;
 
     let isMoving = false;
-    let lastPos = controlled.position();
+    let lastPos = controlled.xy;
     /** @type {import('../../object/').Direction} */
     let directionWhenArrived = 'down';
 
     const interval = (() => window.setInterval(() => {
-      const currentPos = controlled.position();
+      const curPos = controlled.xy;
       const { distance } = getCoordinateRelationship(controlled, target);
       if (distance < 10) {
         controlled.stop();
         isMoving = false;
-        lastPos = currentPos;
+        lastPos = curPos;
         controlled.direct(directionWhenArrived);
         onArrived?.();
         return;
       }
 
-      if (!isMoving || (lastPos.x === currentPos.x && lastPos.y === currentPos.y)) {
+      if (!isMoving || (lastPos.x === curPos.x && lastPos.y === curPos.y)) {
         controlled.stop();
         const dest = findShortestPos(controlled, target);
         directionWhenArrived = dest.direction;
@@ -47,7 +47,7 @@ export const IBasicTracker = {
         });
         isMoving = true;
       }
-      lastPos = currentPos;
+      lastPos = curPos;
     }, delay))();
 
     intervalMap.set(controlled, interval);

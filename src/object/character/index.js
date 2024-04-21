@@ -83,14 +83,15 @@ class ICharacter extends IObject {
       const moveSpeed = speed * 2;
 
       const tick = () => {
-        const { x: curX, y: curY } = this.position();
+        const { x: curX, y: curY } = this.xy;
         const diffX = pos.x - curX;
         const diffY = pos.y - curY;
         const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
         const arrived = distance < moveSpeed;
 
         if (arrived) {
-          this.place({ x: pos.x, y: pos.y });
+          this.x = pos.x;
+          this.y = pos.y;
         } else {
           const deltaX = moveSpeed * (diffX / distance);
           const deltaY = moveSpeed * (diffY / distance);
