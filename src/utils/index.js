@@ -9,3 +9,18 @@ export const FRAMES_PER_SECOND = 60;
 export const wait = (seconds) => /** @type {Promise<void>} */ (new Promise(
   (resolve) => { window.setTimeout(() => resolve(), seconds * 1000); },
 ));
+
+/**
+ * @template T
+ * @param {() => T} f
+ */
+export const cachedGet = (f) => {
+  /** @type {T | null} */
+  let cache = null;
+  return () => {
+    if (!cache) {
+      cache = f();
+    }
+    return cache;
+  };
+};

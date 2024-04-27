@@ -14,7 +14,7 @@ import { Camera } from './camera';
 /**
  * @typedef {Object} SceneParameter
  * @property {string} name
- * @property {IObject[]} objects
+ * @property {() => IObject[]} objects
  * @property {(self: IScene) => (Promise<any>)} take resolve next scene key.
  * @property {any} [key]
  */
@@ -24,8 +24,6 @@ class SceneObjects {
 
   #objects;
 
-  #loaded = false;
-
   /**
    * @param {IScene} scene
    * @param {import('../object').IObject[]} objects
@@ -33,13 +31,6 @@ class SceneObjects {
   constructor(scene, objects) {
     this.#scene = scene;
     this.#objects = objects;
-  }
-
-  async load() {
-    if (!this.#loaded) {
-      await this.add(this.#objects);
-    }
-    this.#loaded = true;
   }
 
   release() {
@@ -139,6 +130,8 @@ class SceneObjects {
 }
 
 class IScene {
+  #p;
+
   name;
 
   key;
@@ -160,11 +153,12 @@ class IScene {
    * @param {SceneParameter} p
    */
   constructor(p) {
+    this.#p = p;
     this.name = p.name;
     this.key = p.key || this.name;
     this.take = p.take;
     this.container.sortableChildren = true;
-    this.objects = new SceneObjects(this, p.objects);
+    this.objects = new SceneObjects(this, []);
   }
 
   application() {
@@ -176,7 +170,7 @@ class IScene {
 
   async load() {
     if (!this.#loaded) {
-      await this.objects.load();
+      await this.objects.add(this.#p.objects());
       this.#loaded = true;
     }
   }
