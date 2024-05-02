@@ -21,9 +21,8 @@ const devtools = {
     graphics.width = area.w;
     graphics.height = area.h;
 
-    graphics.beginFill(options?.color || '#ff0000');
-    graphics.drawRect(0, 0, area.w, area.h);
-    graphics.endFill();
+    graphics.rect(0, 0, area.w, area.h);
+    graphics.fill(options?.color || '#ff0000');
     graphics.zIndex = Infinity;
 
     scene.container.addChild(graphics);
@@ -54,9 +53,8 @@ const devtools = {
 
     const cover = new Graphics();
     cover.zIndex = Infinity;
-    cover.beginFill(`${colorizeMap.get(key)}55`);
-    cover.drawRect(0, 0, w, h);
-    cover.endFill();
+    cover.rect(0, 0, w, h);
+    cover.fill(`${colorizeMap.get(key)}55`);
 
     object.container.addChild(cover);
   },

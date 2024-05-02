@@ -1,9 +1,8 @@
 import EventEmitter from 'events';
+import { Sprite } from 'pixi.js';
 import { GestureDetector } from './gesture';
 import { Joystick } from './joystick';
-
-const { Sprite } = require('pixi.js');
-const { TRANSPARENT_1PX_IMG } = require('../utils');
+import { TRANSPARENT_1PX_IMG } from '../utils';
 
 const listenerMap = new WeakMap();
 
@@ -26,7 +25,7 @@ class IPlayerController extends EventEmitter {
     if (!scene) {
       throw new Error('No scene.');
     }
-    const { width, height } = app.view;
+    const { width, height } = app.screen;
     this.#layer.width = width;
     this.#layer.height = height;
     this.#layer.eventMode = 'static';

@@ -1,9 +1,7 @@
+import {
+  Container, Graphics, Sprite, TextStyle, Text,
+} from 'pixi.js';
 import { TRANSPARENT_1PX_IMG } from '../utils';
-
-const {
-  Graphics, TextStyle, Text,
-  Sprite,
-} = require('pixi.js');
 
 const NAME_STYLE = new TextStyle({
   fontSize: 24,
@@ -22,7 +20,7 @@ const getMessageStyle = (width) => new TextStyle({
   // fontSize: 18,
   wordWrap: true,
   wordWrapWidth: width,
-  fill: [0xffffff, 0xaaaaaa],
+  fill: 0xffffff,
 });
 
 /**
@@ -43,52 +41,55 @@ const imessenger = {
     speaker,
     message,
   }) => {
-    const appWidth = application.view.width;
-    const appHeight = application.view.height;
+    const appWidth = application.screen.width;
+    const appHeight = application.screen.height;
 
-    const messageBox = new Graphics();
-    messageBox.beginFill(0x000000, 0.7);
-    messageBox.drawRect(0, 0, appWidth, appHeight / 2 - 48);
-    messageBox.endFill();
-    messageBox.x = 0;
-    messageBox.y = appHeight - messageBox.height;
+    const container = new Container();
+    container.width = appWidth;
+    container.height = appHeight;
+
+    const bg = new Graphics();
+    bg.rect(0, 0, appWidth, appHeight / 2 - 48);
+    bg.fill({ color: 0x000000, alpha: 0.7 });
+    bg.x = 0;
+    bg.y = appHeight - bg.height;
+    container.addChild(bg);
 
     const upper = Sprite.from(TRANSPARENT_1PX_IMG);
     upper.width = appWidth;
-    upper.height = appHeight - messageBox.height;
+    upper.height = appHeight - bg.height;
     upper.x = 0;
     upper.y = 0;
     upper.eventMode = 'static';
 
     const { photo } = speaker;
-    const name = new Text(speaker.name, NAME_STYLE);
-    const text = new Text('');
+    const name = new Text({ text: speaker.name, style: NAME_STYLE });
+    const text = new Text({ text: '' });
 
     if (photo) {
       const photoSize = Math.min(144, Math.min(appWidth, appHeight) / 2);
       photo.width = photoSize;
       photo.height = photoSize;
       photo.x = 12;
-      photo.y = messageBox.height - photoSize - 12;
-      messageBox.addChild(photo);
+      photo.y = bg.y + bg.height - photoSize - 12;
+      container.addChild(photo);
 
       name.x = photo.x + photo.width + 12;
-      name.y = 6;
-      messageBox.addChild(name);
-
-      text.style = getMessageStyle(messageBox.width - photoSize - 36);
+      name.y = bg.y + 6;
+      container.addChild(name);
+      text.style = getMessageStyle(bg.width - photoSize - 36);
       text.x = photo.x + photo.width + 12;
       text.y = name.y + name.height + 6;
-      messageBox.addChild(text);
+      container.addChild(text);
     } else {
       name.x = 12;
-      name.y = 6;
-      messageBox.addChild(name);
+      name.y = bg.y + 6;
+      container.addChild(name);
 
-      text.style = getMessageStyle(messageBox.width - 36);
+      text.style = getMessageStyle(bg.width - 36);
       text.x = 12;
       text.y = name.y + name.height + 6;
-      messageBox.addChild(text);
+      container.addChild(text);
     }
 
     const messageIdxLimit = message.length;
@@ -96,12 +97,12 @@ const imessenger = {
     let messageEndIdx = 0;
     let isMessageOverflowed = false;
 
-    const heightThreshold = messageBox.height;
+    const heightThreshold = bg.height;
     const showPartedMessage = () => {
       while (messageEndIdx <= messageIdxLimit && !isMessageOverflowed) {
         messageEndIdx += 1;
         text.text = message.substring(messageStartIdx, messageEndIdx);
-        if (messageBox.height > heightThreshold) {
+        if (bg.height > heightThreshold) {
           isMessageOverflowed = true;
           messageEndIdx -= 1;
         }
@@ -110,18 +111,18 @@ const imessenger = {
       messageStartIdx = messageEndIdx;
     };
 
-    application.stage.addChild(upper);
-    application.stage.addChild(messageBox);
+    // application.stage.addChild(upper);
+    application.stage.addChild(container);
 
     showPartedMessage();
 
     return new Promise((resolve) => {
-      messageBox.eventMode = 'static';
-      messageBox.addEventListener('touchstart', (evt) => {
+      container.eventMode = 'static';
+      container.on('pointertap', (evt) => {
         evt.stopPropagation();
         if (messageEndIdx > messageIdxLimit) {
           application.stage.removeChild(upper);
-          application.stage.removeChild(messageBox);
+          application.stage.removeChild(container);
           resolve(undefined);
         } else {
           showPartedMessage();

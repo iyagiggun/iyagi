@@ -9,7 +9,7 @@ class TouchEvent {
   #tap = null;
 
   /**
-   * @param {import("pixi.js").DisplayObject} target
+   * @param {import("pixi.js").Container} target
    */
   constructor(target) {
     this.#target = target;

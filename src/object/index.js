@@ -1,13 +1,16 @@
 // eslint-disable-next-line max-classes-per-file
 import {
   AnimatedSprite,
-  Assets, Container, Sprite, Spritesheet, Texture,
+  Assets, Container, Sprite, Spritesheet,
 } from 'pixi.js';
 import { FRAMES_PER_SECOND } from '../const';
-import { IObjectEvent } from './event';
 
 /**
  * @typedef {"up" | "down" | "left" | "right"} Direction
+ */
+
+/**
+ * @typedef {'tap'} IObjectEventType
  */
 
 /**
@@ -50,8 +53,8 @@ const create_sprite = async (image, options) => {
     },
   };
   // @ts-ignore
-  await new Spritesheet(texture, sheet).parse();
-  const textures = Object.keys(sheet.frames).map((key) => Texture.from(key));
+  const parsed = await new Spritesheet(texture, sheet).parse();
+  const textures = Object.values(parsed);
   if (options.frames.length === 1) {
     return new Sprite(textures[0]);
   }
@@ -110,8 +113,6 @@ class IObject {
   scene = null;
 
   container = new Container();
-
-  event = new IObjectEvent(this);
 
   #loaded = false;
 
@@ -175,17 +176,6 @@ class IObject {
       modY: hitbox.y / scale,
     };
   };
-
-  /**
-   * @param {string} [key]
-   */
-  #get_motion(key) {
-    const value = this.#motions[key ?? this.#motion];
-    if (!value) {
-      throw create_error(`No "${key}" motion.`, this.name);
-    }
-    return value;
-  }
 
   /**
    * @param {Direction} [dir]
@@ -501,6 +491,36 @@ class IObject {
 
   show() {
     this.container.visible = true;
+  }
+
+  /**
+   * @param {import('./event').IObjectEventType} type
+   * @param {() => void} handler
+   */
+  on(type, handler) {
+    this.container.eventMode = 'static';
+    this.container.on(type, handler);
+    return this;
+  }
+
+  /**
+   * @param {'tap'} type
+   * @param {() => void} handler
+   */
+  off(type, handler) {
+    this.container.off(type, handler);
+    if (this.container.eventNames().length === 0) {
+      this.container.eventMode = 'none';
+    }
+    return this;
+  }
+
+  /**
+   * @param {'tap'} type
+   * @param {any} data
+   */
+  emit(type, data) {
+    return this.container.emit(type, data);
   }
 }
 

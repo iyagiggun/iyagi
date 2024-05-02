@@ -1,4 +1,4 @@
-import { Application } from 'pixi.js';
+import { Application, Graphics } from 'pixi.js';
 import { devtools } from '../utils/devtools';
 import { imessenger } from '../messenger';
 
@@ -11,21 +11,17 @@ class Iyagi {
 
   messenger;
 
+  #inited = false;
+
   /**
    * @param {Object} p
-   * @param {HTMLCanvasElement} p.canvas
    * @param {typeof imessenger} [p.messenger]
    * @param {'production' | 'development'} [p.mode] default="production"
    */
   constructor({
-    canvas, mode, messenger,
+    mode, messenger,
   }) {
-    this.application = new Application({
-      view: canvas,
-      backgroundColor: 0x000000,
-      width: parseInt(getComputedStyle(canvas).width, 10),
-      height: parseInt(getComputedStyle(canvas).height, 10),
-    });
+    this.application = new Application();
 
     this.messenger = messenger ?? imessenger;
 
@@ -39,6 +35,15 @@ class Iyagi {
    * @param {IScene[]} scenes
    */
   async play(key, scenes) {
+    if (!this.#inited) {
+      await this.application.init({
+        backgroundColor: 0x000000,
+        resizeTo: window,
+      });
+      this.#inited = true;
+      document.body.appendChild(this.application.canvas);
+    }
+
     const scene = scenes.find((s) => s.key === key);
     if (!scene) {
       throw new Error('Fail to find scene.');

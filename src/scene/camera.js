@@ -25,7 +25,7 @@ class Camera {
       throw new Error('[scene:camera] there is no iyagi.');
     }
     const { x, y } = 'center' in target ? target.center() : target;
-    const { width, height } = app.view;
+    const { width, height } = app.screen;
     this.#scene.container.x = Math.round(width / 2 - x);
     this.#scene.container.y = Math.round(height / 2 - y);
   }
@@ -44,7 +44,7 @@ class Camera {
     }
     const { container } = this.#scene;
     const { x, y } = 'center' in target ? target.center() : target;
-    const { width: appWidth, height: appHeight } = app.view;
+    const { width: appWidth, height: appHeight } = app.screen;
     const destX = Math.round((appWidth / 2) - x);
     const destY = Math.round((appHeight / 2) - y);
 

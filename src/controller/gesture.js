@@ -2,7 +2,7 @@ import { throttle } from 'lodash-es';
 
 /**
  * @typedef Info
- * @property {import('pixi.js').DisplayObject} layer
+ * @property {import('pixi.js').Container} layer
  * @property {number} pointerId
  * @property {import('../object/character').ICharacter} player
  * @property {import('events')} eventEmitter

@@ -28,6 +28,15 @@ class ITile extends IObject {
     });
     this.event = new ITileEvent(this);
   }
+
+  /**
+   * @param {string} type basic tile event types: (basic event types in IObject) + ('in' | 'out')
+   * @param {() => void} handler
+   * @returns
+   */
+  on(type, handler) {
+    return super.on(type, handler);
+  }
 }
 
 export { ITile };
