@@ -111,7 +111,7 @@ const imessenger = {
       messageStartIdx = messageEndIdx;
     };
 
-    // application.stage.addChild(upper);
+    application.stage.addChild(upper);
     application.stage.addChild(container);
 
     showPartedMessage();
