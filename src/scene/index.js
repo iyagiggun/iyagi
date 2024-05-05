@@ -92,30 +92,43 @@ class SceneObjects {
 
     this.#objects.forEach((obj) => {
       if (obj instanceof ITile) {
-        if (typeof obj.event.in === 'function') {
-          const tileArea = obj.area();
-          const beforeIn = getOverlappingArea(tileArea, {
-            x: curX, y: curY, w, h,
-          });
-          const afterIn = getOverlappingArea(tileArea, {
-            x: nextX, y: nextY, w, h,
-          });
-          if (!beforeIn && afterIn) {
-            obj.event.in(target);
-          }
+        const tileArea = obj.area();
+        const beforeIn = getOverlappingArea(tileArea, {
+          x: curX, y: curY, w, h,
+        });
+        const afterIn = getOverlappingArea(tileArea, {
+          x: nextX, y: nextY, w, h,
+        });
+        if (!beforeIn && afterIn) {
+          obj.emit('tilein', { target: obj, in: target });
         }
-        if (typeof obj.event.out === 'function') {
-          const tileArea = obj.area();
-          const beforeIn = getOverlappingArea(tileArea, {
-            x: curX, y: curY, w, h,
-          });
-          const afterIn = getOverlappingArea(tileArea, {
-            x: nextX, y: nextY, w, h,
-          });
-          if (beforeIn && !afterIn) {
-            obj.event.out(target);
-          }
+        if (beforeIn && !afterIn) {
+          obj.emit('tileout', { target: obj, out: target });
         }
+        // if (typeof obj.event.in === 'function') {
+        //   const tileArea = obj.area();
+        //   const beforeIn = getOverlappingArea(tileArea, {
+        //     x: curX, y: curY, w, h,
+        //   });
+        //   const afterIn = getOverlappingArea(tileArea, {
+        //     x: nextX, y: nextY, w, h,
+        //   });
+        //   if (!beforeIn && afterIn) {
+        //     obj.event.in(target);
+        //   }
+        // }
+        // if (typeof obj.event.out === 'function') {
+        //   const tileArea = obj.area();
+        //   const beforeIn = getOverlappingArea(tileArea, {
+        //     x: curX, y: curY, w, h,
+        //   });
+        //   const afterIn = getOverlappingArea(tileArea, {
+        //     x: nextX, y: nextY, w, h,
+        //   });
+        //   if (beforeIn && !afterIn) {
+        //     obj.event.out(target);
+        //   }
+        // }
       }
     });
   }

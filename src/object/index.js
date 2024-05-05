@@ -4,13 +4,10 @@ import {
   Assets, Container, Sprite, Spritesheet,
 } from 'pixi.js';
 import { FRAMES_PER_SECOND } from '../const';
+import IObjectEvent from './event';
 
 /**
  * @typedef {"up" | "down" | "left" | "right"} Direction
- */
-
-/**
- * @typedef {'tap'} IObjectEventType
  */
 
 /**
@@ -122,6 +119,8 @@ class IObject {
   #dir = 'down';
 
   #z;
+
+  #event = new IObjectEvent(this);
 
   /** @type {null | (() => Promise<void>)} */
   interaction = null;
@@ -494,33 +493,29 @@ class IObject {
   }
 
   /**
-   * @param {import('./event').IObjectEventType} type
-   * @param {() => void} handler
+   * @param {string} type
+   * @param {(data: any) => void} handler
    */
   on(type, handler) {
-    this.container.eventMode = 'static';
-    this.container.on(type, handler);
+    this.#event.on(type, handler);
     return this;
   }
 
   /**
-   * @param {'tap'} type
-   * @param {() => void} handler
+   * @param {string} type
+   * @param {(data: any) => void} handler
    */
   off(type, handler) {
-    this.container.off(type, handler);
-    if (this.container.eventNames().length === 0) {
-      this.container.eventMode = 'none';
-    }
+    this.#event.off(type, handler);
     return this;
   }
 
   /**
-   * @param {'tap'} type
+   * @param {string} type
    * @param {any} data
    */
   emit(type, data) {
-    return this.container.emit(type, data);
+    return this.#event.emit(type, data);
   }
 }
 

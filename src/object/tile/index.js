@@ -1,12 +1,11 @@
-/* eslint-disable no-param-reassign */
-
 import { IObject } from '..';
-import { ITileEvent } from './event';
+
+/**
+ * @typedef {{ in: import('../index').IObject, target: ITile }} ITileEventInData
+ * @typedef {{ out: import('../index').IObject, target: ITile }} ITileEventOutData
+ */
 
 class ITile extends IObject {
-  /** @type {ITileEvent} */
-  event;
-
   /**
    * @param {import('..').MonoParameter} p
    */
@@ -26,16 +25,6 @@ class ITile extends IObject {
       },
       z: 0,
     });
-    this.event = new ITileEvent(this);
-  }
-
-  /**
-   * @param {string} type basic tile event types: (basic event types in IObject) + ('in' | 'out')
-   * @param {() => void} handler
-   * @returns
-   */
-  on(type, handler) {
-    return super.on(type, handler);
   }
 }
 
