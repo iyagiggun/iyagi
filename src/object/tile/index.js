@@ -3,6 +3,7 @@ import { IObject } from '..';
 /**
  * @typedef {{ in: import('../index').IObject, target: ITile }} ITileEventInData
  * @typedef {{ out: import('../index').IObject, target: ITile }} ITileEventOutData
+ * @typedef {{ on: import('../index').IObject, target: ITile }} ITileEventOnData
  */
 
 class ITile extends IObject {
