@@ -4,6 +4,7 @@ import { isArray } from 'lodash-es';
 import { ITile } from '../object/tile';
 import {
   getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
+  isInside,
 } from '../utils/coordinates';
 import { Camera } from './camera';
 
@@ -92,7 +93,8 @@ class SceneObjects {
 
     this.#objects.forEach((obj) => {
       if (obj instanceof ITile) {
-        const tileArea = obj.area();
+        const tile = obj;
+        const tileArea = tile.area();
         const beforeIn = getOverlappingArea(tileArea, {
           x: curX, y: curY, w, h,
         });
@@ -100,35 +102,16 @@ class SceneObjects {
           x: nextX, y: nextY, w, h,
         });
         if (!beforeIn && afterIn) {
-          obj.emit('tilein', { target: obj, in: target });
+          tile.emit('tilein', { target: tile, in: target });
         }
         if (beforeIn && !afterIn) {
-          obj.emit('tileout', { target: obj, out: target });
+          tile.emit('tileout', { target: tile, out: target });
         }
-        // if (typeof obj.event.in === 'function') {
-        //   const tileArea = obj.area();
-        //   const beforeIn = getOverlappingArea(tileArea, {
-        //     x: curX, y: curY, w, h,
-        //   });
-        //   const afterIn = getOverlappingArea(tileArea, {
-        //     x: nextX, y: nextY, w, h,
-        //   });
-        //   if (!beforeIn && afterIn) {
-        //     obj.event.in(target);
-        //   }
-        // }
-        // if (typeof obj.event.out === 'function') {
-        //   const tileArea = obj.area();
-        //   const beforeIn = getOverlappingArea(tileArea, {
-        //     x: curX, y: curY, w, h,
-        //   });
-        //   const afterIn = getOverlappingArea(tileArea, {
-        //     x: nextX, y: nextY, w, h,
-        //   });
-        //   if (beforeIn && !afterIn) {
-        //     obj.event.out(target);
-        //   }
-        // }
+        if (isInside(tile.center(), {
+          x: nextX, y: nextY, w, h,
+        })) {
+          tile.emit('tileon', { target: tile, on: target });
+        }
       }
     });
   }
