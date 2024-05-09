@@ -53,7 +53,7 @@ class ICharacter extends IObject {
       throw new Error('No messanger');
     }
     return messenger.talk({
-      application: this.application(),
+      application: this.application,
       speaker: {
         name: this.name,
         photo: this.photo(),
@@ -106,7 +106,7 @@ class ICharacter extends IObject {
           this.stop();
           const movementStop = _movementStopMap.get(this);
           if (movementStop) {
-            this.application().ticker.remove(movementStop.tick);
+            this.application.ticker.remove(movementStop.tick);
             movementStop.resolve();
             _movementStopMap.delete(this);
           }
@@ -116,7 +116,7 @@ class ICharacter extends IObject {
       this.stop();
       this.play({ speed });
       _movementStopMap.set(this, { tick, resolve });
-      this.application().ticker.add(tick);
+      this.application.ticker.add(tick);
     });
   }
 

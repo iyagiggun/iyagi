@@ -65,7 +65,7 @@ const BasicStatusBar = {
   show: (character, {
     key, before, after, max, color,
   }) => {
-    const { ticker } = character.application();
+    const { ticker } = character.application;
     if (!ticker) {
       return;
     }

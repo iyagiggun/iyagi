@@ -1,34 +1,30 @@
 import EventEmitter from 'events';
-import { Sprite } from 'pixi.js';
 import { GestureDetector } from './gesture';
 import { Joystick } from './joystick';
-import { TRANSPARENT_1PX_IMG } from '../utils';
 
 const listenerMap = new WeakMap();
 
 class IPlayerController extends EventEmitter {
-  #layer = Sprite.from(TRANSPARENT_1PX_IMG);
-
-  #player;
+  player;
 
   /**
    * @param {import('../object/character').ICharacter} player
    */
   constructor(player) {
     super();
-    this.#player = player;
+    this.player = player;
   }
 
-  control() {
-    const app = this.#player.application();
-    const { scene } = this.#player;
+  /**
+   * @param {import('pixi.js').Sprite} layer
+   */
+  activate(layer) {
+    const app = this.player.application;
+    const { scene } = this.player;
     if (!scene) {
       throw new Error('No scene.');
     }
-    const { width, height } = app.screen;
-    this.#layer.width = width;
-    this.#layer.height = height;
-    this.#layer.eventMode = 'static';
+    const { width } = app.screen;
 
     /**
      * @param {number} x
@@ -41,35 +37,34 @@ class IPlayerController extends EventEmitter {
      */
     const isActionArea = (x) => x > width / 2;
 
-    this.#layer.ontouchstart = (evt) => {
+    layer.on('touchstart', (evt) => {
       const { x, y } = evt.global;
       if (isJoystickArea(x)) {
         Joystick.activate({
-          layer: this.#layer,
-          player: this.#player,
+          layer,
+          player: this.player,
           pointerId: evt.pointerId,
           start: { x, y },
         });
       }
       if (isActionArea(x)) {
         GestureDetector.activate({
-          layer: this.#layer,
-          player: this.#player,
+          layer,
+          player: this.player,
           pointerId: evt.pointerId,
           eventEmitter: this,
         });
       }
-    };
+    });
 
-    this.#layer.ontouchend = (evt) => {
+    layer.on('touchend', (evt) => {
       const { pointerId } = evt;
       Joystick.release(pointerId);
       GestureDetector.release(pointerId);
-    };
+    });
 
-    app.stage.addChild(this.#layer);
-    scene.camera.point(this.#player);
-    scene.camera.target = this.#player;
+    scene.camera.point(this.player);
+    scene.camera.target = this.player;
   }
 
   /**

@@ -1,6 +1,6 @@
-import { Application, Graphics } from 'pixi.js';
-import { devtools } from '../utils/devtools';
+import { Application } from 'pixi.js';
 import { imessenger } from '../messenger';
+import { devtools } from '../utils/devtools';
 
 /**
  * @typedef {import('../scene').IScene} IScene

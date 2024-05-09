@@ -189,11 +189,16 @@ class IObject {
     return sprite;
   }
 
-  application() {
+  get application() {
     if (!this.scene) {
       throw new Error('No scene.');
     }
-    return this.scene.application();
+    return this.scene.application;
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  set application(_) {
+    throw new Error('application is readonly');
   }
 
   async load() {

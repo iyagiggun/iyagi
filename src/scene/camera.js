@@ -20,10 +20,8 @@ class Camera {
    */
   point(target) {
     this.target = null;
-    const app = this.#scene.application();
-    if (!app) {
-      throw new Error('[scene:camera] there is no iyagi.');
-    }
+    const app = this.#scene.application;
+
     const { x, y } = 'center' in target ? target.center() : target;
     const { width, height } = app.screen;
     this.#scene.container.x = Math.round(width / 2 - x);
@@ -38,10 +36,8 @@ class Camera {
    */
   move(target, options) {
     this.target = null;
-    const app = this.#scene.application();
-    if (!app) {
-      throw new Error('[scene:camera] there is no iyagi.');
-    }
+    const app = this.#scene.application;
+
     const { container } = this.#scene;
     const { x, y } = 'center' in target ? target.center() : target;
     const { width: appWidth, height: appHeight } = app.screen;

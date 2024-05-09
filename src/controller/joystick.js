@@ -72,7 +72,7 @@ const Joystick = {
   activate: (_info) => {
     info = _info;
     const { layer, player } = info;
-    player.application().ticker.add(tick);
+    player.application.ticker.add(tick);
     layer.addEventListener('touchmove', onTouchMove);
     activateTime = performance.now();
   },
@@ -88,7 +88,7 @@ const Joystick = {
       info.player.interact();
     }
     activateTime = -1;
-    player.application().ticker.remove(tick);
+    player.application.ticker.remove(tick);
     layer.removeEventListener('touchmove', onTouchMove);
     player.stop();
     deltaX = 0;
