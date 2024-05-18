@@ -1,9 +1,8 @@
 import { isArray } from 'lodash-es';
+import { ITile } from '../object/tile';
 import {
   getDirectionByDelta, getNextX, getNextY, getOverlappingArea,
-  isInside,
 } from '../utils/coordinates';
-import { ITile } from '../object/tile';
 
 /**
  * @typedef {import('../object').IObject} IObject
@@ -73,6 +72,7 @@ class SceneObjects {
       x: curX, y: curY, w, h,
     } = target.area();
     const { x: deltaX, y: deltaY } = delta;
+    const targetWxH = w * h;
 
     const nextX = getNextX({ target, delta: deltaX, objects: this.#objects });
     const nextY = getNextY({ target, delta: deltaY, objects: this.#objects });
@@ -82,24 +82,25 @@ class SceneObjects {
     target.direct(getDirectionByDelta(deltaX, deltaY));
 
     this.#objects.forEach((obj) => {
-      if (obj instanceof ITile) {
+      if (obj instanceof ITile && obj.eventNames().length > 0) {
         const tile = obj;
         const tileArea = tile.area();
-        const beforeIn = getOverlappingArea(tileArea, {
+        const before = getOverlappingArea(tileArea, {
           x: curX, y: curY, w, h,
         });
-        const afterIn = getOverlappingArea(tileArea, {
+        const after = getOverlappingArea(tileArea, {
           x: nextX, y: nextY, w, h,
         });
-        if (!beforeIn && afterIn) {
+        const beforeOvlpRatio = before ? (before.w * before.h) / targetWxH : 0;
+        const afterOvlpWxH = after ? (after.w * after.h) / targetWxH : 0;
+
+        if (beforeOvlpRatio < 0.5 && afterOvlpWxH >= 0.5) {
           tile.emit('tilein', { target: tile, in: target });
         }
-        if (beforeIn && !afterIn) {
+        if (beforeOvlpRatio >= 0.5 && afterOvlpWxH < 0.5) {
           tile.emit('tileout', { target: tile, out: target });
         }
-        if (isInside(tile.center(), {
-          x: nextX, y: nextY, w, h,
-        })) {
+        if (afterOvlpWxH >= 0.5) {
           tile.emit('tileon', { target: tile, on: target });
         }
       }

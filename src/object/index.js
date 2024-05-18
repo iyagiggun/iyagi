@@ -1,10 +1,10 @@
 // eslint-disable-next-line max-classes-per-file
 import {
   AnimatedSprite,
-  Assets, Container, Sprite, Spritesheet,
+  Assets, Container, EventEmitter, Sprite, Spritesheet,
 } from 'pixi.js';
 import { FRAMES_PER_SECOND } from '../const';
-import IObjectEvent from './event';
+import IObjectEventManager from './event';
 
 /**
  * @typedef {"up" | "down" | "left" | "right"} Direction
@@ -103,7 +103,7 @@ const create_error = (msg, name) => new Error(`[iyagi:object${name ? `:${name}` 
  * @property {number} [z]
  */
 
-class IObject {
+class IObject extends EventEmitter {
   name;
 
   /** @type {import('../scene').IScene | null} */
@@ -120,7 +120,7 @@ class IObject {
 
   #z;
 
-  #event = new IObjectEvent(this);
+  #event_manager = new IObjectEventManager(this);
 
   /** @type {null | (() => Promise<void>)} */
   interaction = null;
@@ -145,9 +145,12 @@ class IObject {
    * @param {ObjectParameter} p
    */
   constructor(p) {
+    super();
     this.name = p.name ?? '(none)';
     this.#p = p;
     this.#z = p.z ?? 1;
+    this.#event_manager.activate();
+    // this.eventable = p.eventable ?? false;
   }
 
   #get_scale() {
@@ -497,30 +500,30 @@ class IObject {
     this.container.visible = true;
   }
 
-  /**
-   * @param {string} type
-   * @param {(data: any) => void} handler
-   */
-  on(type, handler) {
-    this.#event.on(type, handler);
-    return this;
-  }
+  // get eventable() {
+  //   return this.#event_manager.enable;
+  // }
 
   /**
-   * @param {string} type
-   * @param {(data: any) => void} handler
+   * @param {boolean} e
    */
-  off(type, handler) {
-    this.#event.off(type, handler);
-    return this;
-  }
+  // set eventable(e) {
+  //   if (e) {
+  //     this.#event_manager.activate();
+  //   } else {
+  //     this.#event_manager.disactivate();
+  //   }
+  // }
 
   /**
-   * @param {string} type
+   * @param {string | symbol} type
    * @param {any} data
    */
   emit(type, data) {
-    return this.#event.emit(type, data);
+    if (!this.#event_manager.enable) {
+      throw new Error('this is not eventable.');
+    }
+    return super.emit(type, data);
   }
 }
 

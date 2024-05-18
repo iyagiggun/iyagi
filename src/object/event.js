@@ -1,51 +1,43 @@
-import { EventEmitter } from 'pixi.js';
-
 /**
  * @typedef {{ target: import('./index').IObject }} IObjectEventTapData
  */
 
-class IObjectEvent {
+class IObjectEventManager {
   #object;
 
-  #ee = new EventEmitter();
+  #bus = {
+    tap: () => {
+      this.#object.emit('tap', {});
+    },
+  };
+
+  enable = false;
 
   /**
    * @param {import('./index').IObject} object
    */
   constructor(object) {
     this.#object = object;
-    this.#object.container.on('tap', () => {
-      this.#ee.emit('tap', { object });
-    });
   }
 
-  /**
-   * @param {string} type
-   * @param {(data: any) => void} handler
-   */
-  on(type, handler) {
-    this.#object.container.eventMode = 'static';
-    this.#ee.on(type, handler);
-  }
-
-  /**
-   * @param {string} type
-   * @param {(data: any) => void} handler
-   */
-  off(type, handler) {
-    this.#ee.off(type, handler);
-    if (this.#ee.eventNames().length === 0) {
-      this.#object.container.eventMode = 'static';
+  activate() {
+    if (this.enable) {
+      return;
     }
+    this.#object.container.eventMode = 'static';
+    this.#object.container.on('tap', this.#bus.tap);
+    this.enable = true;
   }
 
-  /**
-   * @param {string} type
-   * @param {any} data
-   */
-  emit(type, data) {
-    return this.#ee.emit(type, data);
+  disactivate() {
+    if (!this.enable) {
+      return;
+    }
+    this.#object.removeAllListeners();
+    this.#object.container.eventMode = 'none';
+    this.#object.container.off('tap', this.#bus.tap);
+    this.enable = false;
   }
 }
 
-export default IObjectEvent;
+export default IObjectEventManager;

@@ -239,10 +239,3 @@ export const getNextY = ({
   }
   return destY;
 };
-
-/**
- * @param {Position} pos
- * @param {Area} area
- * @returns
- */
-export const isInside = ({ x, y }, area) => x >= area.x && x <= area.x + area.w && y >= area.y && y <= area.y + area.h;
