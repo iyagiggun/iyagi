@@ -24,6 +24,7 @@ const release = () => {
     if (!parent) {
       return;
     }
+    layer.destroy();
     parent.removeChild(layer);
     limit -= 1;
     if (limit === 0) {

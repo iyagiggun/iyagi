@@ -53,10 +53,17 @@ const onTouchMove = throttle((evt) => {
   deltaX = Math.round((diffX * speed) / distance);
   deltaY = Math.round((diffY * speed) / distance);
   player.play({ speed });
-}, 50);
+}, 50, {
+  trailing: false,
+});
 
 const tick = () => {
   if (!info || (deltaX === 0 && deltaY === 0)) {
+    return;
+  }
+  if (!info.layer.parent) {
+    info.player.stop();
+    info.player.application.ticker.remove(tick);
     return;
   }
   info.player.scene?.objects.move(info.player, { x: deltaX, y: deltaY });
