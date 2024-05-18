@@ -57,10 +57,12 @@ class IPlayerController extends EventEmitter {
       }
     });
 
-    layer.on('touchend', (evt) => {
-      const { pointerId } = evt;
-      Joystick.release(pointerId);
-      GestureDetector.release(pointerId);
+    ['touchend', 'pointerout'].forEach((type) => {
+      layer.on(type, (evt) => {
+        const { pointerId } = evt;
+        Joystick.release(pointerId);
+        GestureDetector.release(pointerId);
+      });
     });
 
     scene.camera.point(this.player);

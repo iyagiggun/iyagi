@@ -77,6 +77,8 @@ const Joystick = {
    * @param {JoystickInfo} _info
    */
   activate: (_info) => {
+    deltaX = 0;
+    deltaY = 0;
     info = _info;
     const { layer, player } = info;
     player.application.ticker.add(tick);
@@ -98,8 +100,6 @@ const Joystick = {
     player.application.ticker.remove(tick);
     layer.removeEventListener('touchmove', onTouchMove);
     player.stop();
-    deltaX = 0;
-    deltaY = 0;
     info = null;
   },
 };
