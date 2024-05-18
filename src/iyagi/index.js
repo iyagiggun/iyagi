@@ -49,11 +49,15 @@ class Iyagi {
       throw new Error('Fail to find scene.');
     }
 
-    await scene.load();
-    this.application.stage.addChild(scene.container);
     // eslint-disable-next-line no-param-reassign
     scene.iyagi = this;
+
+    await scene.load();
+
+    this.application.stage.addChild(scene.container);
+
     const next = await scene.take(scene);
+
     this.application.stage.removeChild(scene.container);
     scene.release();
     await this.play(next, scenes);

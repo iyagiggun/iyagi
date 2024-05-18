@@ -1,47 +1,37 @@
-import { event } from '../event/indexx';
+import { EventEmitter } from 'pixi.js';
 import { BasicStatusBar } from './bar';
 
 /**
  * @template T
- * @param {T} data
  */
-const create = (data) => {
-  let _data = data;
+class IStatus extends EventEmitter {
+  #data;
 
-  const _event = {
-    change: event.createEventType(
-      /**
-       * @param {Object} p
-       * @param {T} p.before
-       * @param {T} p.after
-       */
-      // eslint-disable-next-line no-unused-vars
-      ({ before, after }) => undefined,
-    ),
-  };
+  /**
+   * @param {T} data
+   */
+  constructor(data) {
+    super();
+    this.#data = data;
+  }
 
-  const ret = {
-    /**
-     * @param {Partial<T>} next
-     */
-    set: (next) => {
-      const before = ret.get();
-      const after = { ..._data, ...next };
+  get() {
+    return {
+      ...this.#data,
+    };
+  }
 
-      _data = after;
-      _event.change.fire({ before, after });
-    },
-    get: () => ({
-      ..._data,
-    }),
-    event: _event,
-  };
+  /**
+   * @param {Partial<T>} next
+   */
+  set(next) {
+    const before = this.get();
+    const after = { ...this.#data, ...next };
 
-  return ret;
-};
+    this.#data = after;
 
-const status = {
-  create,
-};
+    this.emit('change', { before, after });
+  }
+}
 
-export { status, BasicStatusBar };
+export { BasicStatusBar, IStatus };

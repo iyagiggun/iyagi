@@ -13,7 +13,7 @@ import SceneController from './controller';
  * @property {string} name
  * @property {() => IObject[]} objects
  * @property {(self: IScene) => (Promise<any>)} take resolve next scene key.
- * @property {any} [key]
+ * @property {string | Symbol} [key]
  */
 
 class IScene {

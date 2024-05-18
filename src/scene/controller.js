@@ -11,16 +11,25 @@ import { TRANSPARENT_1PX_IMG } from '../utils';
  * @property {(layer: Sprite) => void} activate
  */
 
-const layer = Sprite.from(TRANSPARENT_1PX_IMG);
-layer.eventMode = 'static';
+/**
+ * @type {Sprite[]}
+ */
+const layers = [];
 
 const release = () => {
-  const { parent } = layer;
-  if (!parent) {
-    return;
+  let limit = 1024;
+  while (layers.length > 0) {
+    const layer = layers.pop();
+    const parent = layer?.parent;
+    if (!parent) {
+      return;
+    }
+    parent.removeChild(layer);
+    limit -= 1;
+    if (limit === 0) {
+      throw new Error('release loops has been exceeded.');
+    }
   }
-  layer.removeAllListeners();
-  parent.removeChild(layer);
 };
 
 /**
@@ -28,6 +37,11 @@ const release = () => {
  */
 const activate = (controller) => {
   release();
+
+  const layer = Sprite.from(TRANSPARENT_1PX_IMG);
+  layers.push(layer);
+  layer.eventMode = 'static';
+
   const app = controller.player.application;
   const { width, height } = app.screen;
   layer.width = width;
