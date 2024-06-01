@@ -397,6 +397,7 @@ class IObject extends EventEmitter {
     if (this.#dir === next) {
       return;
     }
+    const lastXY = this.xy;
     const last_sprite = this.#get_sprite();
     const is_playing = last_sprite instanceof AnimatedSprite ? last_sprite.playing : false;
 
@@ -404,6 +405,7 @@ class IObject extends EventEmitter {
     this.#dir = next;
 
     this.container.removeChild(last_sprite);
+    this.xy = lastXY; // for calc modX, modY
     this.container.addChild(this.#get_sprite());
 
     if (is_playing) {
@@ -419,9 +421,11 @@ class IObject extends EventEmitter {
    * @param {string} motion
    */
   change(motion) {
+    const lastXY = this.xy;
     this.container.removeChild(this.#get_sprite());
     // TODO:: param check
     this.#motion = motion;
+    this.xy = lastXY; // for calc modX, modY
     this.container.addChild(this.#get_sprite());
   }
   // doing() {

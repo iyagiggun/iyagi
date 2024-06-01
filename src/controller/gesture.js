@@ -8,7 +8,7 @@ import { throttle } from 'lodash-es';
  * @property {import('events')} eventEmitter
  */
 
-const GESTURE_THRESHOLD = 50;
+const GESTURE_THRESHOLD = 30;
 
 /** @type {Info | null} */
 let info = null;
