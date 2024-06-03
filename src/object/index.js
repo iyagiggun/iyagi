@@ -27,6 +27,28 @@ const get_frame_id = () => {
 };
 
 /**
+ *
+ * @param {Sprite | AnimatedSprite} sprite
+ * @returns
+ */
+const getFlipHorizontal = (sprite) => {
+  const cSprite = (() => {
+    if (sprite instanceof AnimatedSprite) {
+      const ret = new AnimatedSprite(sprite.textures);
+      ret.loop = sprite.loop;
+      ret.animationSpeed = sprite.animationSpeed;
+      return ret;
+    }
+    return new Sprite(sprite.texture);
+  })();
+
+  cSprite.anchor.x = 1;
+  cSprite.scale.x = -1;
+
+  return cSprite;
+};
+
+/**
  * @param {SpriteImage} image
  * @param {Object} options
  * @param {import('../utils/coordinates').Area[]} [options.frames]
@@ -161,6 +183,32 @@ class IObject extends EventEmitter {
   }
 
   #get_hitbox() {
+    const inDirection = this.#p.motions[this.#motion][this.#dir]?.hitbox;
+    if (inDirection) {
+      return inDirection;
+    }
+    const opposition = (() => {
+      switch (this.#dir) {
+        case 'left':
+          return this.#p.motions[this.#motion].right;
+        case 'right':
+          return this.#p.motions[this.#motion].left;
+        default:
+          return null;
+      }
+    })();
+
+    if (opposition) {
+      const frameWidth = opposition.frames?.[0].w;
+      const oHitbox = opposition.hitbox;
+      if (frameWidth && oHitbox) {
+        return {
+          ...oHitbox,
+          x: frameWidth - oHitbox.x - oHitbox.w,
+        };
+      }
+    }
+
     return this.#p.motions[this.#motion][this.#dir]?.hitbox ?? this.#p.motions[this.#motion].hitbox;
   }
 
@@ -209,10 +257,10 @@ class IObject extends EventEmitter {
       return;
     }
     const promises = Object.keys(this.#p.motions)
-      .map(async (key) => {
+      .map(async (motion) => {
         const {
           up, down, left, right, image, loop, hitbox,
-        } = this.#p.motions[key];
+        } = this.#p.motions[motion];
 
         const default_image = image ?? this.#p.image;
         const [
@@ -247,11 +295,14 @@ class IObject extends EventEmitter {
             : Promise.resolve(null),
         ]);
 
-        this.#motions[key] = {
+        const right_if_left = left_sprite ? getFlipHorizontal(left_sprite) : null;
+        const left_if_right = right_sprite ? getFlipHorizontal(right_sprite) : null;
+
+        this.#motions[motion] = {
           up: up_sprite,
           down: down_sprite,
-          left: left_sprite,
-          right: right_sprite,
+          left: left_sprite ?? left_if_right,
+          right: right_sprite ?? right_if_left,
           hitbox,
         };
 
@@ -370,20 +421,26 @@ class IObject extends EventEmitter {
 
   width() {
     const hitbox = this.#get_hitbox();
+    if (hitbox) {
+      return hitbox.w;
+    }
     const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
     if (!frame) {
       throw new Error('No frame');
     }
-    return hitbox?.w ?? frame.w;
+    return frame.w;
   }
 
   height() {
     const hitbox = this.#get_hitbox();
+    if (hitbox) {
+      return hitbox.h;
+    }
     const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
     if (!frame) {
       throw new Error('No frame');
     }
-    return hitbox?.h ?? frame.h;
+    return frame.h;
   }
 
   /**
@@ -435,18 +492,26 @@ class IObject extends EventEmitter {
   area() {
     const { x, y, z } = this.xyz;
     const hitbox = this.#get_hitbox();
+    if (hitbox) {
+      return {
+        x,
+        y,
+        z,
+        w: hitbox.w,
+        h: hitbox.h,
+      };
+    }
     const frame = this.#p.motions[this.#motion][this.#dir]?.frames?.[0]
     ?? this.#p.motions[this.#motion][this.#dir]?.frames?.[0];
     if (!frame) {
       throw new Error('No frame');
     }
-
     return {
       x,
       y,
       z,
-      w: hitbox?.w ?? frame.w,
-      h: hitbox?.h ?? frame.h,
+      w: frame.w,
+      h: frame.h,
     };
   }
 
@@ -463,13 +528,18 @@ class IObject extends EventEmitter {
 
   /**
    * @param {Object} [options]
+   * @param {string} [options.motion]
    * @param {number} [options.speed]
    * @param {(frameIndex: number) => void} [options.onFrameChange]
    * @param {(frameIndex: number) => void} [options.onComplete]
    */
-  play(options) {
+  play(options = {}) {
     if (!this.#loaded) {
       throw create_error('fail to play. not loaded', this.name);
+    }
+    const { motion } = options;
+    if (motion) {
+      this.change(motion);
     }
     const sprite = this.#get_sprite();
     if (!(sprite instanceof AnimatedSprite)) {
@@ -484,7 +554,11 @@ class IObject extends EventEmitter {
     } else {
       sprite.gotoAndPlay(0);
       // TODO ::
-      sprite.onComplete = () => options?.onComplete?.(1);
+      sprite.onComplete = () => {
+        if (motion) {
+          this.change('default');
+        }
+      };
     }
   }
 
