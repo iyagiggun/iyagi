@@ -8,9 +8,7 @@ const DEFEAULT_DELAY = 250;
 const listenerMap = new WeakMap();
 
 class ICSWebsocket {
-
   #e = new EventTarget();
-
   #interval = Number.NaN;
 
   /**
@@ -19,12 +17,7 @@ class ICSWebsocket {
    */
   constructor(options = {}) {
     window.setTimeout(() => {
-      this.#e.dispatchEvent(new CustomEvent('open', { detail: new MessageEvent('open') }));
-
-      this.#interval = window.setInterval(() => {
-        const message = new MessageEvent('message', { data: 'data' });
-        this.#e.dispatchEvent(new CustomEvent('message', { detail: { message } }));
-      }, options.delay ?? DEFEAULT_DELAY);
+      this.#e.dispatchEvent(new CustomEvent("fff", { detail: new MessageEvent('open') }));
     }, 50);
   }
 
@@ -54,7 +47,7 @@ class ICSWebsocket {
    * @param {string} message 
    */
   send(message) {
-    console.error('sended', message);
+    this.#e.dispatchEvent(new CustomEvent('message', { detail: message }));
   }
 
   close() {
