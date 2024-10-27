@@ -1,4 +1,4 @@
-import { IMT } from '../const/message';
+import { IMT } from '../const/message.js';
 
 export default class ServerObjectMessage {
   #name;
@@ -11,7 +11,7 @@ export default class ServerObjectMessage {
   }
 
   /**
-   * @param {Position} position
+   * @param {import('../coords/index.js').Position} position
    * @returns
    */
   move(position) {
