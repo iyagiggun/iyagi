@@ -15,6 +15,11 @@
       "require": "./src/object/index.js",
       "types": "./types/object/index.d.ts"
     },
+    "./scene": {
+      "import": "./src/scene/index.js",
+      "require": "./src/scene/index.js",
+      "types": "./types/scene/index.d.ts"
+    },
     "./coords": {
       "import": "./src/coords/index.js",
       "require": "./src/coords/index.js",

@@ -1,16 +1,6 @@
 import ServerObjectMessage from './Message.js';
 
 export default class SObject {
-  #name;
-
-  #hitboxes;
-
-  position = { x: 0, y: 0, z: 1 };
-
-  message;
-
-  clone;
-
   /**
    * @param {Object} p
    * @param {string} p.name
@@ -22,9 +12,10 @@ export default class SObject {
     hitboxes = [],
     clone = false,
   }) {
-    this.#name = name;
-    this.#hitboxes = hitboxes;
-    this.message = new ServerObjectMessage(this.#name);
+    this.name = name;
+    this.hitboxes = hitboxes;
+    this.position = { x: 0, y: 0, z: 1 };
+    this.message = new ServerObjectMessage(this.name);
     this.clone = clone;
   }
 
@@ -38,8 +29,8 @@ export default class SObject {
       this.position.z = p.z;
     }
     return {
-      name: this.#name,
-      hitboxes: this.#hitboxes,
+      name: this.name,
+      hitboxes: this.hitboxes,
       position: {
         ...p,
         z: p.z ?? 1,
