@@ -1,19 +1,23 @@
 import ServerObjectMessage from './Message.js';
 
+/**
+ * hitbox: It is difficult for the client to calculate zIndex when there are multiple hitboxes.
+ */
+
 export default class SObject {
   /**
    * @param {Object} p
    * @param {string} p.name
-   * @param {import('../coords/index.js').Area[]=} p.hitboxes
+   * @param {import('../coords/index.js').Area=} p.hitbox
    * @param {boolean=} p.clone
    */
   constructor({
     name,
-    hitboxes = [],
+    hitbox,
     clone = false,
   }) {
     this.name = name;
-    this.hitboxes = hitboxes;
+    this.hitbox = hitbox;
     this.position = { x: 0, y: 0, z: 1 };
     this.message = new ServerObjectMessage(this.name);
     this.clone = clone;
@@ -30,7 +34,7 @@ export default class SObject {
     }
     return {
       name: this.name,
-      hitboxes: this.hitboxes,
+      hitbox: this.hitbox,
       position: {
         ...p,
         z: p.z ?? 1,

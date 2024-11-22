@@ -23,4 +23,17 @@ export default class ServerObjectMessage {
       },
     };
   }
+
+  /**
+   * @param {string} text
+   */
+  talk(text) {
+    return {
+      type: IMT.SCENE_TALK,
+      data: {
+        target: this.#name,
+        text,
+      },
+    };
+  }
 }

@@ -28,11 +28,17 @@ export default {
     }
     return sender;
   },
-  get scenes() {
-    if (!scenes) {
-      throw new Error(ERR_NOT_INITED);
-    }
-    return scenes;
+  scene: {
+    /**
+     * @param {string} key
+     */
+    find: (key) => {
+      const scene = scenes.find((scene) => scene.key === key);
+      if (!scene) {
+        throw new Error(`Fail to load scene "${key}".`);
+      }
+      return scene;
+    },
   },
   /**
    * @param {GlobalParams} p

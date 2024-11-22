@@ -43,10 +43,11 @@ export const getNextPosition = ({
   objects,
   destination,
 }) => {
-  const { x: curX, y: curY, z: curZ } = target.position;
-  const hitboxes = (target.hitboxes ?? []);
+  const { x: curX, y: curY  } = target.position;
+  const curZ = target.position.z ?? 1;
+  const hitbox = target.hitbox;
 
-  if (hitboxes.length === 0) {
+  if (!hitbox) {
     return { ...destination, z: destination.z ?? curZ };
   }
 
@@ -57,25 +58,28 @@ export const getNextPosition = ({
   const intervalX = deltaX / interval_length;
   const intervalY = deltaY / interval_length;
 
-  const canHit = objects.filter((o) => o.name !== target.name && o.position.z === curZ && o.hitboxes);
+  const canHit = objects.filter((o) => o.name !== target.name && (o.position.z ?? 1) === curZ && o.hitbox);
 
 
   let step = 0;
   while (step < interval_length) {
     step++;
-    const hitboxesInStep = hitboxes.map((org) => ({
-      ...org,
-      x: org.x + curX + Math.round(intervalX * step),
-      y: org.y + curY + Math.round(intervalY * step),
-    }));
+    const hitboxInStep = {
+      ...hitbox,
+      x: hitbox.x + curX + Math.round(intervalX * step),
+      y: hitbox.y + curY + Math.round(intervalY * step),
+    };
 
     const hit = canHit.find((o) => {
+      if (!o.hitbox) {
+        return;
+      }
       const { x: oX, y: oY } = o.position;
-      return hitboxesInStep.some((hitboxes) => o.hitboxes.some((o_hitboxes) => isOverlap(hitboxes, {
-        ...o_hitboxes,
-        x: o_hitboxes.x + oX,
-        y: o_hitboxes.y + oY,
-      })));
+      return isOverlap(hitboxInStep, {
+        ...o.hitbox,
+        x: o.hitbox.x + oX,
+        y: o.hitbox.y + oY,
+      });
     });
     if (hit) {
       return {

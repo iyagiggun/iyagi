@@ -6,6 +6,7 @@
 import { IMT } from './const/message.js';
 import { getNextPosition } from './coords/index.js';
 import global from './global.js';
+import { onSceneEvent } from './scene/index.js';
 import UserUtils from './user/index.js';
 
 /**
@@ -20,17 +21,10 @@ const onMessage = (msg) => {
   const { key, type, data } = JSON.parse(`${msg}`);
   const user = UserUtils.find(key);
 
+  onSceneEvent({ user, type, data });
+
   // common
   switch(type) {
-    case IMT.SCENE_LOAD:
-    {
-      const scene = global.scenes.find((each) => each.key = data.scene);
-      if (!scene) {
-        throw new Error(`Fail to load scene "${data.scene}".`);
-      }
-      scene.onLoad(user);
-      return;
-    }
     case IMT.MOVE:
     {
       const target = user.objects.find((o) => o.name === data.target);
