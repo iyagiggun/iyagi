@@ -16,7 +16,7 @@ export default class ServerObjectMessage {
    */
   move(position) {
     return {
-      type: IMT.MOVE,
+      type: IMT.SCENE_MOVE,
       data: {
         target: this.#name,
         position,

@@ -14,6 +14,10 @@
  */
 
 /**
+ * @typedef {'up' | 'down' | 'left' | 'right'} Direction
+ */
+
+/**
  * @typedef {import('../object/index.js').default} SObject
  */
 
@@ -90,4 +94,17 @@ export const getNextPosition = ({
     }
   }
   return { ...destination, z: destination.z ?? curZ };
+};
+
+/**
+ * @param {Position} before
+ * @param {Position} after
+ */
+export const getDirectionByDelta = (before, after) => {
+  const deltaX = after.x - before.x;
+  const deltaY = after.y - before.y;
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    return deltaX > 0 ? 'right' : 'left';
+  }
+  return deltaY > 0 ? 'down' : 'up';
 };
