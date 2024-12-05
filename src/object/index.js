@@ -4,42 +4,49 @@ import ServerObjectMessage from './Message.js';
  * hitbox: It is difficult for the client to calculate zIndex when there are multiple hitboxes.
  */
 
+/**
+ * @typedef {Object} SObjectParams
+ * @property {string} p.name
+ * @property {import('../coords/index.js').Area=} p.hitbox
+ * @property {import('../coords/index.js').Direction=} p.direction
+ * @property {import('../coords/index.js').Position=} p.position
+ * @property {boolean=} p.clone
+ */
+
 export default class SObject {
+  #hitbox;
   /**
-   * @param {Object} p
-   * @param {string} p.name
-   * @param {import('../coords/index.js').Area=} p.hitbox
-   * @param {boolean=} p.clone
+   * @param {SObjectParams} p
    */
   constructor({
     name,
     hitbox,
+    direction = 'down',
+    position = { x: 0, y: 0 },
     clone = false,
   }) {
     this.name = name;
-    this.hitbox = hitbox;
-    this.position = { x: 0, y: 0, z: 1 };
+    this.position = { ...position, z: position.z ?? 1 };
+    this.direction = direction;
     this.message = new ServerObjectMessage(this.name);
     this.clone = clone;
+
+    this.#hitbox = hitbox;
   }
 
-  /**
-   * @param {import('../coords/index.js').Position} p
-   */
-  at(p) {
-    this.position.x = p.x;
-    this.position.y = p.y;
-    if (typeof p.z === 'number') {
-      this.position.z = p.z;
+  get hitbox() {
+    if (!this.#hitbox) {
+      return null;
     }
     return {
-      name: this.name,
-      hitbox: this.hitbox,
-      position: {
-        ...p,
-        z: p.z ?? 1,
-      },
-      clone: this.clone,
+      ...this.#hitbox,
+      x: this.position.x + this.#hitbox.x,
+      y: this.position.y + this.#hitbox.y,
+      z: this.position.z,
     };
+  }
+
+  set hitbox(_) {
+    throw new Error(`Hitbox can not be set. target: ${this.name}`);
   }
 }

@@ -1,18 +1,12 @@
 import { IMT } from '../const/message.js';
-import { getDirectionByDelta, getNextPosition } from '../coords/index.js';
+import { getDirectionByDelta, getNextPosition, isOverlap } from '../coords/index.js';
 import global from '../global.js';
-
-/**
- * @typedef {Object} Object
- * @property {string} name
- * @property {import('../coords/index.js').Area=} hitbox
- * @property {import('../coords/index.js').Position} position
- */
+import SObject from '../object/index.js';
 
 /**
  * @typedef {Object} SceneParams
  * @property {string} key
- * @property {Object[]} objects
+ * @property {import('../object/index.js').SObjectParams[]} objects
  * @property {function(import('../user/index.js').User): *} onLoaded
  */
 
@@ -46,7 +40,11 @@ export const onSceneEvent = ({ user, type, data }) => {
     {
       const scene = global.scene.find(data.scene);
       user.scene = scene.key;
-      user.objects = JSON.parse(JSON.stringify(scene.objects));
+
+      /** @type {import('../object/index.js').SObjectParams[]} */
+      const objects = JSON.parse(JSON.stringify(scene.objects));
+      user.objects = objects.map((each) => new SObject(each));
+
       return {
         type: IMT.SCENE_LOAD,
         data: { objects: [...scene.objects] },
@@ -63,52 +61,55 @@ export const onSceneEvent = ({ user, type, data }) => {
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
-      const next_position = getNextPosition({ target, objects: user.objects, destination: data.position });
-      const direction = getDirectionByDelta(target.position, next_position);
-      if (next_position) {
-        target.position = next_position;
-        return {
-          type: IMT.SCENE_MOVE,
-          data: {
-            target: data.target,
-            direction,
-            position: next_position,
-          },
-        };
-      }
-      return null;
+      const nextDirection = getDirectionByDelta(target.position, data.position);
+      const nextPosition = getNextPosition({ target, objects: user.objects, destination: data.position });
+      target.position = nextPosition;
+      target.direction = nextDirection;
+      return {
+        type: IMT.SCENE_MOVE,
+        data: {
+          target: data.target,
+          direction: nextDirection,
+          position: nextPosition,
+        },
+      };
     }
     case IMT.SCENE_INTERACT:
     {
       const target = user.objects.find((o) => o.name === data.target);
+      if (!target) {
+        return;
+      }
 
-      // const interactionArea = (() => {
-      //   const {
-      //     x, y, w, h,
-      //   } = this.area();
-      //   switch (this.direction()) {
-      //     case 'up':
-      //       return {
-      //         x, y: y - 5, w, h: h + 5,
-      //       };
-      //     case 'down':
-      //       return {
-      //         x, y, w, h: h + 5,
-      //       };
-      //     case 'left':
-      //       return {
-      //         x: x - 5, y, w: w + 5, h,
-      //       };
-      //     case 'right':
-      //       return {
-      //         x, y, w: w + 5, h,
-      //       };
-      //     default:
-      //       throw new Error('Invalid direction.');
-      //   }
-      // })();
+      const interactionArea = (() => {
+        const hitbox = target.hitbox ?? { ...target.position, w: 0, h: 0 };
+        const {
+          x, y, w, h,
+        } = hitbox;
+        switch (target.direction) {
+          case 'up':
+            return {
+              x, y: y - 5, w, h: h + 5,
+            };
+          case 'down':
+            return {
+              x, y, w, h: h + 5,
+            };
+          case 'left':
+            return {
+              x: x - 5, y, w: w + 5, h,
+            };
+          case 'right':
+            return {
+              x, y, w: w + 5, h,
+            };
+          default:
+            throw new Error('Invalid direction.');
+        }
+      })();
 
-      console.error(target);
+      const willInteract = user.objects.find((object) => object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea));
+      console.error(willInteract);
       return null;
       // console.error(user.objects);
     }

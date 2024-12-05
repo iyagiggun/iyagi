@@ -21,14 +21,12 @@
  * @typedef {import('../object/index.js').default} SObject
  */
 
-
 /**
  * @param {Area} areaA
  * @param {Area} areaB
  * @returns
  */
-function isOverlap(areaA, areaB) {
-  // console.error(areaA, areaB);
+export function isOverlap(areaA, areaB) {
   return !(areaA.x + areaA.w <= areaB.x ||
            areaA.x >= areaB.x + areaB.w ||
            areaA.y + areaA.h <= areaB.y ||
@@ -70,20 +68,16 @@ export const getNextPosition = ({
     step++;
     const hitboxInStep = {
       ...hitbox,
-      x: hitbox.x + curX + Math.round(intervalX * step),
-      y: hitbox.y + curY + Math.round(intervalY * step),
+      x: hitbox.x + Math.round(intervalX * step),
+      y: hitbox.y + Math.round(intervalY * step),
     };
 
     const hit = canHit.find((o) => {
-      if (!o.hitbox) {
+      const hitbox = o.hitbox;
+      if (!hitbox) {
         return;
       }
-      const { x: oX, y: oY } = o.position;
-      return isOverlap(hitboxInStep, {
-        ...o.hitbox,
-        x: o.hitbox.x + oX,
-        y: o.hitbox.y + oY,
-      });
+      return isOverlap(hitboxInStep, hitbox);
     });
     if (hit) {
       return {
