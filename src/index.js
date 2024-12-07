@@ -19,7 +19,7 @@ const init = ({
  * @param {Object} param
  * @param {string} param.type
  * @param {*} param.data
- * @param {import('./user/index.js').User} param.user
+ * @param {import('./user/index.js').default} param.user
  */
 export const response = ({
   type,

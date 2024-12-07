@@ -7,7 +7,7 @@ import SObject from '../object/index.js';
  * @typedef {Object} SceneParams
  * @property {string} key
  * @property {import('../object/index.js').SObjectParams[]} objects
- * @property {function(import('../user/index.js').User): *} onLoaded
+ * @property {function(import('../user/index.js').default): *} onLoaded
  */
 
 export default class Scene {
@@ -29,7 +29,7 @@ export default class Scene {
 
 /**
  * @param {Object} p
- * @param {import('../user/index.js').User} p.user
+ * @param {import('../user/index.js').default} p.user
  * @param {string} p.type
  * @param {*} p.data
  * @returns
