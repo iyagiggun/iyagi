@@ -15,6 +15,11 @@
       "require": "./src/object/index.js",
       "types": "./types/object/index.d.ts"
     },
+    "./user": {
+      "import": "./src/user/index.js",
+      "require": "./src/user/index.js",
+      "types": "./types/user/index.d.ts"
+    },
     "./scene": {
       "import": "./src/scene/index.js",
       "require": "./src/scene/index.js",
@@ -24,6 +29,11 @@
       "import": "./src/coords/index.js",
       "require": "./src/coords/index.js",
       "types": "./types/coords/index.d.ts"
+    },
+    "./message": {
+      "import": "./src/message/index.js",
+      "require": "./src/message/index.js",
+      "types": "./types/message/index.d.ts"
     }
   },
   "scripts": {

@@ -1,7 +1,7 @@
 
 export default class IUser {
   /**
-   * @type {import('../object/index.js').default[]}
+   * @type {import('../object/index.js').IObject[]}
    */
   objects = [];
   /**

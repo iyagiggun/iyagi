@@ -18,7 +18,7 @@
  */
 
 /**
- * @typedef {import('../object/index.js').default} SObject
+ * @typedef {import('../object/index.js').IObject} IObject
  */
 
 /**
@@ -35,8 +35,8 @@ export function isOverlap(areaA, areaB) {
 
 /**
  * @param {{
-*  target: SObject;
-*  objects: SObject[];
+*  target: IObject;
+*  objects: IObject[];
 *  destination: Position;
 * }} p
 */
@@ -60,7 +60,7 @@ export const getNextPosition = ({
   const intervalX = deltaX / interval_length;
   const intervalY = deltaY / interval_length;
 
-  const canHit = objects.filter((o) => o.name !== target.name && (o.position.z ?? 1) === curZ && o.hitbox);
+  const canHit = objects.filter((o) => o.key !== target.key && (o.position.z ?? 1) === curZ && o.hitbox);
 
 
   let step = 0;

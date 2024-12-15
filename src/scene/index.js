@@ -1,12 +1,11 @@
 import { IMT } from '../const/message.js';
 import { getDirectionByDelta, getNextPosition, isOverlap } from '../coords/index.js';
 import global from '../global.js';
-import SObject from '../object/index.js';
 
 /**
  * @typedef {Object} SceneParams
  * @property {string} key
- * @property {import('../object/index.js').SObjectParams[]} objects
+ * @property {import('../object/index.js').IObject[]} objects
  * @property {function(import('../user/index.js').default): *} onLoaded
  */
 
@@ -41,9 +40,7 @@ export const onSceneEvent = ({ user, type, data }) => {
       const scene = global.scene.find(data.scene);
       user.scene = scene.key;
 
-      /** @type {import('../object/index.js').SObjectParams[]} */
-      const objects = JSON.parse(JSON.stringify(scene.objects));
-      user.objects = objects.map((each) => new SObject(each));
+      user.objects = scene.objects;
 
       return {
         type: IMT.SCENE_LOAD,
@@ -57,7 +54,7 @@ export const onSceneEvent = ({ user, type, data }) => {
     }
     case IMT.SCENE_MOVE:
     {
-      const target = user.objects.find((o) => o.name === data.target);
+      const target = user.objects.find((o) => o.key === data.target);
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
@@ -76,7 +73,7 @@ export const onSceneEvent = ({ user, type, data }) => {
     }
     case IMT.SCENE_INTERACT:
     {
-      const target = user.objects.find((o) => o.name === data.target);
+      const target = user.objects.find((o) => o.key === data.target);
       if (!target) {
         return;
       }
@@ -110,6 +107,7 @@ export const onSceneEvent = ({ user, type, data }) => {
 
       const willInteract = user.objects.find((object) => object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea));
       console.error(willInteract);
+      willInteract?.interact?.(user);
       return null;
       // console.error(user.objects);
     }
