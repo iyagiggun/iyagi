@@ -4,7 +4,7 @@
  */
 
 import global from './global.js';
-import { onSceneEvent } from './scene/index.js';
+import { onSceneEvent } from './scene/handler.js';
 import { ServerTeller } from './teller/index.js';
 
 
@@ -12,17 +12,22 @@ import { ServerTeller } from './teller/index.js';
 /**
  * @typedef {Object} IServerParams
  * @property {function(*): void} send
+ * @property {import('./scene/index.js').default[]} scenes
  */
-export class IServer {
+export default class IServer {
 
   /**
    * @param {IServerParams} param0
    */
   constructor({
     send,
+    scenes,
   }) {
     this.send = send;
     this.teller = new ServerTeller(send);
+    global.init({
+      scenes,
+    });
   }
 
   /**
@@ -43,18 +48,3 @@ export class IServer {
     this.send(msg);
   }
 }
-
-/**
- * @param {import('./global.js').GlobalParams} p
- */
-const init = ({
-  scenes,
-}) => {
-  global.init({ scenes });
-};
-
-const iserver = {
-  init,
-};
-
-export default iserver;

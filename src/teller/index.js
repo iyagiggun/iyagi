@@ -11,18 +11,18 @@ export class ServerTeller {
   /**
    * @param {Object} p
    * @param {string} p.target
-   * @param {string | string[]} p.text
+   * @param {string | string[]} p.message
    * @returns
    */
   talk({
     target,
-    text,
+    message,
   }) {
     this.send( {
       type: IMT.SCENE_TALK,
       data: {
         target,
-        text,
+        message,
       },
     });
   }
