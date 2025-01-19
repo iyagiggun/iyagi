@@ -5,11 +5,49 @@
  */
 
 /**
+ * @typedef SpriteImage
+ * @property {string} url
+ * @property {number} [scale]
+ */
+
+/**
+ * @typedef ActionArea
+ * @property {SpriteImage} [image]
+ * @property {import('../coords/index.js').Position} [offset]
+ * @property {import('../coords/index.js').Area[]} frames
+ */
+
+/**
+ * @typedef Motion
+ * @property {SpriteImage} [image]
+ * @property {import('../coords/index.js').Position} [offset]
+ * @property {boolean} [loop]
+ * @property {ActionArea} [up]
+ * @property {ActionArea} [down]
+ * @property {ActionArea} [left]
+ * @property {ActionArea} [right]
+ */
+
+/**
+ * @typedef SpriteInfo
+ * @property {SpriteImage} [image]
+ * @property {import('../coords/index.js').Position} [offset]
+ * @property {Motion} base
+ * @property {{[key: string]: Motion}} [actions]
+ */
+
+/**
+ * @typedef {string | Object<string, string>} Portraits
+ */
+
+/**
  * @typedef {Object} IObjectParams
  * @property {string=} name
  * @property {Position} position
  * @property {Direction=} direction
  * @property {Area=} hitbox
+ * @property {SpriteInfo} sprite
+ * @property {Portraits=} portraits
  * @property {function(import('../user/index.js').default): void=} interact
  */
 
@@ -31,6 +69,10 @@ export default class IObject {
 
   #interact;
 
+  #sprite;
+
+  #portraits;
+
   /**
    * @param {string} key,
    * @param {IObjectParams} p
@@ -40,6 +82,8 @@ export default class IObject {
     position,
     direction,
     hitbox,
+    sprite,
+    portraits,
     interact,
   }) {
     this.#key = key;
@@ -48,6 +92,8 @@ export default class IObject {
     this.#y = position.y;
     this.#z = position.z ?? 1;
     this.#hitbox = hitbox;
+    this.#sprite = sprite;
+    this.#portraits = portraits;
     this.#direction = direction ?? 'down';
     this.#interact = interact;
   }
@@ -106,6 +152,12 @@ export default class IObject {
   }
 
   toJSON() {
-    return { key: this.key, name: this.name, position: this.position };
+    return {
+      key: this.key,
+      name: this.name,
+      position: this.position,
+      sprite: this.#sprite,
+      portraits: this.#portraits,
+    };
   }
 }

@@ -14,6 +14,8 @@ import IObject from './iobject.js';
  * @property {string} p.key
  * @property {string=} p.name
  * @property {import('../coords/index.js').Area=} p.hitbox
+ * @property {import('./iobject.js').SpriteInfo} sprite
+ * @property {import('./iobject.js').Portraits=} portraits
  * @property {function(import('../user/index.js').default): void=} interact
  */
 
@@ -23,6 +25,10 @@ export default class ObjectResource {
   #name;
 
   #hitbox;
+
+  #sprite;
+
+  #portraits;
   /**
    * @param {SObjectParams} p
    */
@@ -30,23 +36,33 @@ export default class ObjectResource {
     key,
     name,
     hitbox,
+    sprite,
+    portraits,
   }) {
     this.#key = key;
     this.#name = name;
     this.message = new ServerObjectMessage(this.#key);
-
     this.#hitbox = hitbox;
+    this.#sprite = sprite;
+    this.#portraits = portraits;
   }
 
   /**
-   * @param {import('./iobject.js').IObjectParams | Position} stampParam
+   * @typedef {Object} StampParams
+   * @property {Position} position
+   * @property {import('../coords/index.js').Direction=} direction
+   * @property {function(import('../user/index.js').default): void=} interact
+   *
+   * @param {StampParams | Position} params
    */
-  stamp(stampParam) {
-    const params = 'position' in stampParam ? stampParam : { position: stampParam };
+  stamp(params) {
+    const additional = 'position' in params ? params : { position: params };
     const obj = new IObject(this.#key, {
       name: this.#name,
       hitbox: this.#hitbox,
-      ...params,
+      sprite: this.#sprite,
+      portraits: this.#portraits,
+      ...additional,
     });
     return obj;
   }
