@@ -97,9 +97,11 @@ export class MonoObjectResource extends ObjectResource {
           url: params.sprite.image,
         },
         offset: params.sprite.offset,
-        base: {
-          down: {
-            frames: params.sprite.frames,
+        motions: {
+          base: {
+            down: {
+              frames: params.sprite.frames,
+            },
           },
         },
       },
