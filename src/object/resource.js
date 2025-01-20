@@ -11,9 +11,9 @@ import IObject from './iobject.js';
 
 /**
  * @typedef {Object} SObjectParams
- * @property {string} p.key
- * @property {string=} p.name
- * @property {import('../coords/index.js').Area=} p.hitbox
+ * @property {string} key
+ * @property {string=} name
+ * @property {import('../coords/index.js').Area=} hitbox
  * @property {import('./iobject.js').SpriteInfo} sprite
  * @property {import('./iobject.js').Portraits=} portraits
  * @property {function(import('../user/index.js').default): void=} interact
@@ -65,5 +65,44 @@ export default class ObjectResource {
       ...additional,
     });
     return obj;
+  }
+}
+
+
+/**
+ * @typedef {Object} MonoSpriteInfo
+ * @property {string} image
+ * @property {import('../coords/index.js').Position=} offset;
+ * @property {import('../coords/index.js').Area[]} frames
+ *
+ * @typedef {Object} MonoObjectParams
+ * @property {string} key
+ * @property {string=} name
+ * @property {import('../coords/index.js').Area=} hitbox
+ * @property {MonoSpriteInfo} sprite
+ * @property {import('./iobject.js').Portraits=} portraits
+ * @property {function(import('../user/index.js').default): void=} interact
+ */
+
+
+export class MonoObjectResource extends ObjectResource {
+  /**
+   * @param {MonoObjectParams} params
+   */
+  constructor(params) {
+    super({
+      ...params,
+      sprite: {
+        image: {
+          url: params.sprite.image,
+        },
+        offset: params.sprite.offset,
+        base: {
+          down: {
+            frames: params.sprite.frames,
+          },
+        },
+      },
+    });
   }
 }
