@@ -1,6 +1,7 @@
 import { IMT } from '../const/message.js';
 import { getDirectionByDelta, getNextPosition, isOverlap } from '../coords/index.js';
 import global from '../global.js';
+import { ShardForge } from '../shard/index.js';
 
 /**
  * @param {Object} p
@@ -13,14 +14,12 @@ export const onSceneEvent = ({ user, type, data }) => {
   switch(type) {
     case IMT.SCENE_LOAD:
     {
-      const scene = global.scene.find(data.scene);
-      user.scene = scene.key;
-
-      user.objects = scene.objects;
+      const shard = data.shard ? ShardForge.seek(data.shard) : undefined;
+      user.shard = shard ?? ShardForge.shatter(global.scene.find(data.scene));
 
       return {
         type: IMT.SCENE_LOAD,
-        data: { objects: [...scene.objects] },
+        data: { objects: [...user.shard.objects] },
       };
     }
     case IMT.SCENE_LOADED:
@@ -30,12 +29,13 @@ export const onSceneEvent = ({ user, type, data }) => {
     }
     case IMT.SCENE_MOVE:
     {
-      const target = user.objects.find((o) => o.key === data.target);
+      const objects = user.shard.objects;
+      const target = objects.find((o) => o.key === data.target);
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
       const nextDirection = getDirectionByDelta(target.position, data.position);
-      const nextPosition = getNextPosition({ target, objects: user.objects, destination: data.position });
+      const nextPosition = getNextPosition({ target, objects: objects, destination: data.position });
       target.position = nextPosition;
       target.direction = nextDirection;
       return {
@@ -49,7 +49,8 @@ export const onSceneEvent = ({ user, type, data }) => {
     }
     case IMT.SCENE_INTERACT:
     {
-      const target = user.objects.find((o) => o.key === data.target);
+      const objects = user.shard.objects;
+      const target = objects.find((o) => o.key === data.target);
       if (!target) {
         return;
       }
@@ -81,7 +82,7 @@ export const onSceneEvent = ({ user, type, data }) => {
         }
       })();
 
-      const willInteract = user.objects.find(
+      const willInteract = objects.find(
         (object) => object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea)
       );
       if (!willInteract) {

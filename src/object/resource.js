@@ -1,5 +1,5 @@
 import ServerObjectMessage from './Message.js';
-import IObject from './iobject.js';
+import { IObject } from './iobject.js';
 
 /**
  * hitbox: It is difficult for the client to calculate zIndex when there are multiple hitboxes.

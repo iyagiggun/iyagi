@@ -1,14 +1,26 @@
 
 export default class IUser {
   /**
-   * @type {import('../object/index.js').IObject[]}
+   * @type {import('../shard/index.js').Shard | null}
    */
-  objects = [];
+  #shard = null;
   /**
    * @param {string} key
    */
   constructor(key) {
     this.key = key;
-    this.scene = '';
+  }
+
+  get shard() {
+    if (!this.#shard) {
+      throw new Error('User does not have a shard.');
+    }
+    return this.#shard;
+  }
+  /**
+   * @param {import('../shard/index.js').Shard} _shard
+   */
+  set shard(_shard) {
+    this.#shard = _shard;
   }
 }
