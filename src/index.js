@@ -30,7 +30,7 @@ export default class IServer {
    * @param {Object} param
    * @param {string} param.type
    * @param {*} param.data
-   * @param {import('./user/index.js').default} param.user
+   * @param {import('./user/index.js').User} param.user
    */
   respond({
     type,

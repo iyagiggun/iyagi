@@ -1,5 +1,4 @@
-
-export default class IUser {
+export class User {
   /**
    * @type {import('../shard/index.js').Shard | null}
    */

@@ -16,7 +16,7 @@ import { IObject } from './iobject.js';
  * @property {import('../coords/index.js').Area=} hitbox
  * @property {import('./iobject.js').SpriteInfo} sprite
  * @property {import('./iobject.js').Portraits=} portraits
- * @property {function(import('../user/index.js').default): void=} interact
+ * @property {function(import('../user/index.js').User): void=} interact
  */
 
 export default class ObjectResource {
@@ -51,7 +51,7 @@ export default class ObjectResource {
    * @typedef {Object} StampParams
    * @property {Position} position
    * @property {import('../coords/index.js').Direction=} direction
-   * @property {function(import('../user/index.js').default): void=} interact
+   * @property {function(import('../user/index.js').User): void=} interact
    *
    * @param {StampParams | Position} params
    */
@@ -81,7 +81,7 @@ export default class ObjectResource {
  * @property {import('../coords/index.js').Area=} hitbox
  * @property {MonoSpriteInfo} sprite
  * @property {import('./iobject.js').Portraits=} portraits
- * @property {function(import('../user/index.js').default): void=} interact
+ * @property {function(import('../user/index.js').User): void=} interact
  */
 
 

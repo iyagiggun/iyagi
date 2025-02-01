@@ -48,10 +48,13 @@
  * @property {Area=} hitbox
  * @property {SpriteInfo} sprite
  * @property {Portraits=} portraits
- * @property {function(import('../user/index.js').default): void=} interact
+ * @property {function(import('../user/index.js').User): void=} interact
  */
 
-export default class IObject {
+/**
+ * 데이터 형에 불과함. 클래스일 필요가 없음
+ */
+export class IObject {
   #key;
 
   #name;

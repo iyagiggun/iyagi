@@ -1,11 +1,11 @@
 import { IMT } from '../const/message.js';
 import { getDirectionByDelta, getNextPosition, isOverlap } from '../coords/index.js';
 import global from '../global.js';
-import { ShardForge } from '../shard/index.js';
+import { ShardForge } from '../shard/forge.js';
 
 /**
  * @param {Object} p
- * @param {import('../user/index.js').default} p.user
+ * @param {import('../user/index.js').User} p.user
  * @param {string} p.type
  * @param {*} p.data
  * @returns
@@ -88,7 +88,6 @@ export const onSceneEvent = ({ user, type, data }) => {
       if (!willInteract) {
         return;
       }
-      console.error(willInteract);
       willInteract.interact?.(user);
       return null;
       // console.error(user.objects);
