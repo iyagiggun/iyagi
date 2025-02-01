@@ -1,4 +1,3 @@
-import ServerObjectMessage from './Message.js';
 import { IObject } from './iobject.js';
 
 /**
@@ -41,7 +40,6 @@ export default class ObjectResource {
   }) {
     this.#key = key;
     this.#name = name;
-    this.message = new ServerObjectMessage(this.#key);
     this.#hitbox = hitbox;
     this.#sprite = sprite;
     this.#portraits = portraits;

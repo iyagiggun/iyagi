@@ -34,18 +34,14 @@ export const onSceneEvent = ({ user, type, data }) => {
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
-      const nextDirection = getDirectionByDelta(target.position, data.position);
+      const direction = getDirectionByDelta(target.position, data.position);
       const nextPosition = getNextPosition({ target, objects: objects, destination: data.position });
-      target.position = nextPosition;
-      target.direction = nextDirection;
-      return {
-        type: IMT.SCENE_MOVE,
-        data: {
-          target: data.target,
-          direction: nextDirection,
-          position: nextPosition,
-        },
-      };
+      return user.shard.message.move(
+        target,
+        nextPosition,
+        {
+          direction,
+        });
     }
     case IMT.SCENE_INTERACT:
     {

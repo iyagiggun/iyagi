@@ -2,7 +2,7 @@
  * @typedef {Object} SceneParams
  * @property {string} key
  * @property {import('../object/index.js').IObject[]} objects
- * @property {function(import('../user/index.js').default): *} onLoaded
+ * @property {function(import('../user/index.js').User): *} onLoaded
  */
 
 export default class Scene {

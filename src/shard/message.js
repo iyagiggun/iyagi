@@ -40,7 +40,6 @@ export class ShardMessage {
     if (!t) {
       throw new Error(`No "${target.name}" in the shard.`);
     }
-    console.error(t.position, position);
     const direction = options?.direction ?? getDirectionByDelta(t.position, position);
     t.position = position;
     return {
@@ -49,6 +48,44 @@ export class ShardMessage {
         target: t.name,
         direction,
         position,
+      },
+    };
+  }
+
+  /**
+   * @param {string} target
+   */
+  focus(target) {
+    return {
+      type: IMT.SCENE_FOCUS,
+      data: {
+        target,
+      },
+    };
+  }
+
+  /**
+   * @param {string} key
+   * @param {*[]} list
+   */
+  take(key, list) {
+    return {
+      type: IMT.SCENE_TAKE,
+      data: {
+        key,
+        list,
+      },
+    };
+  }
+
+  /**
+   * @param {string} target
+   */
+  control(target) {
+    return {
+      type: IMT.SCENE_CONTROL,
+      data: {
+        target,
       },
     };
   }
