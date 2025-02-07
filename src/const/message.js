@@ -3,6 +3,8 @@
  */
 
 export const IMT = {
+  WAIT: 'wait',
+  LIST: 'list',
   SCENE_LOAD: 'scene.load',
   SCENE_LOADED: 'scene.loaded',
   SCENE_TAKE: 'scene.take',
@@ -12,7 +14,4 @@ export const IMT = {
   SCENE_INTERACT: 'scene.interact',
   SCENE_CONTROL: 'scene.control',
   SCENE_FOCUS: 'scene.focus',
-
-  CONTROLLER_ENABLE: 'controller.enable',
-  CONTROLLER_DISABLE: 'controller.disable',
 };

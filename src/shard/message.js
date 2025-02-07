@@ -31,35 +31,64 @@ export class ShardMessage {
 
   /**
    * @param {IObject} target
-   * @param {import('../coords/index.js').Position} position
-   * @param {Object} [options={}]
-   * @param {import('../coords/index.js').Direction} [options.direction]
+   * @param {import('../coords/index.js').Position & {
+   *   speed?: number,
+   *   direction?: import('../coords/index.js').Direction
+   * }} info
    */
-  move(target, position, options) {
+  move(target, info) {
     const t = this.#shard.objects.find((each) => each.name === target.name);
     if (!t) {
       throw new Error(`No "${target.name}" in the shard.`);
     }
-    const direction = options?.direction ?? getDirectionByDelta(t.position, position);
-    t.position = position;
+    const direction = info?.direction ?? getDirectionByDelta(t.position, info);
+    t.position = info;
     return {
       type: IMT.SCENE_MOVE,
       data: {
         target: t.name,
+        ...info,
         direction,
-        position,
       },
     };
   }
 
   /**
-   * @param {string} target
+   * @param {string | import('../coords/index.js').Position} target
+   * @param {Object} [options={}]
+   * @param {1|2|3} [options.speed]
    */
-  focus(target) {
+  focus(target, options) {
     return {
       type: IMT.SCENE_FOCUS,
       data: {
         target,
+        options,
+      },
+    };
+  }
+
+  /**
+   * @param {number} delay ms
+   * @returns
+   */
+  wait(delay) {
+    return {
+      type: IMT.WAIT,
+      data: {
+        delay,
+      },
+    };
+  }
+
+  /**
+   * @param {*[]} list
+   */
+  list(list) {
+    return {
+      type: IMT.LIST,
+      data: {
+        list,
       },
     };
   }
