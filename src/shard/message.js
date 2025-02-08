@@ -22,7 +22,6 @@ export class ShardMessage {
     return {
       type: IMT.SCENE_TALK,
       data: {
-        // TODO ?? name ?? key ?? f...
         target: target.name,
         message,
       },
@@ -88,20 +87,6 @@ export class ShardMessage {
     return {
       type: IMT.LIST,
       data: {
-        list,
-      },
-    };
-  }
-
-  /**
-   * @param {string} key
-   * @param {*[]} list
-   */
-  take(key, list) {
-    return {
-      type: IMT.SCENE_TAKE,
-      data: {
-        key,
         list,
       },
     };
