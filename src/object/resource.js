@@ -5,10 +5,6 @@ import { IObject } from './iobject.js';
  */
 
 /**
- * @typedef {import('../coords/index.js').Position} Position
- */
-
-/**
  * @typedef {Object} SObjectParams
  * @property {string} key
  * @property {string=} name
@@ -46,21 +42,19 @@ export default class ObjectResource {
   }
 
   /**
-   * @typedef {Object} StampParams
-   * @property {Position} position
-   * @property {import('../coords/index.js').Direction=} direction
-   * @property {function(import('../user/index.js').User): void=} interact
-   *
-   * @param {StampParams | Position} params
+   * @param { (import('../coords/index.js').XYZ | import('../coords/index.js').XY) & {
+   *  direction?: import('../coords/index.js').Direction
+   *  interact?: (user: import('../user/index.js').UserType) => void
+   * }} info
    */
-  stamp(params) {
-    const additional = 'position' in params ? params : { position: params };
+  stamp(info) {
     const obj = new IObject(this.#key, {
       name: this.#name,
       hitbox: this.#hitbox,
       sprite: this.#sprite,
       portraits: this.#portraits,
-      ...additional,
+      ...info,
+      z: 'z' in info ? info.z : 1,
     });
     return obj;
   }
@@ -70,7 +64,7 @@ export default class ObjectResource {
 /**
  * @typedef {Object} MonoSpriteInfo
  * @property {string} image
- * @property {import('../coords/index.js').Position=} offset;
+ * @property {import('../coords/index.js').XY=} offset;
  * @property {import('../coords/index.js').Area[]} frames
  *
  * @typedef {Object} MonoObjectParams

@@ -1,9 +1,11 @@
 /**
  * @typedef {import("../coords/index.js").Direction} Direction
- * @typedef {import("../coords/index.js").Position} Position
  * @typedef {import("../coords/index.js").Area} Area
  */
 
+import { IMT } from '../const/message.js';
+import { getDirectionByDelta } from '../coords/index.js';
+import { message } from '../message/index.js';
 /**
  * @typedef SpriteImage
  * @property {string} url
@@ -13,14 +15,14 @@
 /**
  * @typedef ActionArea
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').Position} [offset]
+ * @property {import('../coords/index.js').XY} [offset]
  * @property {import('../coords/index.js').Area[]} frames
  */
 
 /**
  * @typedef Motion
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').Position} [offset]
+ * @property {import('../coords/index.js').XY} [offset]
  * @property {boolean} [loop]
  * @property {ActionArea} [up]
  * @property {ActionArea} [down]
@@ -32,7 +34,7 @@
 /**
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').Position} [offset]
+ * @property {import('../coords/index.js').XY} [offset]
  * @property {{[key: string]: Motion}} [motions]
  */
 
@@ -43,7 +45,6 @@
 /**
  * @typedef {Object} IObjectParams
  * @property {string=} name
- * @property {Position} position
  * @property {Direction=} direction
  * @property {Area=} hitbox
  * @property {SpriteInfo} sprite
@@ -51,19 +52,10 @@
  * @property {function(import('../user/index.js').User): void=} interact
  */
 
-/**
- * 데이터 형에 불과함. 클래스일 필요가 없음
- */
 export class IObject {
   #key;
 
   #name;
-
-  #x;
-
-  #y;
-
-  #z;
 
   #hitbox;
 
@@ -78,11 +70,20 @@ export class IObject {
 
   /**
    * @param {string} key,
-   * @param {IObjectParams} p
+   * @param {import('../coords/index.js').XYZ & {
+   *  name?: string;
+   *  direction?: Direction;
+   *  hitbox?: Area;
+   *  sprite: SpriteInfo;
+   *  portraits?: Portraits;
+   *  interact?: (user: import('../user/index.js').UserType) => void;
+   * }} p
    */
   constructor(key, {
     name,
-    position,
+    x,
+    y,
+    z,
     direction,
     hitbox,
     sprite,
@@ -91,9 +92,9 @@ export class IObject {
   }) {
     this.#key = key;
     this.#name = name;
-    this.#x = position.x;
-    this.#y = position.y;
-    this.#z = position.z ?? 1;
+    this.x = x;
+    this.y = y;
+    this.z = z;
     this.#hitbox = hitbox;
     this.#sprite = sprite;
     this.#portraits = portraits;
@@ -107,23 +108,6 @@ export class IObject {
 
   get name() {
     return this.#name;
-  }
-
-  get position() {
-    return {
-      x: this.#x,
-      y: this.#y,
-      z: this.#z,
-    };
-  }
-
-  /**
-   * @param {Position} pos
-   */
-  set position(pos) {
-    this.#x = pos.x;
-    this.#y = pos.y;
-    this.#z = pos.z ?? this.#z ?? 0;
   }
 
   get direction() {
@@ -144,10 +128,62 @@ export class IObject {
     return {
       key: this.#key,
       ...this.#hitbox,
-      x: this.#x + this.#hitbox.x,
-      y: this.#y + this.#hitbox.y,
-      z: this.#z,
+      x: this.x + this.#hitbox.x,
+      y: this.y + this.#hitbox.y,
+      z: this.z,
     };
+  }
+
+  /**
+   * @param {(import('../coords/index.js').XYZ | import('../coords/index.js').XY) & {
+   *  speed?: 1 | 2 | 3,
+   *  shard: import('../shard/index.js').ShardType,
+   *  direction?: Direction
+   * }} info
+   */
+  move(info) {
+    const t = info.shard.objects.find((obj) => obj.name === this.name);
+    if (!t) {
+      throw new Error(`No "${this.name}" in the shard.`);
+    }
+    const direction = info.direction ?? getDirectionByDelta(t, info);
+    t.x = info.x;
+    t.y = info.y;
+    t.z = 'z' in info ? info.z : this.z;
+    return {
+      type: IMT.OBJECT_MOVE,
+      data: {
+        target: t.name,
+        ...t,
+        speed: info.speed,
+        direction,
+      },
+    };
+  }
+
+  /**
+   * @param {string | string[]} message
+   */
+  talk(message) {
+    return {
+      type: IMT.OBJECT_TALK,
+      data: {
+        target: this.name,
+        message,
+      },
+    };
+  }
+
+  /**
+   * @param {0 | 1 | 2 | 3} [speed] 0: instantly
+   */
+  focus(speed = 1) {
+    const hitbox = this.hitbox;
+    return message.focus({
+      x: this.x + (hitbox ? hitbox.w/2 : 0),
+      y: this.y + (hitbox ? hitbox.h/2 : 0),
+      speed,
+    });
   }
 
   get interact() {
@@ -158,7 +194,9 @@ export class IObject {
     return {
       key: this.key,
       name: this.name,
-      position: this.position,
+      x: this.x,
+      y: this.y,
+      z: this.z,
       sprite: this.#sprite,
       portraits: this.#portraits,
     };

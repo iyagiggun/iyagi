@@ -1,5 +1,5 @@
 import { IMT } from '../const/message.js';
-import { getDirectionByDelta, getNextPosition, isOverlap } from '../coords/index.js';
+import { getDirectionByDelta, getNextXYZ, isOverlap } from '../coords/index.js';
 import global from '../global.js';
 import { ShardForge } from '../shard/forge.js';
 
@@ -14,9 +14,10 @@ export const onSceneEvent = ({ user, type, data }) => {
   switch(type) {
     case IMT.SCENE_LOAD:
     {
+      // If a shard key is provided, it retrieves the shard's content
+      // if not, it creates a shard based on the scene.
       const shard = data.shard ? ShardForge.seek(data.shard) : undefined;
       user.shard = shard ?? ShardForge.shatter(global.scene.find(data.scene));
-
       return {
         type: IMT.SCENE_LOAD,
         data: { objects: [...user.shard.objects] },
@@ -27,21 +28,22 @@ export const onSceneEvent = ({ user, type, data }) => {
       const scene = global.scene.find(data.scene);
       return scene.onLoaded(user);
     }
-    case IMT.SCENE_MOVE:
+    case IMT.OBJECT_MOVE:
     {
-      const objects = user.shard.objects;
-      const target = objects.find((o) => o.key === data.target);
+      const shard = user.shard;
+      const objects = shard.objects;
+      const target = shard.objects.find((o) => o.key === data.target);
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
-      const direction = getDirectionByDelta(target.position, data.position);
-      const nextPosition = getNextPosition({ target, objects: objects, destination: data.position });
-      return user.shard.message.move(
-        target,
-        nextPosition,
-        {
-          direction,
-        });
+
+      const direction = getDirectionByDelta(target, data);
+      const next = getNextXYZ({ target, objects, destination: data });
+      return target.move({
+        ...next,
+        direction,
+        shard,
+      });
     }
     case IMT.SCENE_INTERACT:
     {
@@ -52,7 +54,7 @@ export const onSceneEvent = ({ user, type, data }) => {
       }
 
       const interactionArea = (() => {
-        const hitbox = target.hitbox ?? { ...target.position, w: 0, h: 0 };
+        const hitbox = target.hitbox ?? { ...target, w: 0, h: 0 };
         const {
           x, y, w, h,
         } = hitbox;

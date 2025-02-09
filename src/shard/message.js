@@ -1,5 +1,4 @@
 import { IMT } from '../const/message.js';
-import { getDirectionByDelta } from '../coords/index.js';
 
 /**
  * @typedef {import('../object/iobject.js').IObject} IObject
@@ -16,44 +15,25 @@ export class ShardMessage {
 
   /**
    * @param {IObject} target
-   * @param {string | string[]} message
+   * @param {*} info
    */
-  talk(target, message) {
-    return {
-      type: IMT.SCENE_TALK,
-      data: {
-        target: target.name,
-        message,
-      },
-    };
-  }
-
-  /**
-   * @param {IObject} target
-   * @param {import('../coords/index.js').Position & {
-   *   speed?: number,
-   *   direction?: import('../coords/index.js').Direction
-   * }} info
-   */
-  move(target, info) {
+  object(target, info) {
     const t = this.#shard.objects.find((each) => each.name === target.name);
     if (!t) {
       throw new Error(`No "${target.name}" in the shard.`);
     }
-    const direction = info?.direction ?? getDirectionByDelta(t.position, info);
-    t.position = info;
+    console.error(t);
     return {
-      type: IMT.SCENE_MOVE,
+      type: IMT.SCENE_OBJECT,
       data: {
         target: t.name,
         ...info,
-        direction,
       },
     };
   }
 
   /**
-   * @param {string | import('../coords/index.js').Position} target
+   * @param {string | import('../coords/index.js').XY} target
    * @param {Object} [options={}]
    * @param {1|2|3} [options.speed]
    */

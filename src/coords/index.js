@@ -7,10 +7,8 @@
  */
 
 /**
- * @typedef {Object} Position
- * @property {number} x
- * @property {number} y
- * @property {number=} z
+ * @typedef {{ x: number, y: number }} XY
+ * @typedef { XY & { z: number }} XYZ
  */
 
 /**
@@ -37,20 +35,21 @@ export function isOverlap(areaA, areaB) {
  * @param {{
 *  target: IObject;
 *  objects: IObject[];
-*  destination: Position;
+*  destination: XY | XYZ;
 * }} p
 */
-export const getNextPosition = ({
+export const getNextXYZ = ({
   target,
   objects,
   destination,
 }) => {
-  const { x: curX, y: curY  } = target.position;
-  const curZ = target.position.z ?? 1;
+  const { x: curX, y: curY  } = target;
+  const curZ = target.z;
+  const destZ = 'z' in destination ? destination.z : curZ;
   const hitbox = target.hitbox;
 
   if (!hitbox) {
-    return { ...destination, z: destination.z ?? curZ };
+    return { ...destination, z: destZ };
   }
 
   let deltaX = destination.x - curX;
@@ -60,7 +59,7 @@ export const getNextPosition = ({
   const intervalX = deltaX / interval_length;
   const intervalY = deltaY / interval_length;
 
-  const canHit = objects.filter((o) => o.key !== target.key && (o.position.z ?? 1) === curZ && o.hitbox);
+  const canHit = objects.filter((o) => o.key !== target.key && (o.z ?? 1) === curZ && o.hitbox);
 
 
   let step = 0;
@@ -83,16 +82,17 @@ export const getNextPosition = ({
       return {
         x: curX + Math.round(intervalX * (step - 1)),
         y: curY + Math.round(intervalY * (step - 1)),
-        z: destination.z ?? curZ,
+        // is valid??
+        z: destZ,
       };
     }
   }
-  return { ...destination, z: destination.z ?? curZ };
+  return { ...destination, z: destZ };
 };
 
 /**
- * @param {Position} before
- * @param {Position} after
+ * @param {XY} before
+ * @param {XY} after
  */
 export const getDirectionByDelta = (before, after) => {
   const deltaX = after.x - before.x;

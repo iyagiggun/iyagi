@@ -44,3 +44,4 @@ export default class IServer {
     this.send(msg);
   }
 }
+

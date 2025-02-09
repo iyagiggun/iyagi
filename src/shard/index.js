@@ -4,6 +4,7 @@ let shardKeyDummy = 0;
 
 export class Shard {
   #key;
+
   /**
    * @param {Object} p
    * @param {import('../object/iobject.js').IObject[]} p.objects
@@ -15,10 +16,16 @@ export class Shard {
     this.objects = objects;
     this.message = new ShardMessage(this);
   }
+
   get key() {
     return this.#key;
   }
+
   set key(_) {
     throw new Error('Shard key cannot be modified.');
   }
 }
+
+/**
+ * @typedef {Shard} ShardType
+ */

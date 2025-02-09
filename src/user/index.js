@@ -1,13 +1,19 @@
+import { message } from '../message/index.js';
+
 export class User {
   /**
    * @type {import('../shard/index.js').Shard | null}
    */
   #shard = null;
+
+  #message;
+
   /**
    * @param {string} key
    */
   constructor(key) {
     this.key = key;
+    this.#message = message;
   }
 
   get shard() {
@@ -22,4 +28,12 @@ export class User {
   set shard(_shard) {
     this.#shard = _shard;
   }
+
+  get message() {
+    return this.#message;
+  }
 }
+
+/**
+ * @typedef {User} UserType
+ */
