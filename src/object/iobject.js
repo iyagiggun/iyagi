@@ -200,7 +200,7 @@ export class IObject {
     return {
       type: IMT.OBJECT_CONTROL,
       data: {
-        stamp: this.stamped,
+        stamped: this.stamped,
       },
     };
   }

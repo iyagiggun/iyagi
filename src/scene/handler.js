@@ -32,7 +32,7 @@ export const onSceneEvent = ({ user, type, data }) => {
     {
       const shard = user.shard;
       const objects = shard.objects;
-      const target = shard.objects.find((o) => o.key === data.target);
+      const target = shard.objects.find((o) => o.stamped === data.stamped);
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
       }
