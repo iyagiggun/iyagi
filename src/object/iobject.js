@@ -1,11 +1,12 @@
+import { IMT } from '../const/message.js';
+import { getDirectionByDelta } from '../coords/index.js';
+import { message } from '../message/index.js';
+
 /**
  * @typedef {import("../coords/index.js").Direction} Direction
  * @typedef {import("../coords/index.js").Area} Area
  */
 
-import { IMT } from '../const/message.js';
-import { getDirectionByDelta } from '../coords/index.js';
-import { message } from '../message/index.js';
 /**
  * @typedef SpriteImage
  * @property {string} url
@@ -52,8 +53,13 @@ import { message } from '../message/index.js';
  * @property {function(import('../user/index.js').User): void=} interact
  */
 
+/**
+ * @type {Map<string, number>}
+ */
+const stampIdxMap = new Map();
+
 export class IObject {
-  #key;
+  #resource;
 
   #name;
 
@@ -68,8 +74,10 @@ export class IObject {
 
   #portraits;
 
+  stamped;
+
   /**
-   * @param {string} key,
+   * @param {string} resource,
    * @param {import('../coords/index.js').XYZ & {
    *  name?: string;
    *  direction?: Direction;
@@ -79,7 +87,7 @@ export class IObject {
    *  interact?: (user: import('../user/index.js').UserType) => void;
    * }} p
    */
-  constructor(key, {
+  constructor(resource, {
     name,
     x,
     y,
@@ -90,7 +98,7 @@ export class IObject {
     portraits,
     interact,
   }) {
-    this.#key = key;
+    this.#resource = resource;
     this.#name = name;
     this.x = x;
     this.y = y;
@@ -100,10 +108,13 @@ export class IObject {
     this.#portraits = portraits;
     this.#direction = direction ?? 'down';
     this.#interact = interact;
+    const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
+    stampIdxMap.set(resource, stampIdx);
+    this.stamped = `${resource}:${stampIdx}`;
   }
 
   get key() {
-    return this.#key;
+    return this.stamped;
   }
 
   get name() {
@@ -126,7 +137,7 @@ export class IObject {
       return null;
     }
     return {
-      key: this.#key,
+      key: this.#resource,
       ...this.#hitbox,
       x: this.x + this.#hitbox.x,
       y: this.y + this.#hitbox.y,
@@ -142,9 +153,9 @@ export class IObject {
    * }} info
    */
   move(info) {
-    const t = info.shard.objects.find((obj) => obj.name === this.name);
+    const t = info.shard.objects.find((obj) => obj.stamped === this.stamped);
     if (!t) {
-      throw new Error(`No "${this.name}" in the shard.`);
+      throw new Error('No object in the shard.');
     }
     const direction = info.direction ?? getDirectionByDelta(t, info);
     t.x = info.x;
@@ -153,7 +164,6 @@ export class IObject {
     return {
       type: IMT.OBJECT_MOVE,
       data: {
-        target: t.name,
         ...t,
         speed: info.speed,
         direction,
@@ -168,7 +178,7 @@ export class IObject {
     return {
       type: IMT.OBJECT_TALK,
       data: {
-        target: this.name,
+        stamped: this.stamped,
         message,
       },
     };
@@ -186,13 +196,39 @@ export class IObject {
     });
   }
 
+  control() {
+    return {
+      type: IMT.OBJECT_CONTROL,
+      data: {
+        stamp: this.stamped,
+      },
+    };
+  }
+
+  /**
+   * @param {import('../shard/index.js').ShardType} shard
+   */
+  remove(shard) {
+    const idx = shard.objects.findIndex((obj) => obj.key === this.key);
+    if (idx > -1) {
+      shard.objects.splice(idx, 1);
+    }
+    return {
+      type: IMT.OBJECT_REMOVE,
+      data: {
+        stamped: this.stamped,
+      },
+    };
+  }
+
   get interact() {
     return this.#interact;
   }
 
   toJSON() {
     return {
-      key: this.key,
+      resource: this.#resource,
+      stamped: this.stamped,
       name: this.name,
       x: this.x,
       y: this.y,

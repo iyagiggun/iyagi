@@ -12,7 +12,6 @@ export const message = {
       },
     };
   },
-
   /**
    * @param {*[]} list
    */
@@ -24,7 +23,6 @@ export const message = {
       },
     };
   },
-
   /**
    * @param {import('../coords/index.js').XY & { speed: 0 | 1 | 2 | 3}} data - data.speed = 0 <- instantly
    */
