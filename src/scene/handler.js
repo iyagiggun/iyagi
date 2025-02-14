@@ -32,9 +32,12 @@ export const onSceneEvent = ({ user, type, data }) => {
     {
       const shard = user.shard;
       const objects = shard.objects;
-      const target = shard.objects.find((o) => o.stamped === data.stamped);
+      const target = shard.objects.find((o) => o.serial === data.serial);
       if (!target) {
         throw new Error(`Fail to move. No target (${data.target}).`);
+      }
+      if (target.x === data.x && target.y === data.y) {
+        return null;
       }
 
       const direction = getDirectionByDelta(target, data);
@@ -48,7 +51,7 @@ export const onSceneEvent = ({ user, type, data }) => {
     case IMT.SCENE_INTERACT:
     {
       const objects = user.shard.objects;
-      const target = objects.find((o) => o.key === data.target);
+      const target = objects.find((o) => o.serial === data.target);
       if (!target) {
         return;
       }
@@ -81,7 +84,9 @@ export const onSceneEvent = ({ user, type, data }) => {
       })();
 
       const willInteract = objects.find(
-        (object) => object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea)
+        (object) => {
+          return object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea);
+        }
       );
       if (!willInteract) {
         return;
