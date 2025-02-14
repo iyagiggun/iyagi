@@ -1,5 +1,5 @@
 import { IMT } from '../const/message.js';
-import { getDirectionByDelta, getNextXYZ, isOverlap } from '../coords/index.js';
+import { getNextXYZ, isOverlap } from '../coords/index.js';
 import global from '../global.js';
 import { ShardForge } from '../shard/forge.js';
 
@@ -40,11 +40,10 @@ export const onSceneEvent = ({ user, type, data }) => {
         return null;
       }
 
-      const direction = getDirectionByDelta(target, data);
       const next = getNextXYZ({ target, objects, destination: data });
       return target.move({
         ...next,
-        direction,
+        direction: data.direction,
         shard,
       });
     }

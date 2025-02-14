@@ -65,16 +65,13 @@ export class IObject {
 
   #hitbox;
 
-  /** @type {Direction} */
-  #direction;
-
   #interact;
 
   #sprite;
 
   #portraits;
 
-  stamped;
+  serial;
 
   /**
    * @param {string} resource,
@@ -106,30 +103,19 @@ export class IObject {
     this.#hitbox = hitbox;
     this.#sprite = sprite;
     this.#portraits = portraits;
-    this.#direction = direction ?? 'down';
+    this.direction = direction ?? 'down';
     this.#interact = interact;
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
-    this.stamped = `${resource}:${stampIdx}`;
+    this.serial = `${resource}:${stampIdx}`;
   }
 
   get key() {
-    return this.stamped;
+    return this.serial;
   }
 
   get name() {
     return this.#name;
-  }
-
-  get direction() {
-    return this.#direction;
-  }
-
-  /**
-   * @param {Direction} dir
-   */
-  set direction(dir) {
-    this.#direction = dir;
   }
 
   get hitbox() {
@@ -153,20 +139,21 @@ export class IObject {
    * }} info
    */
   move(info) {
-    const t = info.shard.objects.find((obj) => obj.stamped === this.stamped);
+    const t = info.shard.objects.find((obj) => obj.serial === this.serial);
     if (!t) {
       throw new Error('No object in the shard.');
     }
-    const direction = info.direction ?? getDirectionByDelta(t, info);
+    t.direction = info.direction || getDirectionByDelta(t, info);
+    // t.direction = info.direction;
     t.x = info.x;
     t.y = info.y;
     t.z = 'z' in info ? info.z : this.z;
     return {
       type: IMT.OBJECT_MOVE,
       data: {
+        target: t.serial,
         ...t,
         speed: info.speed,
-        direction,
       },
     };
   }
@@ -178,7 +165,7 @@ export class IObject {
     return {
       type: IMT.OBJECT_TALK,
       data: {
-        stamped: this.stamped,
+        target: this.serial,
         message,
       },
     };
@@ -200,7 +187,7 @@ export class IObject {
     return {
       type: IMT.OBJECT_CONTROL,
       data: {
-        stamped: this.stamped,
+        target: this.serial,
       },
     };
   }
@@ -216,7 +203,7 @@ export class IObject {
     return {
       type: IMT.OBJECT_REMOVE,
       data: {
-        stamped: this.stamped,
+        target: this.serial,
       },
     };
   }
@@ -228,7 +215,7 @@ export class IObject {
   toJSON() {
     return {
       resource: this.#resource,
-      stamped: this.stamped,
+      serial: this.serial,
       name: this.name,
       x: this.x,
       y: this.y,
