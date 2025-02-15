@@ -1,6 +1,4 @@
-import { IMT } from '../const/message.js';
-import { getDirectionByDelta } from '../coords/index.js';
-import { message } from '../message/index.js';
+import { IObjectMessage } from './message.js';
 
 /**
  * @typedef {import("../coords/index.js").Direction} Direction
@@ -107,6 +105,7 @@ export class IObject {
     this.#interact = interact;
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
+    this.message = new IObjectMessage(this);
     this.serial = `${resource}:${stampIdx}`;
   }
 
@@ -131,83 +130,6 @@ export class IObject {
     };
   }
 
-  /**
-   * @param {(import('../coords/index.js').XYZ | import('../coords/index.js').XY) & {
-   *  speed?: 1 | 2 | 3,
-   *  shard: import('../shard/index.js').ShardType,
-   *  direction?: Direction
-   * }} info
-   */
-  move(info) {
-    const t = info.shard.objects.find((obj) => obj.serial === this.serial);
-    if (!t) {
-      throw new Error('No object in the shard.');
-    }
-    t.direction = info.direction || getDirectionByDelta(t, info);
-    // t.direction = info.direction;
-    t.x = info.x;
-    t.y = info.y;
-    t.z = 'z' in info ? info.z : this.z;
-    return {
-      type: IMT.OBJECT_MOVE,
-      data: {
-        target: t.serial,
-        ...t,
-        speed: info.speed,
-      },
-    };
-  }
-
-  /**
-   * @param {string | string[]} message
-   */
-  talk(message) {
-    return {
-      type: IMT.OBJECT_TALK,
-      data: {
-        target: this.serial,
-        message,
-      },
-    };
-  }
-
-  /**
-   * @param {0 | 1 | 2 | 3} [speed] 0: instantly
-   */
-  focus(speed = 1) {
-    const hitbox = this.hitbox;
-    return message.focus({
-      x: this.x + (hitbox ? hitbox.w/2 : 0),
-      y: this.y + (hitbox ? hitbox.h/2 : 0),
-      speed,
-    });
-  }
-
-  control() {
-    return {
-      type: IMT.OBJECT_CONTROL,
-      data: {
-        target: this.serial,
-      },
-    };
-  }
-
-  /**
-   * @param {import('../shard/index.js').ShardType} shard
-   */
-  remove(shard) {
-    const idx = shard.objects.findIndex((obj) => obj.key === this.key);
-    if (idx > -1) {
-      shard.objects.splice(idx, 1);
-    }
-    return {
-      type: IMT.OBJECT_REMOVE,
-      data: {
-        target: this.serial,
-      },
-    };
-  }
-
   get interact() {
     return this.#interact;
   }
@@ -220,8 +142,13 @@ export class IObject {
       x: this.x,
       y: this.y,
       z: this.z,
+      direction: this.direction,
       sprite: this.#sprite,
       portraits: this.#portraits,
     };
   }
 }
+
+/**
+ * @typedef {IObject} IObjectType
+ */

@@ -41,7 +41,7 @@ export const onSceneEvent = ({ user, type, data }) => {
       }
 
       const next = getNextXYZ({ target, objects, destination: data });
-      return target.move({
+      return target.message.move({
         ...next,
         direction: data.direction,
         shard,
