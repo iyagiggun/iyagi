@@ -47,7 +47,7 @@ export const onSceneEvent = ({ user, type, data }) => {
         shard,
       });
     }
-    case IMT.SCENE_INTERACT:
+    case IMT.OBJECT_INTERACT:
     {
       const objects = user.shard.objects;
       const target = objects.find((o) => o.serial === data.target);
@@ -90,7 +90,7 @@ export const onSceneEvent = ({ user, type, data }) => {
       if (!willInteract) {
         return;
       }
-      willInteract.interact?.(user);
+      willInteract.dispatchEvent(new CustomEvent('interact'));
       return null;
       // console.error(user.objects);
     }

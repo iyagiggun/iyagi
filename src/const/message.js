@@ -11,13 +11,13 @@ export const IMT = {
   OBJECT_CONTROL: 'object.control',
   OBJECT_REMOVE: 'object.remove',
   OBJECT_MOTION: 'object.motion',
+  OBJECT_INTERACT: 'object.interact',
 
   SCENE_LOAD: 'scene.load',
   SCENE_LOADED: 'scene.loaded',
   SCENE_TAKE: 'scene.take',
   SCENE_TAKEN: 'scene.taken',
   SCENE_OBJECT: 'scene.object',
-  SCENE_INTERACT: 'scene.interact',
   SCENE_CONTROL: 'scene.control',
   SCENE_FOCUS: 'scene.focus',
 };

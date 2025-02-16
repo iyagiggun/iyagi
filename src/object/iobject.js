@@ -48,7 +48,6 @@ import { IObjectMessage } from './message.js';
  * @property {Area=} hitbox
  * @property {SpriteInfo} sprite
  * @property {Portraits=} portraits
- * @property {function(import('../user/index.js').User): void=} interact
  */
 
 /**
@@ -56,14 +55,12 @@ import { IObjectMessage } from './message.js';
  */
 const stampIdxMap = new Map();
 
-export class IObject {
+export class IObject extends EventTarget {
   #resource;
 
   #name;
 
   #hitbox;
-
-  #interact;
 
   #sprite;
 
@@ -79,7 +76,6 @@ export class IObject {
    *  hitbox?: Area;
    *  sprite: SpriteInfo;
    *  portraits?: Portraits;
-   *  interact?: (user: import('../user/index.js').UserType) => void;
    * }} p
    */
   constructor(resource, {
@@ -91,8 +87,8 @@ export class IObject {
     hitbox,
     sprite,
     portraits,
-    interact,
   }) {
+    super();
     this.#resource = resource;
     this.#name = name;
     this.x = x;
@@ -102,15 +98,10 @@ export class IObject {
     this.#sprite = sprite;
     this.#portraits = portraits;
     this.direction = direction ?? 'down';
-    this.#interact = interact;
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
     this.message = new IObjectMessage(this);
     this.serial = `${resource}:${stampIdx}`;
-  }
-
-  get key() {
-    return this.serial;
   }
 
   get name() {
@@ -122,7 +113,6 @@ export class IObject {
       return null;
     }
     return {
-      key: this.#resource,
       ...this.#hitbox,
       x: this.x + this.#hitbox.x,
       y: this.y + this.#hitbox.y,
@@ -130,8 +120,12 @@ export class IObject {
     };
   }
 
-  get interact() {
-    return this.#interact;
+  /**
+   * @param {'interact'} type
+   * @param {() => void} callback
+   */
+  addEventListener(type, callback) {
+    super.addEventListener(type, callback);
   }
 
   toJSON() {

@@ -4,6 +4,7 @@
  */
 
 import global from './global.js';
+import { message } from './message/index.js';
 import { onSceneEvent } from './scene/handler.js';
 
 /**
@@ -45,3 +46,7 @@ export default class IServer {
   }
 }
 
+
+export const iserver = {
+  message,
+};

@@ -80,7 +80,7 @@ export class IObjectMessage {
    * @param {import('../shard/index.js').ShardType} shard
    */
   remove(shard) {
-    const idx = shard.objects.findIndex((obj) => obj.key === this.#obj.key);
+    const idx = shard.objects.findIndex((obj) => obj.serial === this.#obj.serial);
     if (idx > -1) {
       shard.objects.splice(idx, 1);
     }
