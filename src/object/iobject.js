@@ -1,5 +1,3 @@
-import { IObjectMessage } from './message.js';
-
 /**
  * @typedef {import("../coords/index.js").Direction} Direction
  * @typedef {import("../coords/index.js").Area} Area
@@ -34,7 +32,7 @@ import { IObjectMessage } from './message.js';
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
  * @property {import('../coords/index.js').XY} [offset]
- * @property {{[key: string]: Motion}} [motions]
+ * @property {{[key: string]: Motion}} motions
  */
 
 /**
@@ -63,6 +61,8 @@ export class IObject extends EventTarget {
   #hitbox;
 
   #sprite;
+
+  #motion;
 
   #portraits;
 
@@ -96,11 +96,11 @@ export class IObject extends EventTarget {
     this.z = z;
     this.#hitbox = hitbox;
     this.#sprite = sprite;
+    this.#motion = 'base';
     this.#portraits = portraits;
     this.direction = direction ?? 'down';
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
-    this.message = new IObjectMessage(this);
     this.serial = `${resource}:${stampIdx}`;
   }
 
@@ -121,7 +121,18 @@ export class IObject extends EventTarget {
   }
 
   /**
-   * @param {'interact'} type
+   * @param {string} next
+   */
+  set motion(next) {
+    if (!Object.keys(this.#sprite.motions).includes(next)) {
+      throw new Error('no motion.');
+    }
+    this.#motion = next;
+
+  }
+
+  /**
+   * @param {'interact' | 'press'} type
    * @param {() => void} callback
    */
   addEventListener(type, callback) {
@@ -136,6 +147,7 @@ export class IObject extends EventTarget {
       x: this.x,
       y: this.y,
       z: this.z,
+      motion: this.#motion,
       direction: this.direction,
       sprite: this.#sprite,
       portraits: this.#portraits,
@@ -145,4 +157,8 @@ export class IObject extends EventTarget {
 
 /**
  * @typedef {IObject} IObjectType
+ */
+
+/**
+ * @typedef {ReturnType<IObject['toJSON']>} IObjectJSON
  */

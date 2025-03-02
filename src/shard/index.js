@@ -1,4 +1,4 @@
-import { ShardMessage } from './message.js';
+import { ShardMessage } from './message/index.js';
 
 let shardKeyDummy = 0;
 
