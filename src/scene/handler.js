@@ -39,12 +39,10 @@ export const onSceneEvent = ({ user, type, data }) => {
       if (target.x === data.x && target.y === data.y) {
         return null;
       }
-
       const next = getNextXYZ({ target, objects, destination: data });
-      return target.message.move({
+      return shard.message.object.move(data.serial, {
         ...next,
         direction: data.direction,
-        shard,
       });
     }
     case IMT.OBJECT_INTERACT:
@@ -92,7 +90,6 @@ export const onSceneEvent = ({ user, type, data }) => {
       }
       willInteract.dispatchEvent(new CustomEvent('interact'));
       return null;
-      // console.error(user.objects);
     }
   }
 };
