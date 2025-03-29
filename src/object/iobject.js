@@ -104,10 +104,16 @@ export class IObject extends EventTarget {
     this.serial = `${resource}:${stampIdx}`;
   }
 
+  /**
+   * @readonly
+   */
   get name() {
     return this.#name;
   }
 
+  /**
+   * @readonly
+   */
   get hitbox() {
     if (!this.#hitbox) {
       return null;
@@ -117,6 +123,20 @@ export class IObject extends EventTarget {
       x: this.x + this.#hitbox.x,
       y: this.y + this.#hitbox.y,
       z: this.z,
+    };
+  }
+
+  center() {
+    const hitbox = this.hitbox;
+    if (!hitbox){
+      return {
+        x: this.x,
+        y: this.y,
+      };
+    }
+    return {
+      x: this.x + hitbox.w / 2,
+      y: this.y + hitbox.h / 2,
     };
   }
 
@@ -154,10 +174,6 @@ export class IObject extends EventTarget {
     };
   }
 }
-
-/**
- * @typedef {IObject} IObjectType
- */
 
 /**
  * @typedef {ReturnType<IObject['toJSON']>} IObjectJSON

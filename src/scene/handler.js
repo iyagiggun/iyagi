@@ -14,10 +14,6 @@ export const onSceneEvent = ({ user, type, data }) => {
   switch(type) {
     case IMT.SCENE_LOAD:
     {
-      // If a shard key is provided, it retrieves the shard's content
-      // if not, it creates a shard based on the scene.
-      const shard = data.shard ? ShardForge.seek(data.shard) : undefined;
-      user.shard = shard ?? ShardForge.shatter(global.scene.find(data.scene));
       return {
         type: IMT.SCENE_LOAD,
         data: { objects: [...user.shard.objects] },
@@ -80,11 +76,14 @@ export const onSceneEvent = ({ user, type, data }) => {
         }
       })();
 
+      // TODO :: issue - leftest was choosed..
       const willInteract = objects.find(
         (object) => {
           return object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea);
         }
       );
+
+      console.error(willInteract);
       if (!willInteract) {
         return;
       }

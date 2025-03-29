@@ -1,22 +1,13 @@
-import { Shard } from './index.js';
-
-/**
- * @type {Map<string, Shard>}
- */
 let shards = new Map();
+
 
 export const ShardForge = {
   /**
-   * @param {Object} p
-   * @param {import('../object/iobject.js').IObject[]} p.objects
+   * @param {string} key
+   * @param {import('./index.js').Shard} shard
    */
-  shatter: ({
-    objects,
-  }) => {
-    const shard = new Shard({
-      objects,
-    });
-    shards.set(shard.key, shard);
+  shatter: (key, shard) => {
+    shards.set(key, shard);
     return shard;
   },
   /**

@@ -10,7 +10,7 @@ export class ShardObjectMessage {
   #objects;
 
   /**
-   * @param {import('../../object/iobject.js').IObjectType[]} objects
+   * @param {import('../../object/iobject.js').IObject[]} objects
    */
   constructor(objects) {
     this.#objects = objects;
@@ -58,9 +58,9 @@ export class ShardObjectMessage {
     // if (targetHitbox) {
     //   const [pressed, unpressed] = info.shard.objects.reduce(
     //     /**
-    //      * @param {[import('./iobject.js').IObjectType[], import('./iobject.js').IObjectType[]]} acc
-    //      * @param {import('./iobject.js').IObjectType} obj
-    //      * @return {[import('./iobject.js').IObjectType[], import('./iobject.js').IObjectType[]]}
+    //      * @param {[import('./iobject.js').IObject[], import('./iobject.js').IObject[]]} acc
+    //      * @param {import('./iobject.js').IObject} obj
+    //      * @return {[import('./iobject.js').IObject[], import('./iobject.js').IObject[]]}
     //      */
     //     ([_pressed, _unpressed], obj) => {
     //       if (!obj.hitbox || obj.z !== (t.z - 1)) {

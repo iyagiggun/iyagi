@@ -1,10 +1,8 @@
+import { Subject } from 'rxjs';
+import { IMT } from '../const/message.js';
 import { ShardMessage } from './message/index.js';
 
-let shardKeyDummy = 0;
-
 export class Shard {
-  #key;
-
   /**
    * @param {Object} p
    * @param {import('../object/iobject.js').IObject[]} p.objects
@@ -12,17 +10,27 @@ export class Shard {
   constructor({
     objects,
   }) {
-    this.#key = `${shardKeyDummy++}`;
     this.objects = objects;
     this.message = new ShardMessage(this);
-  }
+    /**
+     * @type {Subject<import('../teller/index.js').SubjectData>}
+     */
+    this.load$ = new Subject();
+    /**
+     * @type {Subject<import('../teller/index.js').SubjectData>}
+     */
+    this.loaded$ = new Subject();
 
-  get key() {
-    return this.#key;
-  }
-
-  set key(_) {
-    throw new Error('Shard key cannot be modified.');
+    this.load$.subscribe(({ shard, listen }) => {
+      listen({
+        type: IMT.SHARD_LOAD,
+        data: {
+          shard: {
+            objects: shard.objects,
+          },
+        },
+      });
+    });
   }
 }
 

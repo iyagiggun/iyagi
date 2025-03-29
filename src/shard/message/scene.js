@@ -5,7 +5,7 @@ export class ShardSceneMessage {
   #objects;
 
   /**
-   * @param {import('../../object/iobject.js').IObjectType[]} objects
+   * @param {import('../../object/iobject.js').IObject[]} objects
    */
   constructor(objects) {
     this.#objects = objects;

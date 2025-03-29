@@ -6,6 +6,9 @@
 import global from './global.js';
 import { message } from './message/index.js';
 import { onSceneEvent } from './scene/handler.js';
+import { ShardForge } from './shard/forge.js';
+import { Shard } from './shard/index.js';
+import { Teller } from './teller/index.js';
 
 /**
  * @typedef {Object} IServerParams
@@ -46,7 +49,8 @@ export default class IServer {
   }
 }
 
-
 export const iserver = {
   message,
 };
+
+export { Teller, ShardForge, Shard };
