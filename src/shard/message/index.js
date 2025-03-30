@@ -12,7 +12,7 @@ export class ShardMessage {
     objects,
   }) {
     this.common = ShardCommonMessage;
-    this.camera = new ShardCameraMessage(objects);
+    this.camera = ShardCameraMessage;
     this.object = new ShardObjectMessage(objects);
     // this.scene = new ShardSceneMessage(objects);
   }
@@ -31,17 +31,17 @@ const ShardCommonMessage = {
     };
   },
 
-  // /**
-  //  * @param {*[]} list
-  //  */
-  // list(list) {
-  //   return {
-  //     type: IMT.LIST,
-  //     data: {
-  //       list,
-  //     },
-  //   };
-  // }
+  /**
+   * @param {*[]} list
+   */
+  list(list) {
+    return {
+      type: IMT.LIST,
+      data: {
+        list,
+      },
+    };
+  },
 
   // /**
   //  * @param {string} target

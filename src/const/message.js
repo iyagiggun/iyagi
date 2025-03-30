@@ -8,6 +8,7 @@ export const IMT = {
 
   SHARD_LOAD: 'shard.load',
   SHARD_LOADED: 'shard.loaded',
+  SHARD_INTERACT: 'shard.interact',
 
   OBJECT_MOVE: 'object.move',
   OBJECT_TALK: 'object.talk',

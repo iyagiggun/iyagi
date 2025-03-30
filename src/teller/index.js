@@ -39,6 +39,13 @@ export class Teller {
       case IMT.SHARD_LOADED:
         data.shard.loaded$.next(data);
         return;
+      case IMT.OBJECT_MOVE:
+        data.shard.move$.next(data);
+        return;
+      case IMT.SHARD_INTERACT:
+        data.shard.interact$.next(data);
+        return;
+
     }
   }
 }

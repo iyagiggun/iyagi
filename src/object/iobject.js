@@ -3,6 +3,8 @@
  * @typedef {import("../coords/index.js").Area} Area
  */
 
+import { Subject } from 'rxjs';
+
 /**
  * @typedef SpriteImage
  * @property {string} url
@@ -102,6 +104,15 @@ export class IObject extends EventTarget {
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
     this.serial = `${resource}:${stampIdx}`;
+
+    /**
+     * @type {Subject<import('../teller/index.js').SubjectData>}
+     */
+    this.interact$ = new Subject();
+
+    // this.move$.subscribe(({listen}) => {
+
+    // })
   }
 
   /**
@@ -149,14 +160,6 @@ export class IObject extends EventTarget {
     }
     this.#motion = next;
 
-  }
-
-  /**
-   * @param {'interact' | 'press'} type
-   * @param {() => void} callback
-   */
-  addEventListener(type, callback) {
-    super.addEventListener(type, callback);
   }
 
   toJSON() {

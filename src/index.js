@@ -5,7 +5,6 @@
 
 import global from './global.js';
 import { message } from './message/index.js';
-import { onSceneEvent } from './scene/handler.js';
 import { ShardForge } from './shard/forge.js';
 import { Shard } from './shard/index.js';
 import { Teller } from './teller/index.js';
@@ -28,24 +27,6 @@ export default class IServer {
     global.init({
       scenes,
     });
-  }
-
-  /**
-   * @param {Object} param
-   * @param {string} param.type
-   * @param {*} param.data
-   * @param {import('./user/index.js').User} param.user
-   */
-  respond({
-    type,
-    data,
-    user,
-  }) {
-    const msg = onSceneEvent({ user, type, data });
-    if (!msg) {
-      return;
-    }
-    this.send(msg);
   }
 }
 
