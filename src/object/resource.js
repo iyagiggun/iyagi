@@ -18,8 +18,6 @@ export default class ObjectResource {
 
   #name;
 
-  #hitbox;
-
   #sprite;
 
   #portraits;
@@ -29,13 +27,11 @@ export default class ObjectResource {
   constructor({
     key,
     name,
-    hitbox,
     sprite,
     portraits,
   }) {
     this.#key = key;
     this.#name = name;
-    this.#hitbox = hitbox;
     this.#sprite = sprite;
     this.#portraits = portraits;
   }
@@ -48,7 +44,6 @@ export default class ObjectResource {
   stamp(info) {
     const obj = new IObject(this.#key, {
       name: this.#name,
-      hitbox: this.#hitbox,
       sprite: this.#sprite,
       portraits: this.#portraits,
       ...info,
@@ -62,13 +57,12 @@ export default class ObjectResource {
 /**
  * @typedef {Object} MonoSpriteInfo
  * @property {string} image
- * @property {import('../coords/index.js').XY=} offset;
+ * @property {import('../coords/index.js').Area} [hitbox]
  * @property {import('../coords/index.js').Area[]} frames
  *
  * @typedef {Object} MonoObjectParams
  * @property {string} key
  * @property {string=} name
- * @property {import('../coords/index.js').Area=} hitbox
  * @property {MonoSpriteInfo} sprite
  * @property {import('./iobject.js').Portraits=} portraits
  */
@@ -85,7 +79,6 @@ export class MonoObjectResource extends ObjectResource {
         image: {
           url: params.sprite.image,
         },
-        offset: params.sprite.offset,
         motions: {
           base: {
             down: {

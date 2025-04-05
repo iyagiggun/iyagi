@@ -14,14 +14,14 @@ import { Subject } from 'rxjs';
 /**
  * @typedef ActionArea
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').XY} [offset]
+ * @property {Area} [hitbox]
  * @property {import('../coords/index.js').Area[]} frames
  */
 
 /**
  * @typedef Motion
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').XY} [offset]
+ * @property {Area} [hitbox]
  * @property {boolean} [loop]
  * @property {ActionArea} [up]
  * @property {ActionArea} [down]
@@ -33,7 +33,7 @@ import { Subject } from 'rxjs';
 /**
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
- * @property {import('../coords/index.js').XY} [offset]
+ * @property {Area} [hitbox]
  * @property {{[key: string]: Motion}} motions
  */
 
@@ -55,7 +55,10 @@ import { Subject } from 'rxjs';
  */
 const stampIdxMap = new Map();
 
-export class IObject extends EventTarget {
+const MOTION_BASE = 'base';
+const DIRECTION_DEFAULT = 'down';
+
+export class IObject {
   #resource;
 
   #name;
@@ -64,7 +67,10 @@ export class IObject extends EventTarget {
 
   #sprite;
 
-  #motion;
+  #motion = MOTION_BASE;
+
+  /** @type {Direction} */
+  #direction = DIRECTION_DEFAULT;
 
   #portraits;
 
@@ -75,7 +81,6 @@ export class IObject extends EventTarget {
    * @param {import('../coords/index.js').XYZ & {
    *  name?: string;
    *  direction?: Direction;
-   *  hitbox?: Area;
    *  sprite: SpriteInfo;
    *  portraits?: Portraits;
    * }} p
@@ -86,21 +91,20 @@ export class IObject extends EventTarget {
     y,
     z,
     direction,
-    hitbox,
     sprite,
     portraits,
   }) {
-    super();
     this.#resource = resource;
     this.#name = name;
+    this.#sprite = sprite;
     this.x = x;
     this.y = y;
     this.z = z;
-    this.#hitbox = hitbox;
-    this.#sprite = sprite;
-    this.#motion = 'base';
+    if (direction) {
+      this.#direction = direction;
+    }
+    this.#hitbox = this.#calcHitbox();
     this.#portraits = portraits;
-    this.direction = direction ?? 'down';
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
     this.serial = `${resource}:${stampIdx}`;
@@ -109,10 +113,6 @@ export class IObject extends EventTarget {
      * @type {Subject<import('../teller/index.js').SubjectData>}
      */
     this.interact$ = new Subject();
-
-    // this.move$.subscribe(({listen}) => {
-
-    // })
   }
 
   /**
@@ -126,14 +126,57 @@ export class IObject extends EventTarget {
    * @readonly
    */
   get hitbox() {
-    if (!this.#hitbox) {
-      return null;
-    }
     return {
       ...this.#hitbox,
       x: this.x + this.#hitbox.x,
       y: this.y + this.#hitbox.y,
       z: this.z,
+    };
+  }
+
+  get w() {
+    return this.#hitbox.w;
+  }
+
+  get h() {
+    return this.#hitbox.h;
+  }
+
+  get direction() {
+    return this.#direction;
+  }
+
+  set direction(next) {
+    if (this.#direction === next) {
+      return;
+    }
+    this.#direction = next;
+  }
+
+  get clientX() {
+    return this.x - this.#hitbox.x;
+  }
+
+  get clientY() {
+    return this.y - this.#hitbox.y;
+  }
+
+  #calcHitbox() {
+    const motion = this.#sprite.motions[this.#motion];
+    const directedMotion = motion[this.#direction];
+    const hitbox = directedMotion?.hitbox ?? motion.hitbox ?? this.#sprite.hitbox;
+    if (hitbox) {
+      return hitbox;
+    }
+    if (!directedMotion) {
+      throw new Error('no directed motion.');
+    }
+    const { w, h } = directedMotion.frames[0];
+    return {
+      x: 0,
+      y: 0,
+      w,
+      h,
     };
   }
 
@@ -159,25 +202,20 @@ export class IObject extends EventTarget {
       throw new Error('no motion.');
     }
     this.#motion = next;
-
   }
 
-  toJSON() {
+  toLoadData() {
     return {
       resource: this.#resource,
       serial: this.serial,
       name: this.name,
-      x: this.x,
-      y: this.y,
+      x: this.clientX,
+      y: this.clientY,
       z: this.z,
       motion: this.#motion,
-      direction: this.direction,
+      direction: this.#direction,
       sprite: this.#sprite,
       portraits: this.#portraits,
     };
   }
 }
-
-/**
- * @typedef {ReturnType<IObject['toJSON']>} IObjectJSON
- */

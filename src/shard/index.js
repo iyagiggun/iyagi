@@ -37,29 +37,52 @@ export class Shard {
         type: IMT.SHARD_LOAD,
         data: {
           shard: {
-            objects: shard.objects,
+            objects: shard.objects.map((o) => o.toLoadData()),
           },
         },
       });
     });
 
+    // delta 로 동작함 (position 이 아니라)
     this.move$.subscribe(({ shard, listen, message }) => {
       const objects = shard.objects;
       const data = message.data;
-      const target = shard.objects.find((o) => o.serial === message.data.serial);
+      const target = shard.objects.find((o) => o.serial === data.serial);
       if (!target) {
         throw new Error(`Fail to move. No target (${message.data.serial}).`);
       }
-      const next = getNextXYZ({ target, objects, destination: data });
+      const delta = data.delta;
+      const x = target.x + (delta.x ?? 0);
+      const y = target.y + (delta.y ?? 0);
+      const z = target.z + (delta.z ?? 0);
+      const next = getNextXYZ({ target, objects, destination: { x, y, z } });
       target.direction = data.direction || getDirectionByDelta(target, next);
       target.x = next.x;
       target.y = next.y;
-      target.z = 'z' in data ? data.z : target.z;
+      target.z = next.z;
+
+      const tHitbox = target.hitbox;
+      if (tHitbox) {
+        const overlaped = objects.filter((o) => {
+          if (o.serial === target.serial) {
+            return false;
+          }
+          const oHitbox = o.hitbox;
+          if (oHitbox) {
+            return isOverlap({ ...oHitbox }, { ...next, w: tHitbox.w, h: tHitbox.h });
+          }
+          return false;
+        });
+        console.error(overlaped);
+      }
+
       listen({
         type: IMT.OBJECT_MOVE,
         data: {
           target: target.serial,
-          ...next,
+          x: target.clientX,
+          y: target.clientY,
+          z: target.z,
           direction: target.direction,
           speed: data.speed,
         },
