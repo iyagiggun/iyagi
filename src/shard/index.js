@@ -24,6 +24,7 @@ export class Shard {
 
     /**
      * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @description Operates based on delta values
      */
     this.move$ = new Subject();
 
@@ -44,7 +45,7 @@ export class Shard {
     });
 
     // delta 로 동작함 (position 이 아니라)
-    this.move$.subscribe(({ shard, listen, message }) => {
+    this.move$.subscribe(({ shard, listen, message, user }) => {
       const objects = shard.objects;
       const data = message.data;
       const target = shard.objects.find((o) => o.serial === data.serial);
@@ -62,19 +63,20 @@ export class Shard {
       target.z = next.z;
 
       const tHitbox = target.hitbox;
-      if (tHitbox) {
-        const overlaped = objects.filter((o) => {
-          if (o.serial === target.serial) {
-            return false;
-          }
-          const oHitbox = o.hitbox;
-          if (oHitbox) {
-            return isOverlap({ ...oHitbox }, { ...next, w: tHitbox.w, h: tHitbox.h });
-          }
+      const overlaped = objects.filter((o) => {
+        if (o.serial === target.serial) {
           return false;
-        });
-        console.error(overlaped);
-      }
+        }
+        const oHitbox = o.hitbox;
+        if (oHitbox) {
+          return isOverlap({ ...oHitbox }, { ...next, w: tHitbox.w, h: tHitbox.h });
+        }
+        return false;
+      });
+      const pressed = overlaped.filter((o) => o.hitbox.z === tHitbox.z - 1);
+      pressed.forEach((o) => {
+        o.pressed$.next({ user, shard, message, listen });
+      });
 
       listen({
         type: IMT.OBJECT_MOVE,

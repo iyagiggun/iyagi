@@ -79,6 +79,7 @@ export class MonoObjectResource extends ObjectResource {
         image: {
           url: params.sprite.image,
         },
+        hitbox: params.sprite.hitbox,
         motions: {
           base: {
             down: {

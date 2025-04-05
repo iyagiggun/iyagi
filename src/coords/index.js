@@ -48,9 +48,9 @@ export const getNextXYZ = ({
   const destZ = 'z' in destination ? destination.z : curZ;
   const hitbox = target.hitbox;
 
-  if (!hitbox) {
-    return { ...destination, z: destZ };
-  }
+  // if (!hitbox) {
+  //   return { ...destination, z: destZ };
+  // }
 
   let deltaX = destination.x - curX;
   let deltaY = destination.y - curY;
@@ -60,7 +60,6 @@ export const getNextXYZ = ({
   const intervalY = deltaY / interval_length;
 
   const canHit = objects.filter((o) => o.serial !== target.serial && (o.z ?? 1) === curZ && o.hitbox);
-
 
   let step = 0;
   while (step < interval_length) {
@@ -72,11 +71,7 @@ export const getNextXYZ = ({
     };
 
     const hit = canHit.find((o) => {
-      const hitbox = o.hitbox;
-      if (!hitbox) {
-        return;
-      }
-      return isOverlap(hitboxInStep, hitbox);
+      return isOverlap(hitboxInStep, o.hitbox);
     });
     if (hit) {
       return {

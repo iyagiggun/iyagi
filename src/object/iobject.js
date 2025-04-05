@@ -63,7 +63,7 @@ export class IObject {
 
   #name;
 
-  #hitbox;
+  #absHitbox;
 
   #sprite;
 
@@ -103,7 +103,7 @@ export class IObject {
     if (direction) {
       this.#direction = direction;
     }
-    this.#hitbox = this.#calcHitbox();
+    this.#absHitbox = this.#calcAbsHitbox();
     this.#portraits = portraits;
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
@@ -113,6 +113,11 @@ export class IObject {
      * @type {Subject<import('../teller/index.js').SubjectData>}
      */
     this.interact$ = new Subject();
+
+    /**
+     * @type {Subject<import('../teller/index.js').SubjectData>}
+     */
+    this.pressed$ = new Subject();
   }
 
   /**
@@ -127,19 +132,25 @@ export class IObject {
    */
   get hitbox() {
     return {
-      ...this.#hitbox,
-      x: this.x + this.#hitbox.x,
-      y: this.y + this.#hitbox.y,
+      ...this.#absHitbox,
+      x: this.x,
+      y: this.y,
       z: this.z,
     };
   }
 
+  /**
+   * @readonly
+   */
   get w() {
-    return this.#hitbox.w;
+    return this.#absHitbox.w;
   }
 
+  /**
+   * @readonly
+   */
   get h() {
-    return this.#hitbox.h;
+    return this.#absHitbox.h;
   }
 
   get direction() {
@@ -151,17 +162,18 @@ export class IObject {
       return;
     }
     this.#direction = next;
+    this.#absHitbox = this.#calcAbsHitbox();
   }
 
   get clientX() {
-    return this.x - this.#hitbox.x;
+    return this.x - this.#absHitbox.x;
   }
 
   get clientY() {
-    return this.y - this.#hitbox.y;
+    return this.y - this.#absHitbox.y;
   }
 
-  #calcHitbox() {
+  #calcAbsHitbox() {
     const motion = this.#sprite.motions[this.#motion];
     const directedMotion = motion[this.#direction];
     const hitbox = directedMotion?.hitbox ?? motion.hitbox ?? this.#sprite.hitbox;
@@ -181,16 +193,10 @@ export class IObject {
   }
 
   center() {
-    const hitbox = this.hitbox;
-    if (!hitbox){
-      return {
-        x: this.x,
-        y: this.y,
-      };
-    }
+    const { w, h } = this.#absHitbox;
     return {
-      x: this.x + hitbox.w / 2,
-      y: this.y + hitbox.h / 2,
+      x: this.x + w / 2,
+      y: this.y + h / 2,
     };
   }
 
