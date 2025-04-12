@@ -129,7 +129,9 @@ export class Shard {
       // TODO :: issue - leftest was choosed..
       const willInteract = objects.find(
         (object) => {
-          return object !== target && object.hitbox && isOverlap(object.hitbox, interactionArea);
+          return object !== target
+              && object.z === target.z
+              && isOverlap(object.hitbox, interactionArea);
         }
       );
       willInteract?.interact$.next({ user, shard, message, listen });
