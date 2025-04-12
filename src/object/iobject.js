@@ -153,6 +153,13 @@ export class IObject {
     return this.#absHitbox.h;
   }
 
+  /**
+   * @readonly
+   */
+  get xyz() {
+    return { x: this.x, y: this.y, z: this.z };
+  }
+
   get direction() {
     return this.#direction;
   }
@@ -163,14 +170,6 @@ export class IObject {
     }
     this.#direction = next;
     this.#absHitbox = this.#calcAbsHitbox();
-  }
-
-  get clientX() {
-    return this.x - this.#absHitbox.x;
-  }
-
-  get clientY() {
-    return this.y - this.#absHitbox.y;
   }
 
   #calcAbsHitbox() {
@@ -210,14 +209,21 @@ export class IObject {
     this.#motion = next;
   }
 
+  get offset() {
+    const { x, y } = this.#absHitbox;
+    return {
+      x,
+      y,
+    };
+  }
+
   toLoadData() {
     return {
       resource: this.#resource,
       serial: this.serial,
       name: this.name,
-      x: this.clientX,
-      y: this.clientY,
-      z: this.z,
+      ...this.xyz,
+      offset: this.offset,
       motion: this.#motion,
       direction: this.#direction,
       sprite: this.#sprite,

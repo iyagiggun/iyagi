@@ -86,7 +86,8 @@ export class ShardObjectMessage {
       type: IMT.OBJECT_MOVE,
       data: {
         target: t.serial,
-        ...t,
+        ...t.xyz,
+        direction: t.direction,
         speed: info.speed,
       },
     };

@@ -8,7 +8,6 @@ import { IObject } from './iobject.js';
  * @typedef {Object} SObjectParams
  * @property {string} key
  * @property {string=} name
- * @property {import('../coords/index.js').Area=} hitbox
  * @property {import('./iobject.js').SpriteInfo} sprite
  * @property {import('./iobject.js').Portraits=} portraits
  */
