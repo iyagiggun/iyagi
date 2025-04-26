@@ -3,19 +3,23 @@
  */
 
 export const IMT = {
+  START: 'start',
   WAIT: 'wait',
   LIST: 'list',
 
   SHARD_LOAD: 'shard.load',
   SHARD_LOADED: 'shard.loaded',
-  SHARD_INTERACT: 'shard.interact',
+
+  SHARD_FADE_IN: 'shard.fade.in',
+  SHARD_FADE_OUT: 'shard.fade.out',
 
   OBJECT_MOVE: 'object.move',
   OBJECT_TALK: 'object.talk',
+  OBJECT_INTERACT: 'object.interact',
   OBJECT_CONTROL: 'object.control',
+  OBJECT_RELEASE: 'object.release',
   OBJECT_REMOVE: 'object.remove',
   OBJECT_MOTION: 'object.motion',
-  OBJECT_INTERACT: 'object.interact',
 
   SCENE_LOAD: 'scene.load',
   SCENE_LOADED: 'scene.loaded',

@@ -3,7 +3,7 @@ import { IMT } from '../const/message.js';
 /**
  * @typedef {{
  *  type: string,
- *  data: any,
+ *  data?: any,
  * }} Message
  */
 
@@ -12,7 +12,7 @@ import { IMT } from '../const/message.js';
  *  user: import('../user/index.js').User;
  *  shard: import('../shard/index.js').Shard;
  *  message: Message;
- *  listen: (message: Message) => void;
+ *  reply: (message: Message) => void;
  * }} SubjectData
  */
 
@@ -33,6 +33,7 @@ export class Teller {
    */
   ask(data) {
     switch(data.message.type) {
+      case IMT.START:
       case IMT.SHARD_LOAD:
         data.shard.load$.next(data);
         return;
@@ -42,9 +43,11 @@ export class Teller {
       case IMT.OBJECT_MOVE:
         data.shard.move$.next(data);
         return;
-      case IMT.SHARD_INTERACT:
+      case IMT.OBJECT_INTERACT:
         data.shard.interact$.next(data);
         return;
+      default:
+        console.error('server recieve unknown message', data.message);
 
     }
   }

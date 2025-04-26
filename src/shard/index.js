@@ -33,8 +33,8 @@ export class Shard {
      */
     this.interact$ = new Subject();
 
-    this.load$.subscribe(({ shard, listen }) => {
-      listen({
+    this.load$.subscribe(({ shard, reply }) => {
+      reply({
         type: IMT.SHARD_LOAD,
         data: {
           shard: {
@@ -45,7 +45,7 @@ export class Shard {
     });
 
     // delta 로 동작함 (position 이 아니라)
-    this.move$.subscribe(({ shard, listen, message, user }) => {
+    this.move$.subscribe(({ shard, reply, message, user }) => {
       const objects = shard.objects;
       const data = message.data;
       const target = shard.objects.find((o) => o.serial === data.serial);
@@ -75,10 +75,10 @@ export class Shard {
       });
       const pressed = overlaped.filter((o) => o.hitbox.z === tHitbox.z - 1);
       pressed.forEach((o) => {
-        o.pressed$.next({ user, shard, message, listen });
+        o.pressed$.next({ user, shard, message, reply });
       });
 
-      listen({
+      reply({
         type: IMT.OBJECT_MOVE,
         data: {
           target: target.serial,
@@ -90,7 +90,7 @@ export class Shard {
       });
     });
 
-    this.interact$.subscribe(({ user, shard, listen, message }) => {
+    this.interact$.subscribe(({ user, shard, reply, message }) => {
       const objects = shard.objects;
       const data = message.data;
       const target = objects.find((o) => o.serial === data.target);
@@ -134,7 +134,7 @@ export class Shard {
               && isOverlap(object.hitbox, interactionArea);
         }
       );
-      willInteract?.interact$.next({ user, shard, message, listen });
+      willInteract?.interact$.next({ user, shard, message, reply });
 
     });
   }
