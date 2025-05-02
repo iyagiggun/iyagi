@@ -33,11 +33,9 @@ export class Teller {
   ask(data) {
     switch(data.message.type) {
       case IMT.SHARD_LOAD:
-        console.error('loadd???', data.user.shard.key);
         data.user.shard.load$.next(data);
         return;
       case IMT.SHARD_LOADED:
-        console.error('loaded', data.user.shard.key);
         data.user.shard.loaded$.next(data);
         return;
       case IMT.OBJECT_MOVE:

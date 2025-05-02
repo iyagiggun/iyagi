@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
 import { IMT } from '../const/message.js';
 import { ShardMessage } from './message/index.js';
-import { getDirectionByDelta, getNextXYZ, isOverlap } from '../coords/index.js';
+import { getDirectionByDelta, getNextXYZ, isIn, isOverlap } from '../coords/index.js';
 
 export class Shard {
   #key;
@@ -67,19 +67,14 @@ export class Shard {
       target.y = next.y;
       target.z = next.z;
 
-      const tHitbox = target.hitbox;
-      const overlaped = objects.filter((o) => {
-        if (o.id === target.id) {
-          return false;
+      const tc = target.center();
+      objects.forEach((o) => {
+        if (o.hitbox.z !== target.z - 1) {
+          return;
         }
-        const oHitbox = o.hitbox;
-        if (oHitbox) {
-          return isOverlap({ ...oHitbox }, { ...next, w: tHitbox.w, h: tHitbox.h });
+        if (!isIn(tc, o.hitbox)) {
+          return;
         }
-        return false;
-      });
-      const pressed = overlaped.filter((o) => o.hitbox.z === tHitbox.z - 1);
-      pressed.forEach((o) => {
         o.pressed$.next({ user, message, reply });
       });
 

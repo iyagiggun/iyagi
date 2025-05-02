@@ -32,6 +32,15 @@ export function isOverlap(areaA, areaB) {
 }
 
 /**
+ * @param {XY} xy
+ * @param {Area} area
+ * @returns
+ */
+export function isIn(xy, area) {
+  return xy.x >= area.x && xy.x <= area.x + area.w && xy.y >= area.y && xy.y <= area.y + area.h;
+}
+
+/**
  * @param {{
 *  target: IObject;
 *  objects: IObject[];
