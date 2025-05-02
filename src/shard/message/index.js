@@ -1,5 +1,6 @@
 import { IMT } from '../../const/message.js';
 import { ShardCameraMessage } from './camera.js';
+import { ShardEffectMessage } from './effect.js';
 import { ShardObjectMessage } from './object.js';
 
 export class ShardMessage {
@@ -13,8 +14,8 @@ export class ShardMessage {
   }) {
     this.common = ShardCommonMessage;
     this.camera = ShardCameraMessage;
+    this.effect = ShardEffectMessage;
     this.object = new ShardObjectMessage(objects);
-    // this.scene = new ShardSceneMessage(objects);
   }
 }
 
@@ -43,15 +44,27 @@ const ShardCommonMessage = {
     };
   },
 
-  // /**
-  //  * @param {string} target
-  //  */
-  // control(target) {
-  //   return {
-  //     type: IMT.SCENE_CONTROL,
-  //     data: {
-  //       target,
-  //     },
-  //   };
-  // }
+
+  /**
+   * @param {object} param
+   * @param {import('../../user/index.js').UserType} param.user
+   * @param {import('../index.js').ShardType} param.shard
+   * @returns
+   */
+  enter({ user, shard }) {
+    user.shard = shard;
+    return this.list([
+      {
+        type: IMT.SHARD_CLEAR,
+      },
+      {
+        type: IMT.SHARD_LOAD,
+        data: {
+          shard: {
+            objects: shard.objects.map((o) => o.toLoadData()),
+          },
+        },
+      },
+    ]);
+  },
 };

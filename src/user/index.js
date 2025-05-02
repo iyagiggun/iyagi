@@ -5,19 +5,26 @@ import { message } from '../message/index.js';
  */
 export class User {
   /**
-   * @type {import('../shard/index.js').Shard | null}
+   * @type {import('../shard/index.js').Shard}
    */
-  #shard = null;
+  #shard;
 
   #message;
 
   /**
-   * @param {string} key
-   * @param {T} state
+   * @param {object} param
+   * @param {string} param.key
+   * @param {import('../shard/index.js').ShardType} param.shard
+   * @param {T} param.state
    */
-  constructor(key, state) {
+  constructor({
+    key,
+    shard,
+    state,
+  }) {
     this.key = key;
     this.#message = message;
+    this.#shard = shard;
     this.state = state;
   }
 

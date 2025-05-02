@@ -74,7 +74,7 @@ export class IObject {
 
   #portraits;
 
-  serial;
+  #id;
 
   /**
    * @param {string} resource,
@@ -107,7 +107,7 @@ export class IObject {
     this.#portraits = portraits;
     const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
     stampIdxMap.set(resource, stampIdx);
-    this.serial = `${resource}:${stampIdx}`;
+    this.#id = `object:${resource}:${stampIdx}`;
 
     /**
      * @type {Subject<import('../teller/index.js').SubjectData>}
@@ -118,6 +118,17 @@ export class IObject {
      * @type {Subject<import('../teller/index.js').SubjectData>}
      */
     this.pressed$ = new Subject();
+  }
+
+  /**
+   * @readonly
+   */
+  get id() {
+    return this.#id;
+  }
+
+  set id(_) {
+    throw new Error('object\'s id cannot be modified');
   }
 
   /**
@@ -220,7 +231,7 @@ export class IObject {
   toLoadData() {
     return {
       resource: this.#resource,
-      serial: this.serial,
+      id: this.id,
       name: this.name,
       ...this.xyz,
       offset: this.offset,

@@ -4,13 +4,18 @@ import { ShardMessage } from './message/index.js';
 import { getDirectionByDelta, getNextXYZ, isOverlap } from '../coords/index.js';
 
 export class Shard {
+  #key;
+
   /**
    * @param {Object} p
+   * @param {string} p.key
    * @param {import('../object/iobject.js').IObject[]} p.objects
    */
   constructor({
+    key,
     objects,
   }) {
+    this.#key = key;
     this.objects = objects;
     this.message = new ShardMessage(this);
     /**
@@ -33,24 +38,24 @@ export class Shard {
      */
     this.interact$ = new Subject();
 
-    this.load$.subscribe(({ shard, reply }) => {
+    this.load$.subscribe(({ user, reply }) => {
       reply({
         type: IMT.SHARD_LOAD,
         data: {
           shard: {
-            objects: shard.objects.map((o) => o.toLoadData()),
+            objects: user.shard.objects.map((o) => o.toLoadData()),
           },
         },
       });
     });
 
     // delta 로 동작함 (position 이 아니라)
-    this.move$.subscribe(({ shard, reply, message, user }) => {
-      const objects = shard.objects;
+    this.move$.subscribe(({ user, reply, message }) => {
+      const objects = user.shard.objects;
       const data = message.data;
-      const target = shard.objects.find((o) => o.serial === data.serial);
+      const target = user.shard.objects.find((o) => o.id === data.id);
       if (!target) {
-        throw new Error(`Fail to move. No target (${message.data.serial}).`);
+        throw new Error(`Fail to move. No target (${message.data.id}).`);
       }
       const delta = data.delta;
       const x = target.x + (delta.x ?? 0);
@@ -64,7 +69,7 @@ export class Shard {
 
       const tHitbox = target.hitbox;
       const overlaped = objects.filter((o) => {
-        if (o.serial === target.serial) {
+        if (o.id === target.id) {
           return false;
         }
         const oHitbox = o.hitbox;
@@ -75,13 +80,13 @@ export class Shard {
       });
       const pressed = overlaped.filter((o) => o.hitbox.z === tHitbox.z - 1);
       pressed.forEach((o) => {
-        o.pressed$.next({ user, shard, message, reply });
+        o.pressed$.next({ user, message, reply });
       });
 
       reply({
         type: IMT.OBJECT_MOVE,
         data: {
-          target: target.serial,
+          target: target.id,
           ...target.xyz,
           offset: target.offset,
           direction: target.direction,
@@ -90,10 +95,10 @@ export class Shard {
       });
     });
 
-    this.interact$.subscribe(({ user, shard, reply, message }) => {
-      const objects = shard.objects;
+    this.interact$.subscribe(({ user, reply, message }) => {
+      const objects = user.shard.objects;
       const data = message.data;
-      const target = objects.find((o) => o.serial === data.target);
+      const target = objects.find((o) => o.id === data.target);
 
       if (!target) {
         return;
@@ -134,9 +139,17 @@ export class Shard {
               && isOverlap(object.hitbox, interactionArea);
         }
       );
-      willInteract?.interact$.next({ user, shard, message, reply });
+      willInteract?.interact$.next({ user, message, reply });
 
     });
+  }
+
+  get key() {
+    return this.#key;
+  }
+
+  get id() {
+    return 'SHARD';
   }
 }
 
