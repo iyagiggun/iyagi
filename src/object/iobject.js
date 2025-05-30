@@ -57,12 +57,14 @@ const stampIdxMap = new Map();
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
+const MAX_Z_INDEX = 999;
 
 export class IObject {
   #resource;
 
   #name;
 
+  // hitbox 는 한 개가 맞음. 여러개이면 z-index 처리가 매우 어려워짐
   #absHitbox;
 
   #sprite;
@@ -220,11 +222,12 @@ export class IObject {
     this.#motion = next;
   }
 
-  get offset() {
-    const { x, y } = this.#absHitbox;
+  getClientXYZ() {
+    const hitbox = this.hitbox;
     return {
-      x,
-      y,
+      x: hitbox.x,
+      y: hitbox.y - this.#absHitbox.y,
+      z: this.z * (MAX_Z_INDEX + 1) + hitbox.y + hitbox.h,
     };
   }
 
@@ -233,8 +236,7 @@ export class IObject {
       resource: this.#resource,
       id: this.id,
       name: this.name,
-      ...this.xyz,
-      offset: this.offset,
+      ...this.getClientXYZ(),
       motion: this.#motion,
       direction: this.#direction,
       sprite: this.#sprite,

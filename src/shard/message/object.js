@@ -83,7 +83,7 @@ export class ShardObjectMessage {
       type: IMT.OBJECT_MOVE,
       data: {
         target: t.id,
-        ...t.xyz,
+        ...t.getClientXYZ(),
         direction: t.direction,
         speed: info.speed,
       },

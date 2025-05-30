@@ -82,8 +82,7 @@ export class Shard {
         type: IMT.OBJECT_MOVE,
         data: {
           target: target.id,
-          ...target.xyz,
-          offset: target.offset,
+          ...target.getClientXYZ(),
           direction: target.direction,
           speed: data.speed,
         },
