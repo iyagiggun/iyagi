@@ -44,8 +44,9 @@ export class ShardObjectMessage {
   /**
    * @param {import('../../object/iobject.js').IObject} target
    * @param {(import('../../coords/index.js').XYZ | import('../../coords/index.js').XY) & {
-   *  speed?: 0 | 1 | 2 | 3,
-   *  direction?: import('../../coords/index.js').Direction
+   *  speed?: 1 | 2 | 3,
+   *  direction?: import('../../coords/index.js').Direction,
+   *  instant?: boolean;
    * }} info
    */
   move(target, info) {
@@ -74,7 +75,7 @@ export class ShardObjectMessage {
     //   console.error(unpressed);
     // }
 
-    t.direction = info.direction || getDirectionByDelta(t, info);
+    t.direction = info.direction || (info.instant ? t.direction : getDirectionByDelta(t, info));
     t.x = info.x;
     t.y = info.y;
     t.z = 'z' in info ? info.z : t.z;
@@ -86,6 +87,7 @@ export class ShardObjectMessage {
         ...t.getClientXYZ(),
         direction: t.direction,
         speed: info.speed,
+        instant: !!info.instant,
       },
     };
   }
@@ -130,10 +132,10 @@ export class ShardObjectMessage {
    */
   remove(target) {
     const id = typeof target === 'string' ? target :  target.id;
-    const idx = this.#objects.findIndex((obj) => obj.id === id);
-    if (idx > -1) {
-      this.#objects.splice(idx, 1);
-    }
+    // const idx = this.#objects.findIndex((obj) => obj.id === id);
+    // if (idx > -1) {
+    //   this.#objects.splice(idx, 1);
+    // }
     return {
       type: IMT.OBJECT_REMOVE,
       data: {
