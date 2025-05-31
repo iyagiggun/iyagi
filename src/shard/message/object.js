@@ -44,7 +44,7 @@ export class ShardObjectMessage {
   /**
    * @param {import('../../object/iobject.js').IObject} target
    * @param {(import('../../coords/index.js').XYZ | import('../../coords/index.js').XY) & {
-   *  speed?: 1 | 2 | 3,
+   *  speed?: 0 | 1 | 2 | 3,
    *  direction?: import('../../coords/index.js').Direction
    * }} info
    */

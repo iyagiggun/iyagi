@@ -38,9 +38,10 @@ export default class ObjectResource {
   /**
    * @param { (import('../coords/index.js').XYZ | import('../coords/index.js').XY) & {
    *  direction?: import('../coords/index.js').Direction
-   * }} info
+   * }} [_info]
    */
-  stamp(info) {
+  stamp(_info) {
+    const info = _info ?? { x: 0, y: 0 };
     const obj = new IObject(this.#key, {
       name: this.#name,
       sprite: this.#sprite,

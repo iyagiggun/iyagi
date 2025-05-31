@@ -68,14 +68,14 @@ export class Shard {
       target.z = next.z;
 
       const tc = target.center();
-      objects.forEach((o) => {
+      const pressed = objects.filter((o) => {
         if (o.hitbox.z !== target.z - 1) {
-          return;
+          return false;
         }
         if (!isIn(tc, o.hitbox)) {
-          return;
+          return false;
         }
-        o.pressed$.next({ user, message, reply });
+        return true;
       });
 
       reply({
@@ -86,6 +86,10 @@ export class Shard {
           direction: target.direction,
           speed: data.speed,
         },
+      });
+
+      pressed.forEach((o) => {
+        o.pressed$.next({ user, message, reply });
       });
     });
 
