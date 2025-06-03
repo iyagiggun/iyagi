@@ -68,7 +68,16 @@ export const getNextXYZ = ({
   const intervalX = deltaX / interval_length;
   const intervalY = deltaY / interval_length;
 
-  const canHit = objects.filter((o) => o.id !== target.id && (o.z ?? 1) === curZ && o.hitbox);
+  const canHit = objects.filter((o) => {
+    if (o.id === target.id) {
+      return false;
+    }
+    const oHitBox = o.hitbox;
+    if (oHitBox.w === 0 || oHitBox.h === 0) {
+      return false;
+    }
+    return o.z === curZ;
+  });
 
   let step = 0;
   while (step < interval_length) {

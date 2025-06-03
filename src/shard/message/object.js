@@ -43,7 +43,10 @@ export class ShardObjectMessage {
 
   /**
    * @param {import('../../object/iobject.js').IObject} target
-   * @param {(import('../../coords/index.js').XYZ | import('../../coords/index.js').XY) & {
+   * @param {{
+   *  x?: number,
+   *  y?: number,
+   *  z?: number,
    *  speed?: 1 | 2 | 3,
    *  direction?: import('../../coords/index.js').Direction,
    *  instant?: boolean;
@@ -75,10 +78,21 @@ export class ShardObjectMessage {
     //   console.error(unpressed);
     // }
 
-    t.direction = info.direction || (info.instant ? t.direction : getDirectionByDelta(t, info));
-    t.x = info.x;
-    t.y = info.y;
-    t.z = 'z' in info ? info.z : t.z;
+    const lastXYZ = t.xyz;
+
+    if (typeof info.x === 'number') {
+      t.x = info.x;
+    }
+
+    if (typeof info.y === 'number') {
+      t.y = info.y;
+    }
+
+    if (typeof info.z === 'number') {
+      t.z = info.z;
+    }
+
+    t.direction = info.direction || (info.instant ? t.direction : getDirectionByDelta(lastXYZ, t));
 
     return {
       type: IMT.OBJECT_MOVE,
