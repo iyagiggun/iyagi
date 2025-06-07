@@ -225,7 +225,7 @@ export class IObject {
   getClientXYZ() {
     const hitbox = this.hitbox;
     return {
-      x: hitbox.x,
+      x: hitbox.x - this.#absHitbox.x,
       y: hitbox.y - this.#absHitbox.y,
       z: this.z * (MAX_Z_INDEX + 1) + hitbox.y + hitbox.h,
     };

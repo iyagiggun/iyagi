@@ -28,15 +28,15 @@ export class ShardObjectMessage {
 
   /**
    * @param {import('../../object/iobject.js').IObject} target
-   * @param {string | string[]} message
+   * @param {string[]} message
    */
-  talk(target, message) {
+  talk(target, ...message) {
     const obj = this.#find(target); // for valid check
     return {
       type: IMT.OBJECT_TALK,
       data: {
         target: obj.id,
-        message,
+        message: message,
       },
     };
   }
