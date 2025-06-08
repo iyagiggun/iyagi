@@ -8,6 +8,14 @@
       "import": "./src/index.js",
       "require": "./src/index.js"
     },
+    "./client": {
+      "import": "./src/client/index.js",
+      "require": "./src/client/index.js"
+    },
+    "./client/controller": {
+      "import": "./src/client/controller/index.js",
+      "require": "./src/client/controller/index.js"
+    },
     "./object": {
       "import": "./src/object/index.js",
       "require": "./src/object/index.js"
@@ -50,6 +58,7 @@
   },
   "type": "module",
   "dependencies": {
+    "pixi.js": "^8.10.1",
     "rxjs": "^7.8.2"
   }
 }
