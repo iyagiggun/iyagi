@@ -1,6 +1,6 @@
 /**
- * @typedef {import("../coords/index.js").Direction} Direction
- * @typedef {import("../coords/index.js").Area} Area
+ * @typedef {import("../../coords/index.js").Direction} Direction
+ * @typedef {import("../../coords/index.js").Area} Area
  */
 
 import { Subject } from 'rxjs';
@@ -15,7 +15,7 @@ import { Subject } from 'rxjs';
  * @typedef ActionArea
  * @property {SpriteImage} [image]
  * @property {Area} [hitbox]
- * @property {import('../coords/index.js').Area[]} frames
+ * @property {import('../../coords/index.js').Area[]} frames
  */
 
 /**
@@ -80,7 +80,7 @@ export class IObject {
 
   /**
    * @param {string} resource,
-   * @param {import('../coords/index.js').XYZ & {
+   * @param {import('../../coords/index.js').XYZ & {
    *  name?: string;
    *  direction?: Direction;
    *  sprite: SpriteInfo;
@@ -112,12 +112,12 @@ export class IObject {
     this.#id = `object:${resource}:${stampIdx}`;
 
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      */
     this.interact$ = new Subject();
 
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      */
     this.pressed$ = new Subject();
   }

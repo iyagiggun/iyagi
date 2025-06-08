@@ -1,4 +1,4 @@
-import { IMT } from '../../const/message.js';
+import { IMT } from '../../../const/message.js';
 import { ShardForge } from '../forge.js';
 import { ShardCameraMessage } from './camera.js';
 import { ShardEffectMessage } from './effect.js';
@@ -7,7 +7,7 @@ import { ShardObjectMessage } from './object.js';
 export class ShardMessage {
   /**
    * @param {{
-   *  objects: import('../../coords/index.js').IObject[]
+   *  objects: import('../../../coords/index.js').IObject[]
    * }} p
    */
   constructor({
@@ -48,7 +48,7 @@ const ShardCommonMessage = {
 
   /**
    * @param {object} param
-   * @param {import('../../user/index.js').UserType} param.user
+   * @param {import('../../../user/index.js').UserType} param.user
    * @param {string} param.shard
    * @returns
    */

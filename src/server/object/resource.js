@@ -36,8 +36,8 @@ export default class ObjectResource {
   }
 
   /**
-   * @param { (import('../coords/index.js').XYZ | import('../coords/index.js').XY) & {
-   *  direction?: import('../coords/index.js').Direction
+   * @param { (import('../../coords/index.js').XYZ | import('../../coords/index.js').XY) & {
+   *  direction?: import('../../coords/index.js').Direction
    * }} [_info]
    */
   stamp(_info) {
@@ -57,8 +57,8 @@ export default class ObjectResource {
 /**
  * @typedef {Object} MonoSpriteInfo
  * @property {string} image
- * @property {import('../coords/index.js').Area} [hitbox]
- * @property {import('../coords/index.js').Area[]} frames
+ * @property {import('../../coords/index.js').Area} [hitbox]
+ * @property {import('../../coords/index.js').Area[]} frames
  *
  * @typedef {Object} MonoObjectParams
  * @property {string} key

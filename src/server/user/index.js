@@ -1,5 +1,3 @@
-import { message } from '../message/index.js';
-
 /**
  * @template [T=unknown]
  */
@@ -8,8 +6,6 @@ export class User {
    * @type {import('../shard/index.js').Shard}
    */
   #shard;
-
-  #message;
 
   /**
    * @param {object} param
@@ -23,7 +19,6 @@ export class User {
     state,
   }) {
     this.key = key;
-    this.#message = message;
     this.#shard = shard;
     this.state = state;
   }
@@ -39,10 +34,6 @@ export class User {
    */
   set shard(_shard) {
     this.#shard = _shard;
-  }
-
-  get message() {
-    return this.#message;
   }
 }
 

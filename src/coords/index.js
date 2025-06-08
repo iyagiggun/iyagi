@@ -16,7 +16,7 @@
  */
 
 /**
- * @typedef {import('../object/index.js').IObject} IObject
+ * @typedef {import('../server/object/index.js').IObject} IObject
  */
 
 /**

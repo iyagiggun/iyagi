@@ -1,9 +1,9 @@
-import { IMT } from '../../const/message.js';
+import { IMT } from '../../../const/message.js';
 import { IObject } from '../../object/index.js';
 
 export const ShardCameraMessage = {
   /**
-   * @param {IObject | import('../../coords/index.js').XY} target
+   * @param {IObject | import('../../../coords/index.js').XY} target
    * @param {Object} [options={}]
    * @param {1|2|3} [options.speed]
    */

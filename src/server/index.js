@@ -4,7 +4,6 @@
  */
 
 import global from './global.js';
-import { message } from './message/index.js';
 import { ShardForge } from './shard/forge.js';
 import { Shard } from './shard/index.js';
 import { Teller } from './teller/index.js';
@@ -29,9 +28,5 @@ export default class IServer {
     });
   }
 }
-
-export const iserver = {
-  message,
-};
 
 export { Teller, ShardForge, Shard };

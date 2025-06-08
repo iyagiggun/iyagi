@@ -1,7 +1,7 @@
 import { Subject } from 'rxjs';
-import { IMT } from '../const/message.js';
+import { IMT } from '../../const/message.js';
 import { ShardMessage } from './message/index.js';
-import { getDirectionByDelta, getNextXYZ, isIn, isOverlap } from '../coords/index.js';
+import { getDirectionByDelta, getNextXYZ, isIn, isOverlap } from '../../coords/index.js';
 
 export class Shard {
   #key;
@@ -19,22 +19,22 @@ export class Shard {
     this.objects = objects;
     this.message = new ShardMessage(this);
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      */
     this.load$ = new Subject();
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      */
     this.loaded$ = new Subject();
 
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      * @description Operates based on delta values
      */
     this.move$ = new Subject();
 
     /**
-     * @type {Subject<import('../teller/index.js').SubjectData>}
+     * @type {Subject<import('../../teller/index.js').SubjectData>}
      */
     this.interact$ = new Subject();
 

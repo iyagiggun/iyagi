@@ -5,7 +5,7 @@ import { shard } from '../shard/index.js';
 
 /**
  * @typedef {Object} SubjectData
- * @property {import('../const/index.js').ClientMessage} message
+ * @property {import('../../server/const/index.js').ServerMessage} message
  * @property {(message: import('../const/index.js').ClientMessage) => void} reply
  */
 

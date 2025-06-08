@@ -1,5 +1,3 @@
-import { IMT } from '../const/message.js';
-
 /**
  * @typedef {{
  *  type: string,
@@ -10,7 +8,7 @@ import { IMT } from '../const/message.js';
 /**
  * @typedef {{
  *  user: import('../user/index.js').User;
- *  message: Message;
+ *  message: import('../../client/const/index.js').ClientMessage;
  *  reply: (message: Message) => void;
  * }} SubjectData
  */
@@ -32,16 +30,16 @@ export class Teller {
    */
   ask(data) {
     switch(data.message.type) {
-      case IMT.SHARD_LOAD:
+      case 'shard.load':
         data.user.shard.load$.next(data);
         return;
-      case IMT.SHARD_LOADED:
+      case 'shard.loaded':
         data.user.shard.loaded$.next(data);
         return;
-      case IMT.OBJECT_MOVE:
+      case 'object.move':
         data.user.shard.move$.next(data);
         return;
-      case IMT.OBJECT_INTERACT:
+      case 'object.interact':
         data.user.shard.interact$.next(data);
         return;
       default:

@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} SceneParams
  * @property {string} key
- * @property {import('../object/index.js').IObject[]} objects
+ * @property {import('../server/object/index.js').IObject[]} objects
  * @property {function(import('../user/index.js').UserType): *} onLoaded
  */
 

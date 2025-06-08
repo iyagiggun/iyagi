@@ -1,5 +1,5 @@
-import { IMT } from '../../const/message.js';
-import { getDirectionByDelta } from '../../coords/index.js';
+import { IMT } from '../../../const/message.js';
+import { getDirectionByDelta } from '../../../coords/index.js';
 
 /**
  * @typedef {{ id: string }} Target
@@ -48,7 +48,7 @@ export class ShardObjectMessage {
    *  y?: number,
    *  z?: number,
    *  speed?: 1 | 2 | 3,
-   *  direction?: import('../../coords/index.js').Direction,
+   *  direction?: import('../../../coords/index.js').Direction,
    *  instant?: boolean;
    * }} info
    */

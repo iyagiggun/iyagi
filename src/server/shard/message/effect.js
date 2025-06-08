@@ -1,8 +1,8 @@
-import { IMT } from '../../const/message.js';
+import { IMT } from '../../../const/message.js';
 
 const ShardEffectMessage = {
   /**
-   * @typedef {import('../../coords/index.js').IObject | import('../index.js').Shard} Target
+   * @typedef {import('../../../coords/index.js').IObject | import('../index.js').Shard} Target
    * @param {Target | Target[]} target
    * @param {*} [options]
    */
@@ -16,7 +16,7 @@ const ShardEffectMessage = {
     };
   },
   /**
-   * @typedef {import('../../coords/index.js').IObject | import('../index.js').Shard} Target
+   * @typedef {import('../../../coords/index.js').IObject | import('../index.js').Shard} Target
    * @param {Target | Target[]} target
    * @param {*} [options]
    */
