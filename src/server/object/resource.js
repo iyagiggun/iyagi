@@ -1,18 +1,18 @@
-import { IObject } from './iobject.js';
-
 /**
  * hitbox: It is difficult for the client to calculate zIndex when there are multiple hitboxes.
  */
+
+import { ServerObject } from './index.js';
 
 /**
  * @typedef {Object} SObjectParams
  * @property {string} key
  * @property {string=} name
- * @property {import('./iobject.js').SpriteInfo} sprite
- * @property {import('./iobject.js').Portraits=} portraits
+ * @property {import('./index.js').SpriteInfo} sprite
+ * @property {import('./index.js').Portraits=} portraits
  */
 
-export default class ObjectResource {
+export class ObjectResource {
   #key;
 
   #name;
@@ -42,7 +42,7 @@ export default class ObjectResource {
    */
   stamp(_info) {
     const info = _info ?? { x: 0, y: 0 };
-    const obj = new IObject(this.#key, {
+    const obj = new ServerObject(this.#key, {
       name: this.#name,
       sprite: this.#sprite,
       portraits: this.#portraits,
@@ -64,7 +64,7 @@ export default class ObjectResource {
  * @property {string} key
  * @property {string=} name
  * @property {MonoSpriteInfo} sprite
- * @property {import('./iobject.js').Portraits=} portraits
+ * @property {import('./index.js').Portraits=} portraits
  */
 
 

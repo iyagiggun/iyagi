@@ -10,11 +10,11 @@
  *  user: import('../user/index.js').User;
  *  message: import('../../client/const/index.js').ClientMessage;
  *  reply: (message: Message) => void;
- * }} SubjectData
+ * }} ClientPayload
  */
 
 /**
- * @typedef {(data: SubjectData) => import('rxjs').Observable<Message>} Process
+ * @typedef {(data: ClientPayload) => import('rxjs').Observable<Message>} Process
  */
 
 
@@ -24,27 +24,26 @@
  * }} TellerParams
  */
 
-export class Teller {
+export class ServerReceiver {
   /**
-   * @param {SubjectData} data
+   * @param {ClientPayload} payload
    */
-  ask(data) {
-    switch(data.message.type) {
+  receive(payload) {
+    switch(payload.message.type) {
       case 'shard.load':
-        data.user.shard.load$.next(data);
+        payload.user.shard.load$.next(payload);
         return;
       case 'shard.loaded':
-        data.user.shard.loaded$.next(data);
+        payload.user.shard.loaded$.next(payload);
         return;
       case 'object.move':
-        data.user.shard.move$.next(data);
+        payload.user.shard.move$.next(payload);
         return;
       case 'object.interact':
-        data.user.shard.interact$.next(data);
+        payload.user.shard.interact$.next(payload);
         return;
       default:
-        console.error('server recieve unknown message', data.message);
-
+        console.error('server recieve unknown message', payload.message);
     }
   }
 }

@@ -6,7 +6,7 @@
 import global from './global.js';
 import { ShardForge } from './shard/forge.js';
 import { Shard } from './shard/index.js';
-import { Teller } from './teller/index.js';
+import { ServerReceiver } from './receiver/index.js';
 
 /**
  * @typedef {Object} IServerParams
@@ -29,4 +29,4 @@ export default class IServer {
   }
 }
 
-export { Teller, ShardForge, Shard };
+export { ServerReceiver, ShardForge, Shard };

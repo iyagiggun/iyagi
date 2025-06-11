@@ -32,7 +32,7 @@ import ITexture from './texture.js';
  */
 
 /**
- * @typedef IObjectParams
+ * @typedef ClientObjectParams
  * @property {string} key
  * @property {string} [name]
  * @property {SpriteInfo} sprite
@@ -55,7 +55,7 @@ class ObjectResource {
 
   /**
    * @param {string} key
-   * @param {IObjectParams} params
+   * @param {ClientObjectParams} params
    */
   constructor(key, params) {
     this.#params = params;

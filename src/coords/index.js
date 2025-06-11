@@ -16,10 +16,6 @@
  */
 
 /**
- * @typedef {import('../server/object/index.js').IObject} IObject
- */
-
-/**
  * @param {Area} areaA
  * @param {Area} areaB
  * @returns
@@ -42,11 +38,11 @@ export function isIn(xy, area) {
 
 /**
  * @param {{
-*  target: IObject;
-*  objects: IObject[];
-*  destination: XY | XYZ;
-* }} p
-*/
+ *  target: import("../server/object/index.js").ServerObjectType;
+ *  objects: import("../server/object/index.js").ServerObjectType[];
+ *  destination: XY | XYZ;
+ * }} p
+ */
 export const getNextXYZ = ({
   target,
   objects,
