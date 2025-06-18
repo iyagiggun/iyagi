@@ -12,7 +12,6 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
  * | 'shard.remove'
  * | 'object.move'
  * | 'object.talk'
- * | 'object.remove'
  * | 'object.motion'
  * | 'effect.fade.in'
  * | 'effect.fade.out'

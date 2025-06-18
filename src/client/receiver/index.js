@@ -36,6 +36,9 @@ const ask = async ({
     case 'shard.clear':
       return shard.clear();
 
+    case 'shard.remove':
+      return ObjectManager.remove(data);
+
     case 'camera.focus':
       return camera.move(data);
 
@@ -45,16 +48,13 @@ const ask = async ({
     case 'object.move':
       return ObjectManager.move(data);
 
-    case 'object.remove':
-      return ObjectManager.remove(data);
-
     case 'object.motion':
       return ObjectManager.motion(data);
 
-    case 'object.control':
+    case 'shard.control':
       return ObjectManager.control(data);
 
-    case 'object.release':
+    case 'shard.release':
       return ObjectManager.release();
 
     case 'effect.fade.in':

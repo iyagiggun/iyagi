@@ -1,27 +1,13 @@
 /**
  * @typedef {{
- *  type: string,
- *  data?: any,
- * }} Message
- */
-
-/**
- * @typedef {{
  *  user: import('../user/index.js').User;
  *  message: import('../../client/const/index.js').ClientMessage;
- *  reply: (message: Message) => void;
+ *  reply: (message: import('../const/index.js').ServerMessage) => void;
  * }} ClientPayload
  */
 
 /**
- * @typedef {(data: ClientPayload) => import('rxjs').Observable<Message>} Process
- */
-
-
-/**
- * @typedef {{
- *  tell: (message: Message) => void,
- * }} TellerParams
+ * @typedef {(data: ClientPayload) => import('rxjs').Observable<import('../const/index.js').ServerMessage>} Process
  */
 
 export class ServerReceiver {

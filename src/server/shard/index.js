@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs';
-import { IMT } from '../../const/message.js';
 import { getDirectionByDelta, getNextXYZ, isIn, isOverlap } from '../../coords/index.js';
 import { ServerCommand } from './command/index.js';
 
@@ -41,7 +40,7 @@ export class Shard {
 
     this.load$.subscribe(({ user, reply }) => {
       reply({
-        type: IMT.SHARD_LOAD,
+        type: 'shard.load',
         data: {
           shard: {
             objects: user.shard.objects.map((o) => o.toLoadData()),
@@ -80,7 +79,7 @@ export class Shard {
       });
 
       reply({
-        type: IMT.OBJECT_MOVE,
+        type: 'object.move',
         data: {
           target: target.id,
           ...target.getClientXYZ(),
