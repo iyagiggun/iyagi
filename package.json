@@ -4,6 +4,10 @@
   "description": "",
   "main": "src/index.js",
   "exports": {
+    "./types": {
+      "import": "./src/index.d.ts",
+      "require": "./src/index.d.ts"
+    },
     "./client": {
       "import": "./src/client/index.js",
       "require": "./src/client/index.js"
@@ -37,6 +41,7 @@
       "require": "./src/server/message/index.js"
     }
   },
+  "types": "index.d.ts",  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

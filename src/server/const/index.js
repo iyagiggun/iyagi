@@ -23,12 +23,12 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
  * | 'controller.enable'
  * | 'controller.disable'
  * | 'camera.focus'
- * } ServerMessageType
+ * } CommandType
  */
 
 /**
  * @typedef {Object} ServerMessage
- * @property {ServerMessageType} type
+ * @property {CommandType} type
  * @property {*} [data]
  */
 
