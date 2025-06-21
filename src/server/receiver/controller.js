@@ -37,7 +37,7 @@ export const ControllerReceiver = {
     reply(
       new ServerCommand()
         .move(target, {
-          ...target.getClientXYZ(),
+          ...target.xyz,
           direction: target.direction,
           speed: data.speed,
         })
