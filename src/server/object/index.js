@@ -112,12 +112,12 @@ export class ServerObject {
     this.#id = `object:${resource}:${stampIdx}`;
 
     /**
-     * @type {Subject<import('../receiver/index.js').ClientPayload>}
+     * @type {Subject<import('../const/index.js').ServerPayload>}
      */
     this.interact$ = new Subject();
 
     /**
-     * @type {Subject<import('../receiver/index.js').ClientPayload>}
+     * @type {Subject<import('../const/index.js').ServerPayload>}
      */
     this.pressed$ = new Subject();
   }

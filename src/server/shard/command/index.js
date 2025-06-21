@@ -1,86 +1,75 @@
 import { getDirectionByDelta } from '../../../coords/index.js';
 import { ShardForge } from '../forge.js';
-import { CameraCommand } from './camera.js';
-import { EffectCommand } from './effect.js';
+import { ServerCameraCommandBuilder } from './camera.js';
+import { ServerEffectCommandBuilder } from './effect.js';
+export class ServerCommand {
+  /**
+   * @type {import('../../const/index.js').ServerMessage[]}
+   */
+  #list = [];
 
-export const ServerCommand = {
-  camera: CameraCommand,
-  effect: EffectCommand,
+  constructor() {
+    this.camera = new ServerCameraCommandBuilder(this, this.#list);
+    this.effect = new ServerEffectCommandBuilder(this, this.#list);
+  }
 
   /**
    * @param {number} delay ms
-   * @returns {import('../../const/index.js').ServerMessage}
    */
   wait(delay) {
-    return {
+    this.#list.push({
       type: 'wait',
       data: {
         delay,
       },
-    };
-  },
-
-  /**
-   * @param {import('../../const/index.js').ServerMessage[]} list
-   * @returns {import('../../const/index.js').ServerMessage}
-   */
-  list(list) {
-    return {
-      type: 'list',
-      data: {
-        list,
-      },
-    };
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {object} param
    * @param {import('../../user/index.js').UserType} param.user
    * @param {string} param.shard
-   * @returns
    */
   enter({ user, shard }) {
     user.shard = ShardForge.seek(shard);
-    return this.list([
-      {
-        type: 'shard.clear',
-      },
-      {
-        type: 'shard.load',
-        data: {
-          shard: {
-            objects: user.shard.objects.map((o) => o.toLoadData()),
-          },
+    this.#list.push({
+      type: 'shard.clear',
+    }
+    );
+    this.#list.push({
+      type: 'shard.load',
+      data: {
+        shard: {
+          objects: user.shard.objects.map((o) => o.toLoadData()),
         },
       },
-    ]);
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {import('../../object/index.js').ServerObjectType} target
-   * @returns {import('../../const/index.js').ServerMessage}
    */
   control(target) {
-    return {
+    this.#list.push({
       type: 'shard.control',
       data: {
         target: target.id,
       },
-    };
-  },
+    });
+    return this;
+  }
 
-  /**
-   * @returns {import('../../const/index.js').ServerMessage}
-   */
   release() {
-    return {
+    this.#list.push({
       type: 'shard.release',
-    };
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {string | import('../../object/index.js').ServerObjectType} target
-   * @returns {import('../../const/index.js').ServerMessage}
    */
   remove(target) {
     const id = typeof target === 'string' ? target :  target.id;
@@ -88,13 +77,14 @@ export const ServerCommand = {
     // if (idx > -1) {
     //   this.#objects.splice(idx, 1);
     // }
-    return {
+    this.#list.push({
       type: 'shard.remove',
       data: {
         id,
       },
-    };
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {import("../../object/index.js").ServerObjectType} target
@@ -106,7 +96,6 @@ export const ServerCommand = {
    *  direction?: import("../../../commons/coords.js").Direction,
    *  instant?: boolean;
    * }} info
-   * @returns {import("../../const/index.js").ServerMessage}
    */
   move(target, info) {
     const lastXYZ = target.xyz;
@@ -125,7 +114,7 @@ export const ServerCommand = {
 
     target.direction = info.direction || (info.instant ? target.direction : getDirectionByDelta(lastXYZ, target));
 
-    return {
+    this.#list.push({
       type: 'object.move',
       data: {
         target: target.id,
@@ -134,37 +123,42 @@ export const ServerCommand = {
         speed: info.speed,
         instant: !!info.instant,
       },
-    };
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {import('../../object/index.js').ServerObjectType} target
    * @param {string[]} message
-   * @return {import('../../const/index.js').ServerMessage}
    */
   talk(target, ...message) {
-    return {
+    this.#list.push({
       type: 'object.talk',
       data: {
         target: target.id,
         message: message,
       },
-    };
-  },
+    });
+    return this;
+  }
 
   /**
    * @param {import('../../object/index.js').ServerObjectType} target
    * @param {string} motion
-   * @return {import('../../const/index.js').ServerMessage}
    */
   motion(target, motion) {
     target.motion = motion;
-    return {
+    this.#list.push({
       type: 'object.motion',
       data: {
         target: target.id,
         motion,
       },
-    };
-  },
-};
+    });
+    return this;
+  }
+
+  build() {
+    return this.#list;
+  }
+}

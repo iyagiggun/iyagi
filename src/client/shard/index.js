@@ -10,10 +10,10 @@ const clear = () => {
 };
 
 /**
- * @param {import('../receiver/index.js').SubjectData} data
- * @returns
+ * @param {import('../../server/const/index.js').ServerMessage} message
+ * @param {import('../const/index.js').ClientReply} reply
  */
-const load = async ({ message, reply }) => {
+const load = async (message, reply) => {
 
   const data = message.data;
 

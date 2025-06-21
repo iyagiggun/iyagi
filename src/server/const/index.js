@@ -32,3 +32,13 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
  * @property {*} [data]
  */
 
+/**
+ * @typedef {(message: ServerMessage[]) => void} ServerReply
+ */
+
+/**
+ * @typedef {Object} ServerPayload
+ * @property {import('../user/index.js').User} user
+ * @property {ServerReply} reply
+ */
+

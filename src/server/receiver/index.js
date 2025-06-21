@@ -2,13 +2,11 @@
  * @typedef {{
  *  user: import('../user/index.js').User;
  *  message: import('../../client/const/index.js').ClientMessage;
- *  reply: (message: import('../const/index.js').ServerMessage) => void;
+ *  reply: import('../const/index.js').ServerReply
  * }} ClientPayload
  */
 
-/**
- * @typedef {(data: ClientPayload) => import('rxjs').Observable<import('../const/index.js').ServerMessage>} Process
- */
+import { ControllerReceiver } from './controller.js';
 
 export class ServerReceiver {
   /**
@@ -22,11 +20,11 @@ export class ServerReceiver {
       case 'shard.loaded':
         payload.user.shard.loaded$.next(payload);
         return;
-      case 'object.move':
-        payload.user.shard.move$.next(payload);
+      case 'controller.move':
+        ControllerReceiver.move(payload, payload.message);
         return;
-      case 'object.interact':
-        payload.user.shard.interact$.next(payload);
+      case 'controller.interact':
+        ControllerReceiver.interact(payload, payload.message);
         return;
       default:
         console.error('server recieve unknown message', payload.message);

@@ -4,18 +4,10 @@ import ObjectManager from '../object/manager.js';
 import { shard } from '../shard/index.js';
 
 /**
- * @typedef {Object} SubjectData
- * @property {import('../../server/const/index.js').ServerMessage} message
- * @property {(message: import('../const/index.js').ClientMessage) => void} reply
+ * @param {import('../../server/const/index.js').ServerMessage} message
+ * @param {import('../const/index.js').ClientReply} reply
  */
-
-/**
- * @param {SubjectData} p
- */
-const ask = async ({
-  message,
-  reply,
-}) => {
+const resolve = (message, reply) => {
   const data = message.data;
 
   switch (message.type) {
@@ -26,12 +18,8 @@ const ask = async ({
       });
     }
 
-    case 'list':
-      return data.list.reduce(
-        (prev, msg) => prev.then(() => ask({ message: msg, reply })), Promise.resolve());
-
     case 'shard.load':
-      return shard.load({ message, reply });
+      return shard.load(message, reply);
 
     case 'shard.clear':
       return shard.clear();
@@ -67,6 +55,23 @@ const ask = async ({
       throw new Error(`client recieve unknown message. ${JSON.stringify(message)}`);
     }
   }
+
+};
+
+/**
+ * @param {object} p
+ * @param {import('../const/index.js').ClientReply} p.reply
+ * @param {import('../../server/const/index.js').ServerMessage[]} p.message
+ */
+
+const ask = async ({
+  message,
+  reply,
+}) => {
+  return message.reduce(
+    (prev, msg) => prev.then(() => resolve(msg, reply)),
+    Promise.resolve()
+  );
 };
 
 export const ClientReceiver = {

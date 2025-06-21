@@ -4,8 +4,8 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
 /**
  * @typedef { 'shard.load'
  * | 'shard.loaded'
- * | 'object.move'
- * | 'object.interact'
+ * | 'controller.move'
+ * | 'controller.interact'
  * } ClientMessageType
  */
 
@@ -15,3 +15,6 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
  * @property {*} [data]
  */
 
+/**
+ * @typedef {(message: ClientMessage) => void} ClientReply
+ */
