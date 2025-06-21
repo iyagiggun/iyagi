@@ -1,3 +1,6 @@
+/**
+ * @type {Map<string, import('./index.js').Shard>}
+ */
 let shards = new Map();
 
 
@@ -14,6 +17,10 @@ export const ShardForge = {
    * @param {string} key
    */
   seek: (key) => {
-    return shards.get(key);
+    const shard = shards.get(key);
+    if (!shard) {
+      throw new Error(`Fail to seek shard. key = ${key}`);
+    }
+    return shard;
   },
 };

@@ -1,6 +1,7 @@
 /**
  * @typedef {{
  *  user: import('../user/index.js').User;
+ *  shard: import('../shard/index.js').Shard;
  *  message: import('../../client/const/index.js').ClientMessage;
  *  reply: import('../const/index.js').ServerReply
  * }} ClientPayload
@@ -15,10 +16,10 @@ export class ServerReceiver {
   receive(payload) {
     switch(payload.message.type) {
       case 'shard.load':
-        payload.user.shard.load$.next(payload);
+        payload.shard.load$.next(payload);
         return;
       case 'shard.loaded':
-        payload.user.shard.loaded$.next(payload);
+        payload.shard.loaded$.next(payload);
         return;
       case 'controller.move':
         ControllerReceiver.move(payload, payload.message);

@@ -31,8 +31,9 @@ export class ServerCommand {
    * @param {import('../../user/index.js').UserType} param.user
    * @param {string} param.shard
    */
-  enter({ user, shard }) {
-    user.shard = ShardForge.seek(shard);
+  enter({ user, shard: shardKey }) {
+    const shard = ShardForge.seek(shardKey);
+    user.shard = shardKey;
     this.#list.push({
       type: 'shard.clear',
     }
@@ -41,7 +42,7 @@ export class ServerCommand {
       type: 'shard.load',
       data: {
         shard: {
-          objects: user.shard.objects.map((o) => o.toLoadData()),
+          objects: shard.objects.map((o) => o.toLoadData()),
         },
       },
     });

@@ -6,13 +6,15 @@ export const ControllerReceiver = {
    * @param {import("../const/index.js").ServerPayload} payload
    * @param {*} message
    */
-  move: ({ user, reply }, message) => {
-    const objects = user.shard.objects;
+  move: ({ user, shard, reply }, message) => {
+    const objects = shard.objects;
     const data = message.data;
-    const target = user.shard.objects.find((o) => o.id === data.id);
+    const target = shard.objects.find((o) => o.id === data.id);
     if (!target) {
       throw new Error(`Fail to move. No target (${message.data.id}).`);
     }
+    const beforeCenter = target.center();
+
     const delta = data.delta;
     const x = target.x + (delta.x ?? 0);
     const y = target.y + (delta.y ?? 0);
@@ -23,15 +25,15 @@ export const ControllerReceiver = {
     target.y = next.y;
     target.z = next.z;
 
-    const tc = target.center();
+    const afterCenter = target.center();
     const pressed = objects.filter((o) => {
       if (o.hitbox.z !== target.z - 1) {
         return false;
       }
-      if (!isIn(tc, o.hitbox)) {
+      if (!isIn(afterCenter, o.hitbox)) {
         return false;
       }
-      return true;
+      return !isIn(beforeCenter, o.hitbox);
     });
 
     reply(
@@ -45,15 +47,15 @@ export const ControllerReceiver = {
     );
 
     pressed.forEach((o) => {
-      o.pressed$.next({ user, reply });
+      o.pressed$.next({ user, shard, reply });
     });
   },
   /**
    * @param {import("../const/index.js").ServerPayload} payload
    * @param {*} message
    */
-  interact: ({ user, reply }, message) => {
-    const objects = user.shard.objects;
+  interact: ({ user, shard, reply }, message) => {
+    const objects = shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.target);
 
@@ -96,6 +98,6 @@ export const ControllerReceiver = {
                   && isOverlap(object.hitbox, interactionArea);
       }
     );
-    willInteract?.interact$.next({ user, reply });
+    willInteract?.interact$.next({ user, shard, reply });
   },
 };
