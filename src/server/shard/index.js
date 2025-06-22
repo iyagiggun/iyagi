@@ -31,11 +31,6 @@ export class Shard {
      */
     this.move$ = new Subject();
 
-    /**
-     * @type {Subject<import('../const/index.js').ServerPayload>}
-     */
-    this.interact$ = new Subject();
-
     this.load$.subscribe(({ shard, reply }) => {
       reply([{
         type: 'shard.load',

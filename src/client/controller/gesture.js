@@ -14,7 +14,7 @@ export default class Gesture {
   #gestureList = [];
 
   /**
-   * @type {XY | null}
+   * @type {import('../../commons/coords.js').XY | null}
    */
   #last = null;
 
@@ -46,7 +46,7 @@ export default class Gesture {
   }
 
   /**
- * @param {XY} cur
+ * @param {import('../../commons/coords.js').XY} cur
  */
   #check(cur) {
     if (!this.#last) {
@@ -96,9 +96,9 @@ export default class Gesture {
     }
     if (pointerId !== undefined) {
       if (this.#gestureList.length === 0) {
-        this.#et.dispatchEvent(new CustomEvent('action', { detail: { gesture: 'tap' } }));
+        this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: 'tap' } }));
       } else {
-        this.#et.dispatchEvent(new CustomEvent('action', { detail: { gesture: this.#gestureList.join('') } }));
+        this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: this.#gestureList.join('') } }));
       }
     }
     this.#container.removeEventListener('touchmove', this.#onTouchMove);

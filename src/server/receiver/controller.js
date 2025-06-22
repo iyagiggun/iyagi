@@ -132,7 +132,7 @@ export const ControllerReceiver = {
       }
     })();
 
-    nearest.interact$.next({
+    nearest.interaction$.next({
       user,
       shard,
       reply: (arr) => {
@@ -156,5 +156,20 @@ export const ControllerReceiver = {
         }
       },
     });
+  },
+  /**
+   * @param {import("../const/index.js").ServerPayload} payload
+   * @param {*} message
+   */
+  action: ({ user, shard, reply }, message) => {
+    const objects = shard.objects;
+    const data = message.data;
+    const target = objects.find((o) => o.id === data.id);
+
+    if (!target) {
+      return;
+    }
+
+    target.action$.next({ user, shard, reply, input: data.input });
   },
 };

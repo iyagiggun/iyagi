@@ -43,12 +43,6 @@ const iclient = {
     global.controller = next;
   },
 
-  // get messenger() {
-  //   return {
-  //     move: sender.move,
-  //     interact: sender.interact,
-  //   };
-  // },
 };
 
 export default iclient;

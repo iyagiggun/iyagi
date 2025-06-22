@@ -111,12 +111,17 @@ export class ServerObject {
     /**
      * @type {Subject<import('../const/index.js').ServerPayload>}
      */
-    this.interact$ = new Subject();
+    this.interaction$ = new Subject();
 
     /**
      * @type {Subject<import('../const/index.js').ServerPayload>}
      */
     this.pressed$ = new Subject();
+
+    /**
+     * @type {Subject<import('../const/index.js').ServerPayload & { input: string }>}
+     */
+    this.action$ = new Subject();
   }
 
   /**

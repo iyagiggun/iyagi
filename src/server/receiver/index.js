@@ -24,8 +24,11 @@ export class ServerReceiver {
       case 'controller.move':
         ControllerReceiver.move(payload, payload.message);
         return;
-      case 'controller.interact':
+      case 'controller.interaction':
         ControllerReceiver.interact(payload, payload.message);
+        return;
+      case 'controller.action':
+        ControllerReceiver.action(payload, payload.message);
         return;
       default:
         console.error('server recieve unknown message', payload.message);
