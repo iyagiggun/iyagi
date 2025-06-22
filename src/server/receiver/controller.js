@@ -90,14 +90,71 @@ export const ControllerReceiver = {
       }
     })();
 
-    // TODO :: issue - leftest was choosed..
-    const willInteract = objects.find(
-      (object) => {
-        return object !== target
-                  && object.z === target.z
-                  && isOverlap(object.hitbox, interactionArea);
+    const interactables = objects.filter((object) => {
+      return object !== target
+        && object.z === target.z
+        && isOverlap(object.hitbox, interactionArea);
+    });
+
+    if (interactables.length === 0) {
+      return;
+    }
+
+    const interactionAreaCenter = {
+      x: interactionArea.x + interactionArea.w / 2,
+      y: interactionArea.y + interactionArea.h / 2,
+    };
+
+    const nearest = interactables.reduce((most, current) => {
+      const mostDistance = Math.hypot(
+        most.center().x - interactionAreaCenter.x,
+        most.center().y - interactionAreaCenter.y
+      );
+      const currentDistance = Math.hypot(
+        current.center().x - interactionAreaCenter.x,
+        current.center().y - interactionAreaCenter.y
+      );
+      return currentDistance < mostDistance ? current : most;
+    });
+
+    const interactDirection = (() => {
+      switch (target.direction) {
+        case 'up':
+          return 'down';
+        case 'down':
+          return 'up';
+        case 'left':
+          return 'right';
+        case 'right':
+          return 'left';
+        default:
+          throw new Error('Invalid direction.');
       }
-    );
-    willInteract?.interact$.next({ user, shard, reply });
+    })();
+
+    nearest.interact$.next({
+      user,
+      shard,
+      reply: (arr) => {
+        if (nearest.canDirectTo(interactDirection)) {
+          const rollbackDirection = nearest.direction;
+          const before = shard.command()
+            .move(nearest, {
+              direction: interactDirection,
+            })
+            .build();
+          const after = shard.command()
+            .move(nearest, {
+              direction: rollbackDirection,
+            })
+            .build();
+
+          reply([...before, ...arr, ...after]);
+
+        } else {
+          reply(arr);
+        }
+      },
+    });
   },
 };

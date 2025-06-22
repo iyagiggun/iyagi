@@ -50,7 +50,7 @@ export class ServerCommand {
   }
 
   /**
-   * @param {import('../../object/index.js').ServerObjectType} target
+   * @param {import('../../object/index.js').ServerObject} target
    */
   control(target) {
     this.#list.push({
@@ -70,7 +70,7 @@ export class ServerCommand {
   }
 
   /**
-   * @param {string | import('../../object/index.js').ServerObjectType} target
+   * @param {string | import('../../object/index.js').ServerObject} target
    */
   remove(target) {
     const id = typeof target === 'string' ? target :  target.id;
@@ -88,7 +88,7 @@ export class ServerCommand {
   }
 
   /**
-   * @param {import("../../object/index.js").ServerObjectType} target
+   * @param {import("../../object/index.js").ServerObject} target
    * @param {{
    *  x?: number,
    *  y?: number,
@@ -129,7 +129,7 @@ export class ServerCommand {
   }
 
   /**
-   * @param {import('../../object/index.js').ServerObjectType} target
+   * @param {import('../../object/index.js').ServerObject} target
    * @param {string[]} message
    */
   talk(target, ...message) {
@@ -144,7 +144,7 @@ export class ServerCommand {
   }
 
   /**
-   * @param {import('../../object/index.js').ServerObjectType} target
+   * @param {import('../../object/index.js').ServerObject} target
    * @param {string} motion
    */
   motion(target, motion) {

@@ -42,26 +42,34 @@ import { Subject } from 'rxjs';
  */
 
 /**
- * @typedef {Object} ServerObjectParams
- * @property {string=} name
- * @property {Direction=} direction
- * @property {Area=} hitbox
+ * @typedef {Object} ServerObjectResource
+ * @property {string} key
  * @property {SpriteInfo} sprite
- * @property {Portraits=} portraits
  */
-
-/**
- * @type {Map<string, number>}
- */
-const stampIdxMap = new Map();
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
 const MAX_Z_INDEX = 999;
 
+/**
+ * @type {Map<string, number>}
+ */
+const instanceIdxMap = new Map();
+
+/**
+ * @typedef {Object} ServerObjectOptions
+ * @property {string} [name]
+ * @property {number} [x]
+ * @property {number} [y]
+ * @property {number} [z]
+ * @property {Direction} [direction]
+ * @property {Portraits} [portraits]
+ */
+
 export class ServerObject {
   #resource;
 
+  /** @type {string | undefined} */
   #name;
 
   // hitbox 는 한 개가 맞음. 여러개이면 z-index 처리가 매우 어려워짐
@@ -79,37 +87,26 @@ export class ServerObject {
   #id;
 
   /**
-   * @param {string} resource,
-   * @param {import('../../coords/index.js').XYZ & {
-   *  name?: string;
-   *  direction?: Direction;
-   *  sprite: SpriteInfo;
-   *  portraits?: Portraits;
-   * }} p
+   * @param {ServerObjectResource} p
+   * @param {ServerObjectOptions} [o]
    */
-  constructor(resource, {
-    name,
-    x,
-    y,
-    z,
-    direction,
-    sprite,
-    portraits,
-  }) {
-    this.#resource = resource;
-    this.#name = name;
-    this.#sprite = sprite;
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    if (direction) {
-      this.#direction = direction;
+  constructor(p, o) {
+    this.#name = o?.name;
+    this.#sprite = p.sprite;
+    this.x = o?.x ?? 0;
+    this.y = o?.y ?? 0;
+    this.z = o?.z ?? 1;
+
+    const idx = instanceIdxMap.get(p.key) ?? 0;
+    this.#id = `object:${p.key}:${idx}`;
+    instanceIdxMap.set(p.key, idx + 1); // set next index
+
+    this.#resource = p.key;
+    if (o?.direction) {
+      this.#direction = o.direction;
     }
     this.#absHitbox = this.#calcAbsHitbox();
-    this.#portraits = portraits;
-    const stampIdx = (stampIdxMap.get(resource) ?? 0) + 1;
-    stampIdxMap.set(resource, stampIdx);
-    this.#id = `object:${resource}:${stampIdx}`;
+    this.#portraits = o?.portraits;
 
     /**
      * @type {Subject<import('../const/index.js').ServerPayload>}
@@ -185,6 +182,15 @@ export class ServerObject {
     this.#absHitbox = this.#calcAbsHitbox();
   }
 
+  /**
+   * @param {string} direction
+   */
+  canDirectTo(direction) {
+    const motion = this.#sprite.motions[this.#motion];
+    if (!motion) return false;
+    return !!motion[direction];
+  }
+
   #calcAbsHitbox() {
     const motion = this.#sprite.motions[this.#motion];
     const directedMotion = motion[this.#direction];
@@ -244,7 +250,3 @@ export class ServerObject {
     };
   }
 }
-
-/**
- * @typedef {ServerObject} ServerObjectType
- */

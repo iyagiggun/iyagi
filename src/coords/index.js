@@ -38,8 +38,8 @@ export function isIn(xy, area) {
 
 /**
  * @param {{
- *  target: import("../server/object/index.js").ServerObjectType;
- *  objects: import("../server/object/index.js").ServerObjectType[];
+ *  target: import("../server/object/index.js").ServerObject;
+ *  objects: import("../server/object/index.js").ServerObject[];
  *  destination: XY | XYZ;
  * }} p
  */

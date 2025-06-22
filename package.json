@@ -21,8 +21,8 @@
       "require": "./src/server/index.js"
     },
     "./server/object": {
-      "import": "./src/server/object/exports.js",
-      "require": "./src/server/object/exports.js"
+      "import": "./src/server/object/index.js",
+      "require": "./src/server/object/index.js"
     },
     "./server/user": {
       "import": "./src/server/user/index.js",
