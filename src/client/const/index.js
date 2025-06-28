@@ -1,5 +1,5 @@
 export const FRAMES_PER_SECOND = 60;
-export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
+export const DEFAULT_ANIMATION_SPEED = 12 / FRAMES_PER_SECOND;
 
 /**
  * @typedef { 'shard.load'

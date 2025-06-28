@@ -1,6 +1,9 @@
 import global from '../global/index.js';
 import { Rectangle } from 'pixi.js';
 
+/**
+ * @type {import('./index.js').default[]}
+ */
 const objects = [];
 
 /**
@@ -16,6 +19,9 @@ const find = (id) => {
 
 
 const ObjectManager = {
+  /**
+   * @param {import('./index.js').default} o
+   */
   push: (o) => {
     objects.push(o);
   },
@@ -79,7 +85,7 @@ const ObjectManager = {
 
   motion: (data) => {
     const target = find(data.target);
-    target.set(data.motion);
+    target.play({ motion: data.motion });
     return Promise.resolve();
   },
 };

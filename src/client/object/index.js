@@ -247,17 +247,38 @@ export default class ClientObject {
 
   /**
    * @param {{
-   *   speed: number
+   *  speed?: number
+   *  motion?: string
    * }} options
    */
-  play({ speed } = { speed: 0 }) {
-    if ((this.#current instanceof AnimatedSprite) === false) {
+  play({ speed, motion } = { speed: 0 }) {
+    const before = this.#motion;
+
+    if (motion) {
+      this.set(motion);
+    }
+
+    const sprite = this.#current;
+    if ((sprite instanceof AnimatedSprite) === false) {
       return;
     }
+
     if (speed > 0) {
-      this.#current.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
+      sprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
     }
-    this.#current.play();
+
+    if (!motion) {
+      sprite.play();
+      return;
+    }
+
+    sprite.onComplete = () => {
+      this.set(before);
+      if (this.#current instanceof AnimatedSprite) {
+        this.#current.gotoAndStop(0);
+      }
+    };
+    sprite.gotoAndPlay(0);
   }
 
   /**

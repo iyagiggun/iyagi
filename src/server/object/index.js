@@ -223,6 +223,10 @@ export class ServerObject {
     };
   }
 
+  get motion() {
+    return this.#motion;
+  }
+
   /**
    * @param {string} next
    */
@@ -231,6 +235,7 @@ export class ServerObject {
       throw new Error('no motion.');
     }
     this.#motion = next;
+    this.#absHitbox = this.#calcAbsHitbox();
   }
 
   getClientXYZ() {
