@@ -36,7 +36,7 @@ const resolve = (message, reply) => {
     case 'object.move':
       return ObjectManager.move(data);
 
-    case 'object.motion':
+    case 'object.action':
       return ObjectManager.motion(data);
 
     case 'shard.control':

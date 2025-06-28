@@ -18,6 +18,7 @@ import ITexture from './texture.js';
  * @typedef Motion
  * @property {SpriteImage} [image]
  * @property {boolean} [loop]
+ * @property {number | Object<number, number>} [fps]
  * @property {ActionArea} [up]
  * @property {ActionArea} [down]
  * @property {ActionArea} [left]

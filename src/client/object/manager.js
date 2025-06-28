@@ -85,7 +85,7 @@ const ObjectManager = {
 
   motion: (data) => {
     const target = find(data.target);
-    target.play({ motion: data.motion });
+    target.play({ motion: data.motion, ...data.options });
     return Promise.resolve();
   },
 };

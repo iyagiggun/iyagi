@@ -1,10 +1,5 @@
 import { AnimatedSprite, Assets, Sprite, Spritesheet, Texture } from 'pixi.js';
-import { DEFAULT_ANIMATION_SPEED } from '../const/index.js';
-
-/**
- * @typedef {import('../coords/index.js').Area} Area
- * @typedef {import('../coords/index.js').Direction} Direction
- */
+import { DEFAULT_ANIMATION_SPEED, FRAMES_PER_SECOND } from '../const/index.js';
 
 /**
  * @param {string} motion
@@ -17,7 +12,7 @@ let frameNo = 0;
 /**
  * @param {import('./resource.js').SpriteImage} image
  * @param {Object} options
- * @param {Area[]} [options.frames]
+ * @param {import('../../commons/coords.js').Area[]} [options.frames]
  * @param {boolean} [options.scale]
  */
 const createTexture = async (image, options) => {
@@ -50,7 +45,7 @@ export default class ITexture {
 
   #info;
 
-  /** @type {{[key: string]: Texture | Texture[] | undefined }} */
+  /** @type {Object.<string, Texture | Texture[] | undefined>} */
   #motions = {};
 
   #loaded = false;
@@ -97,7 +92,7 @@ export default class ITexture {
 
   /**
    * @param {string} motion
-   * @param {Direction} direction
+   * @param {import('../../commons/coords.js').Direction} direction
    */
   createSprite(motion, direction) {
     if (!this.#loaded) {
@@ -113,7 +108,28 @@ export default class ITexture {
     }
 
     const as = new AnimatedSprite(data);
-    as.animationSpeed = 1 * DEFAULT_ANIMATION_SPEED;
+    const fps = this.#info.motions?.[motion]?.fps ?? DEFAULT_ANIMATION_SPEED;
+    if (typeof fps === 'object') {
+      const initSpeed = fps[0];
+      if (!initSpeed) {
+        throw new Error('The fps variable must have a valid fps[0] value.');
+      }
+      as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
+      as.onComplete = () => {
+        as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
+        as.emit('complete');
+      };
+      as.onFrameChange = (idx) => {
+        const segmentSpeed = fps[idx];
+        if (segmentSpeed > 0) {
+          as.animationSpeed = segmentSpeed / FRAMES_PER_SECOND;
+        }
+      };
+    } else {
+      as.animationSpeed = fps / FRAMES_PER_SECOND;
+    }
+
+
     as.loop = this.#info.motions?.[motion]?.loop ?? true;
     return as;
   }

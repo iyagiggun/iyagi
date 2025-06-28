@@ -2,7 +2,6 @@ import { getMDKey } from './texture.js';
 import { AnimatedSprite, Container } from 'pixi.js';
 import camera from '../camera/index.js';
 import global from '../global/index.js';
-import { DEFAULT_ANIMATION_SPEED } from '../const/index.js';
 
 /**
  * @typedef {import('pixi.js').Sprite} Sprite
@@ -75,7 +74,6 @@ export default class ClientObject {
 
     if (this.#current) {
       if (this.#current instanceof AnimatedSprite && next instanceof AnimatedSprite) {
-        next.animationSpeed = this.#current.animationSpeed;
         if (this.#current.playing) {
           this.#current.stop();
           next.play();
@@ -251,7 +249,7 @@ export default class ClientObject {
    *  motion?: string
    * }} options
    */
-  play({ speed, motion } = { speed: 0 }) {
+  play({ speed, motion } = { speed: 1 }) {
     const before = this.#motion;
 
     if (motion) {
@@ -263,21 +261,22 @@ export default class ClientObject {
       return;
     }
 
-    if (speed > 0) {
-      sprite.animationSpeed = speed * DEFAULT_ANIMATION_SPEED;
-    }
+    // const speed = typeof _speed === 'number' ? _speed : _speed?.[0];
+    // if (speed > 0) {
+    //   sprite.animationSpeed = speed / FRAMES_PER_SECOND;
+    // }
 
     if (!motion) {
       sprite.play();
       return;
     }
 
-    sprite.onComplete = () => {
+    sprite.on('complete', () => {
       this.set(before);
       if (this.#current instanceof AnimatedSprite) {
         this.#current.gotoAndStop(0);
       }
-    };
+    });
     sprite.gotoAndPlay(0);
   }
 

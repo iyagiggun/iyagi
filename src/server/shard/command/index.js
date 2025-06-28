@@ -146,14 +146,19 @@ export class ServerCommand {
   /**
    * @param {import('../../object/index.js').ServerObject} target
    * @param {string} motion
+   * @param {object} [options]
+   * @param {number} [options.speed]
    */
-  motion(target, motion) {
+  action(target, motion, options = {}) {
     target.motion = motion;
     this.#list.push({
-      type: 'object.motion',
+      type: 'object.action',
       data: {
         target: target.id,
         motion,
+        options: {
+          speed: options.speed,
+        },
       },
     });
     return this;

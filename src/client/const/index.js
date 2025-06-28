@@ -1,5 +1,5 @@
 export const FRAMES_PER_SECOND = 60;
-export const DEFAULT_ANIMATION_SPEED = 12 / FRAMES_PER_SECOND;
+export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND;
 
 /**
  * @typedef { 'shard.load'
@@ -7,7 +7,7 @@ export const DEFAULT_ANIMATION_SPEED = 12 / FRAMES_PER_SECOND;
  * | 'controller.move'
  * | 'controller.interaction'
  * | 'controller.action'
- * | 'object.motion'
+ * | 'object.action'
  * } ClientMessageType
  */
 
