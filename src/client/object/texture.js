@@ -108,27 +108,18 @@ export default class ITexture {
     }
 
     const as = new AnimatedSprite(data);
-    const fps = this.#info.motions?.[motion]?.fps ?? DEFAULT_ANIMATION_SPEED;
-    if (typeof fps === 'object') {
-      const initSpeed = fps[0];
-      if (!initSpeed) {
-        throw new Error('The fps variable must have a valid fps[0] value.');
-      }
-      as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
-      as.onComplete = () => {
-        as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
-        as.emit('complete');
-      };
+    as.animationSpeed = DEFAULT_ANIMATION_SPEED;
+
+    // @todo 돌아갈 때ㅐ 대비 필요
+    const fdm = this.#info.motions?.[motion]?.frameDelayMap;
+    if (fdm) {
       as.onFrameChange = (idx) => {
-        const segmentSpeed = fps[idx];
-        if (segmentSpeed > 0) {
-          as.animationSpeed = segmentSpeed / FRAMES_PER_SECOND;
+        const delay = fdm[idx];
+        if (delay) {
+          as.animationSpeed = 1000 / (FRAMES_PER_SECOND * delay);
         }
       };
-    } else {
-      as.animationSpeed = fps / FRAMES_PER_SECOND;
     }
-
 
     as.loop = this.#info.motions?.[motion]?.loop ?? true;
     return as;

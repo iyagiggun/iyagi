@@ -271,12 +271,12 @@ export default class ClientObject {
       return;
     }
 
-    sprite.on('complete', () => {
+    sprite.onComplete = () => {
       this.set(before);
       if (this.#current instanceof AnimatedSprite) {
         this.#current.gotoAndStop(0);
       }
-    });
+    };
     sprite.gotoAndPlay(0);
   }
 
