@@ -1,5 +1,5 @@
 import { AnimatedSprite, Assets, Sprite, Spritesheet, Texture } from 'pixi.js';
-import { DEFAULT_ANIMATION_SPEED, FRAMES_PER_SECOND } from '../const/index.js';
+import { DEFAULT_FPS, FRAMES_PER_SECOND } from '../const/index.js';
 
 /**
  * @param {string} motion
@@ -108,7 +108,7 @@ export default class ITexture {
     }
 
     const as = new AnimatedSprite(data);
-    const fps = this.#info.motions?.[motion]?.fps ?? DEFAULT_ANIMATION_SPEED;
+    const fps = this.#info.motions?.[motion]?.fps ?? DEFAULT_FPS;
     if (typeof fps === 'object') {
       const initSpeed = fps[0];
       if (!initSpeed) {
