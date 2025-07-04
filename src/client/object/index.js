@@ -1,5 +1,5 @@
 import { getMDKey } from './texture.js';
-import { AnimatedSprite, Container } from 'pixi.js';
+import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import camera from '../camera/index.js';
 import global from '../global/index.js';
 
@@ -55,6 +55,19 @@ export default class ClientObject {
     this.#portrait = portrait;
     this.#info = info;
     this.set(this.#motion, this.#direction);
+
+    if (this.#info.shadow) {
+      const shadow = new Graphics();
+      shadow.ellipse(0, 0, this.#info.shadow.w/2, this.#info.shadow.h/2);
+      shadow.fill({
+        color: 0x000000,
+        alpha: 0.4,
+      });
+      shadow.x = this.#info.shadow.x + this.#info.shadow.w/2;
+      shadow.y = this.#info.shadow.y + this.#info.shadow.h/2;
+
+      this.container.addChildAt(shadow, 0);
+    }
   }
 
   /**

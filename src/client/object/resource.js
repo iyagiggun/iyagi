@@ -29,6 +29,7 @@ import ITexture from './texture.js';
 /**
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
+ * @property {import('../../commons/coords.js').Area} [shadow]
  * @property {{[key: string]: Motion}} [motions]
  */
 
