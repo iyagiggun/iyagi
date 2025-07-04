@@ -1,4 +1,4 @@
-import { throttle } from 'lodash-es';
+import { filter, fromEvent, throttleTime } from 'rxjs';
 
 const GESTURE_THRESHOLD = 30;
 
@@ -18,13 +18,7 @@ export default class Gesture {
    */
   #last = null;
 
-  #onTouchMove = throttle((evt) => {
-    const { x, y } = evt.global;
-    this.#check({ x, y });
-  }, 50);
-
   /**
-   *
    * @param {{
    *  container: import('pixi.js').Container;
    *  eventTarget: EventTarget;
@@ -36,6 +30,18 @@ export default class Gesture {
   }) {
     this.#container = container;
     this.#et = eventTarget;
+
+    fromEvent(this.#container, 'touchmove')
+      .pipe(
+        filter(() => this.#pointerId !== -1),
+        throttleTime(50)
+      )
+      .subscribe(
+        /**
+         * @param {import('pixi.js').FederatedPointerEvent} evt
+         */
+        ({ global: { x, y } }) => this.#check({ x, y })
+      );
   }
 
   /**
@@ -82,7 +88,6 @@ export default class Gesture {
    */
   activate(pointerId) {
     this.#pointerId = pointerId;
-    this.#container.addEventListener('touchmove', this.#onTouchMove);
     this.#last = null;
     this.#gestureList.length = 0;
   }
@@ -101,7 +106,6 @@ export default class Gesture {
         this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: this.#gestureList.join('') } }));
       }
     }
-    this.#container.removeEventListener('touchmove', this.#onTouchMove);
     this.#pointerId = -1;
   }
 }

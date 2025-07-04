@@ -271,7 +271,7 @@ export default class ClientObject {
       return;
     }
 
-    sprite.on('complete', () => {
+    sprite.on('iyagi.animation.complete', () => {
       this.set(before);
       if (this.#current instanceof AnimatedSprite) {
         this.#current.gotoAndStop(0);

@@ -117,7 +117,7 @@ export default class ITexture {
       as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
       as.onComplete = () => {
         as.animationSpeed = initSpeed / FRAMES_PER_SECOND;
-        as.emit('complete');
+        as.emit('iyagi.animation.complete');
       };
       as.onFrameChange = (idx) => {
         const segmentSpeed = fps[idx];

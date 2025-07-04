@@ -248,6 +248,8 @@ export class ServerObject {
   }
 
   toLoadData() {
+    // eslint-disable-next-line no-unused-vars
+    const { hitbox, ...clientSpriteData } = this.#sprite;
     return {
       resource: this.#resource,
       id: this.id,
@@ -255,7 +257,7 @@ export class ServerObject {
       ...this.getClientXYZ(),
       motion: this.#motion,
       direction: this.#direction,
-      sprite: this.#sprite,
+      sprite: clientSpriteData,
       portraits: this.#portraits,
     };
   }
