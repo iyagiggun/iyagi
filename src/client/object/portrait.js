@@ -35,7 +35,7 @@ export class Portrait {
 
   get(key = 'default') {
     if (!this.#params) {
-      return null;
+      return undefined;
     }
 
     if (!this.#textures) {

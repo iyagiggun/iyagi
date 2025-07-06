@@ -12,6 +12,10 @@
       "import": "./src/client/index.js",
       "require": "./src/client/index.js"
     },
+    "./client/object": {
+      "import": "./src/client/object/index.js",
+      "require": "./src/client/object/index.js"
+    },
     "./client/controller": {
       "import": "./src/client/controller/index.js",
       "require": "./src/client/controller/index.js"

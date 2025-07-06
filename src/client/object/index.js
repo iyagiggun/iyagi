@@ -3,11 +3,16 @@ import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import camera from '../camera/index.js';
 import global from '../global/index.js';
 
-/**
- * @typedef {import('pixi.js').Sprite} Sprite
- */
-
 const DEFAULT_COMPLETE = () => undefined;
+
+/**
+ * @typedef {Object} ClientObjectParams
+ * @property {string} id
+ * @property {string=} name
+ * @property {import('./texture.js').default} texture
+ * @property {import('./resource.js').SpriteInfo} info
+ * @property {import('./portrait.js').PortraitType} portrait
+ */
 
 export default class ClientObject {
 
@@ -22,23 +27,18 @@ export default class ClientObject {
 
   #portrait;
 
-  /** @type {Sprite | null} */
+  /** @type {import('pixi.js').Sprite | null} */
   #current = null;
 
   /**
-   * @type {Map<string, Sprite>}
+   * @type {Map<string, import('pixi.js').Sprite>}
    */
   #cache = new Map();
 
   #complete = DEFAULT_COMPLETE;
 
   /**
-   * @param {Object} param
-   * @param {string} param.id
-   * @param {string=} param.name
-   * @param {import('./texture.js').default} param.texture
-   * @param {import('./resource.js').SpriteInfo} param.info
-   * @param {import('./portrait.js').PortraitType} param.portrait
+   * @param {ClientObjectParams} param
    */
   constructor({
     id,
@@ -96,7 +96,7 @@ export default class ClientObject {
     }
     this.container.addChild(next);
     this.#current = next;
-    if (this.#info.motions[motion].playing) {
+    if (this.#info.motions?.[motion].playing) {
       this.play();
     }
   }
@@ -253,6 +253,9 @@ export default class ClientObject {
    * @param {string} [key]
    */
   talk(message, key) {
+    if (!this.name) {
+      throw new Error('Failed to talk. No name found.');
+    }
     return global.messenger.show({ name: this.name, message, portrait: this.#portrait.get(key) });
   }
 

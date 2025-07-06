@@ -1,5 +1,6 @@
 import global from './global/index.js';
 import imessenger from './messenger/imessenger.js';
+import { ObjectConverter } from './object/converter.js';
 import { ClientReceiver } from './receiver/index.js';
 import { shard } from './shard/index.js';
 
@@ -7,10 +8,20 @@ import { shard } from './shard/index.js';
 
 const iclient = {
   receiver: ClientReceiver,
-  async init() {
+  /**
+   * @param {Object} [params]
+   * @param {Object} [params.object]
+   * @param {import('./object/converter.js').ObjectConverterType} [params.object.converter]
+   */
+  async init(params) {
     await global.init({
       messenger: imessenger,
     });
+
+    const converter = params?.object?.converter;
+    if (converter) {
+      ObjectConverter.set(converter);
+    }
 
     const app = global.app;
 
@@ -42,7 +53,17 @@ const iclient = {
     }
     global.controller = next;
   },
-
+  object: {
+    get converter() {
+      return ObjectConverter.convert;
+    },
+    /**
+     * @param {*} next;
+     */
+    set converter(next) {
+      ObjectConverter.set(next);
+    },
+  },
 };
 
 export default iclient;

@@ -1,4 +1,4 @@
-import ClientObject from './index.js';
+import { ObjectConverter } from './converter.js';
 import { Portrait } from './portrait.js';
 import ITexture from './texture.js';
 
@@ -34,7 +34,7 @@ import ITexture from './texture.js';
  */
 
 /**
- * @typedef ClientObjectParams
+ * @typedef ClientObjectResourceParams
  * @property {string} key
  * @property {string} [name]
  * @property {SpriteInfo} sprite
@@ -42,7 +42,7 @@ import ITexture from './texture.js';
  */
 
 /**
- * @type {Map<string, ClientObject>}
+ * @type {Map<string, import('./index.js').default>}
  */
 const pool = new Map();
 
@@ -57,7 +57,7 @@ class ObjectResource {
 
   /**
    * @param {string} key
-   * @param {ClientObjectParams} params
+   * @param {ClientObjectResourceParams} params
    */
   constructor(key, params) {
     this.#params = params;
@@ -80,7 +80,8 @@ class ObjectResource {
     if (cached) {
       return cached;
     }
-    const created = new ClientObject({
+    console.error(ObjectConverter.convert);
+    const created = ObjectConverter.convert({
       id,
       name: this.#params.name,
       texture: this.#texture,
