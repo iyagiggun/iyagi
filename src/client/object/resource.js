@@ -80,7 +80,6 @@ class ObjectResource {
     if (cached) {
       return cached;
     }
-    console.error(ObjectConverter.convert);
     const created = ObjectConverter.convert({
       id,
       name: this.#params.name,
