@@ -1,5 +1,5 @@
 {
-  "name": "iyagi-server",
+  "name": "iyagi",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
@@ -51,14 +51,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iyagiggun/iyagi-server.git"
+    "url": "git+https://github.com/iyagiggun/iyagi.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/iyagiggun/iyagi-server/issues"
+    "url": "https://github.com/iyagiggun/iyagi/issues"
   },
-  "homepage": "https://github.com/iyagiggun/iyagi-server#readme",
+  "homepage": "https://github.com/iyagiggun/iyagi#readme",
   "devDependencies": {
     "@eslint/js": "^9.4.0",
     "eslint": "^8.57.0",
