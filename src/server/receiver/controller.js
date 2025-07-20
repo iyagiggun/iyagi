@@ -1,5 +1,5 @@
 import { getDirectionByDelta, getNextXYZ, isIn, isOverlap } from '../../coords/index.js';
-import { ServerCommand } from '../shard/command/index.js';
+import { StageDirector } from '../director/stage.js';
 
 export const ControllerReceiver = {
   /**
@@ -36,15 +36,13 @@ export const ControllerReceiver = {
       return !isIn(beforeCenter, o.hitbox);
     });
 
-    reply(
-      new ServerCommand()
-        .move(target, {
-          ...target.xyz,
-          direction: target.direction,
-          speed: data.speed,
-        })
-        .build()
-    );
+    reply([
+      StageDirector.move(target, {
+        ...target.xyz,
+        direction: target.direction,
+        speed: data.speed,
+      }),
+    ]);
 
     pressed.forEach((o) => {
       o.pressed$.next({ user, shard, reply });
@@ -138,18 +136,16 @@ export const ControllerReceiver = {
       reply: (arr) => {
         if (nearest.canDirectTo(interactDirection)) {
           const rollbackDirection = nearest.direction;
-          const before = shard.command()
+          const before = StageDirector
             .move(nearest, {
               direction: interactDirection,
-            })
-            .build();
-          const after = shard.command()
+            });
+          const after = StageDirector
             .move(nearest, {
               direction: rollbackDirection,
-            })
-            .build();
+            });
 
-          reply([...before, ...arr, ...after]);
+          reply([before, ...arr, after]);
 
         } else {
           reply(arr);

@@ -2,46 +2,38 @@
  * @typedef {{ id: string }} EffectTarget
  */
 
-export class ServerEffectCommandBuilder {
-  #command;
-  #list;
+import { BASIC_SERVER_MESSAGE_TYPES } from '../const/index.js';
 
-  /**
-   *
-   * @param {import('./index.js').ServerCommand} command
-   * @param {import('../../const/index.js').ServerMessage[]} list
-   */
-  constructor(command, list) {
-    this.#command = command;
-    this.#list = list;
-  }
+export const EffectDirector = {
   /**
    * @param {EffectTarget | EffectTarget[]} target
    * @param {*} [options]
+   *
+   * @returns {import('../const/index.js').ServerMessage}
    */
   fadeIn(target, options) {
-    this.#list.push({
-      type: 'effect.fade.in',
+    return {
+      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN,
       data: {
         target: (Array.isArray(target) ? target : [target]).map((t) => t.id),
         ...options,
       },
-    });
-    return this.#command;
-  }
+    };
+  },
 
   /**
    * @param {EffectTarget | EffectTarget[]} target
    * @param {*} [options]
+   *
+   * @returns {import('../const/index.js').ServerMessage}
    */
   fadeOut(target, options) {
-    this.#list.push({
-      type: 'effect.fade.out',
+    return {
+      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT,
       data: {
         target: (Array.isArray(target) ? target : [target]).map((t) => t.id),
         ...options,
       },
-    });
-    return this.#command;
-  }
-}
+    };
+  },
+};

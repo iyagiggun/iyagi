@@ -2,6 +2,7 @@ import { getMDKey } from './texture.js';
 import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import camera from '../camera/index.js';
 import global from '../global/index.js';
+import { FRAMES_PER_SECOND } from '../const/index.js';
 
 const DEFAULT_COMPLETE = () => undefined;
 
@@ -200,7 +201,7 @@ export default class ClientObject {
     const speed = _speed ?? 1;
     return new Promise((resolve) => {
 
-      this.play();
+      this.play({ speed });
 
       const tick = () => {
         const { x: curX, y: curY, z: curZ } = this.xyz;
@@ -265,7 +266,7 @@ export default class ClientObject {
    *  motion?: string
    * }} options
    */
-  play({ speed, motion } = { speed: 1 }) {
+  play({ speed: _speed, motion } = {}) {
     const before = this.#motion;
 
     if (motion) {
@@ -275,6 +276,11 @@ export default class ClientObject {
     const sprite = this.#current;
     if ((sprite instanceof AnimatedSprite) === false) {
       return;
+    }
+
+    const speed = _speed ?? 1;
+    if (speed > 0) {
+      sprite.animationSpeed = speed * 10 / FRAMES_PER_SECOND;
     }
 
     // const speed = typeof _speed === 'number' ? _speed : _speed?.[0];

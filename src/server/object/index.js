@@ -1,9 +1,9 @@
+import { Subject } from 'rxjs';
+
 /**
  * @typedef {import("../../coords/index.js").Direction} Direction
  * @typedef {import("../../coords/index.js").Area} Area
  */
-
-import { Subject } from 'rxjs';
 
 /**
  * @typedef SpriteImage
@@ -188,7 +188,7 @@ export class ServerObject {
   }
 
   /**
-   * @param {string} direction
+   * @param {Direction} direction
    */
   canDirectTo(direction) {
     const motion = this.#sprite.motions[this.#motion];

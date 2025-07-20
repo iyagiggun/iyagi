@@ -43,6 +43,10 @@
     "./server/message": {
       "import": "./src/server/message/index.js",
       "require": "./src/server/message/index.js"
+    },
+    "./server/director": {
+      "import": "./src/server/director/index.js",
+      "require": "./src/server/director/index.js"
     }
   },
   "types": "index.d.ts",

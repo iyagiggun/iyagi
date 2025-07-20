@@ -1,3 +1,4 @@
+import { BASIC_SERVER_MESSAGE_TYPES } from '../../server/const/index.js';
 import camera from '../camera/index.js';
 import { effect } from '../effect/index.js';
 import ObjectManager from '../object/manager.js';
@@ -18,37 +19,35 @@ const resolve = (message, reply) => {
       });
     }
 
-    case 'shard.load':
+    case BASIC_SERVER_MESSAGE_TYPES.LOAD:
+      shard.clear();
       return shard.load(message, reply);
 
-    case 'shard.clear':
-      return shard.clear();
-
-    case 'shard.remove':
+    case BASIC_SERVER_MESSAGE_TYPES.OBJECT_REMOVE:
       return ObjectManager.remove(data);
 
-    case 'camera.focus':
+    case BASIC_SERVER_MESSAGE_TYPES.CAMERA_FOCUS:
       return camera.move(data);
 
-    case 'object.talk':
+    case BASIC_SERVER_MESSAGE_TYPES.OBJECT_TALK:
       return ObjectManager.talk(data);
 
-    case 'object.move':
+    case BASIC_SERVER_MESSAGE_TYPES.OBJECT_MOVE:
       return ObjectManager.move(data);
 
-    case 'object.action':
+    case BASIC_SERVER_MESSAGE_TYPES.OBJECT_ACTION:
       return ObjectManager.motion(data);
 
-    case 'shard.control':
+    case BASIC_SERVER_MESSAGE_TYPES.CONTROL:
       return ObjectManager.control(data);
 
-    case 'shard.release':
+    case BASIC_SERVER_MESSAGE_TYPES.CONTROL_RELEASE:
       return ObjectManager.release();
 
-    case 'effect.fade.in':
+    case BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN:
       return effect.fadeIn(data);
 
-    case 'effect.fade.out':
+    case BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT:
       return effect.fadeOut(data);
 
     default: {

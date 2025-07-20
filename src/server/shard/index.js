@@ -1,5 +1,5 @@
 import { Subject } from 'rxjs';
-import { ServerCommand } from './command/index.js';
+import { StageDirector } from '../director/stage.js';
 
 export class Shard {
   #key;
@@ -31,20 +31,14 @@ export class Shard {
      */
     this.move$ = new Subject();
 
-    this.load$.subscribe(({ shard, reply }) => {
-      reply([{
-        type: 'shard.load',
-        data: {
-          shard: {
-            objects: shard.objects.map((o) => o.toLoadData()),
-          },
-        },
-      }]);
+    this.load$.subscribe(({ user, reply }) => {
+      reply([
+        StageDirector.enter({
+          user,
+          shard: this.#key,
+        }),
+      ]);
     });
-  }
-
-  command() {
-    return new ServerCommand();
   }
 
   get key() {

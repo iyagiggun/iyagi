@@ -1,34 +1,23 @@
 export const FRAMES_PER_SECOND = 60;
 export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
 
-/**
- * @typedef { 'wait'
- * | 'list'
- * | 'shard.load'
- * | 'shard.loaded'
- * | 'shard.clear'
- * | 'shard.control'
- * | 'shard.release'
- * | 'shard.remove'
- * | 'object.move'
- * | 'object.talk'
- * | 'object.action'
- * | 'effect.fade.in'
- * | 'effect.fade.out'
- * | 'scene.load'
- * | 'scene.loaded'
- * | 'scene.object'
- * | 'scene.focus'
- * | 'scene.control'
- * | 'controller.enable'
- * | 'controller.disable'
- * | 'camera.focus'
- * } CommandType
- */
+export const BASIC_SERVER_MESSAGE_TYPES = {
+  WAIT: 'wait',
+  LOAD: 'load',
+  CONTROL: 'control',
+  CONTROL_RELEASE: 'control.release',
+  OBJECT_MOVE: 'object.move',
+  OBJECT_TALK: 'object.talk',
+  OBJECT_ACTION: 'object.action',
+  OBJECT_REMOVE: 'object.remove',
+  EFFECT_FADE_IN: 'effect.fade.in',
+  EFFECT_FADE_OUT: 'effect.fade.out',
+  CAMERA_FOCUS: 'camera.focus',
+};
 
 /**
  * @typedef {Object} ServerMessage
- * @property {CommandType} type
+ * @property {string} type
  * @property {*} [data]
  */
 
