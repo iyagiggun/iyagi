@@ -1,13 +1,13 @@
 import global from './global/index.js';
 import imessenger from './messenger/imessenger.js';
 import { ObjectConverter } from './object/converter.js';
-import { ClientReceiver } from './receiver/index.js';
 import { shard } from './shard/index.js';
+import { payload$ } from './message/index.js';
 
 /** @typedef {import('./global/index.js').Controller} Controller */
 
 const iclient = {
-  receiver: ClientReceiver,
+  payload$,
   /**
    * @param {Object} [params]
    * @param {Object} [params.object]

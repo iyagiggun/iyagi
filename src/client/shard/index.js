@@ -1,7 +1,7 @@
 import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
 import resource from '../resource/index.js';
-import ObjectManager from '../object/manager.js';
+import ObjectOperator from '../object/operator.js';
 
 const container = new Container();
 
@@ -27,7 +27,7 @@ const load = async (message, reply) => {
     obj.xyz = info;
     obj.direction = info.direction;
     container.addChild(obj.container);
-    ObjectManager.push(obj);
+    ObjectOperator.push(obj);
     return obj;
   }));
   reply({

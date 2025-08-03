@@ -1,28 +1,33 @@
+import { BASIC_SERVER_MESSAGE_TYPES } from '../../server/const/index.js';
 import global from '../global/index.js';
 import { shard } from '../shard/index.js';
 
 /**
- * @param {string} id
+ * @param {Object} target
+ * @param {string} target.type
+ * @param {string} target.id
  */
-const toContainer = (id) => {
-  switch (id) {
+const toContainer = (target) => {
+  switch (target.type) {
     case 'SHARD':
       return shard.container;
+    // case 'OBJECT':
+    //   return;
     default:
-      throw new Error('invalid id :' + id);
+      throw new Error(`Unknown target type: ${target.type}`);
   }
 };
 
-const effect = {
+export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   /**
-   * @param {*} data
+   * @param {import('../message/index.js').ServerPayload} param0
    */
-  fadeIn: (data) => {
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ message: { data } }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
+    const container = toContainer(data.target);
 
-    const promises = data.target.map((id) => new Promise((resolve) => {
-      const container = toContainer(id);
+    return new Promise((resolve) => {
       const process = () => {
         if (container.alpha >= 1) {
           container.alpha = 1;
@@ -32,16 +37,16 @@ const effect = {
         container.alpha += delta;
       };
       ticker.add(process);
-    }));
-    return Promise.all(promises);
+    });
   },
-
-  fadeOut: (data) => {
+  /**
+   * @param {import('../message/index.js').ServerPayload} param0
+   */
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ message: { data } }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
-
-    const promises = data.target.map((id) => new Promise((resolve) => {
-      const container = toContainer(id);
+    const container = toContainer(data.target);
+    return new Promise((resolve) => {
       const process = () => {
         if (container.alpha <= 0) {
           container.alpha = 0;
@@ -51,10 +56,28 @@ const effect = {
         container.alpha -= delta;
       };
       ticker.add(process);
-    }));
-    return Promise.all(promises);
+    });
   },
+  /**
+   * @param {import('../message/index.js').ServerPayload} param0
+   */
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ message: { data } }) => {
+    const ticker = global.app.ticker;
+    const container = toContainer(data.target);
 
+    console.error(data);
+    console.error(container);
+
+    return new Promise((resolve) => {
+      const process = () => {
+        container.x += (Math.random() - 0.5) * 10;
+        container.y += (Math.random() - 0.5) * 10;
+      };
+      ticker.add(process);
+      setTimeout(() => {
+        ticker.remove(process);
+        resolve();
+      }, data.duration || 1000);
+    });
+  },
 };
-
-export { effect };

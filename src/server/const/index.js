@@ -12,6 +12,7 @@ export const BASIC_SERVER_MESSAGE_TYPES = {
   OBJECT_REMOVE: 'object.remove',
   EFFECT_FADE_IN: 'effect.fade.in',
   EFFECT_FADE_OUT: 'effect.fade.out',
+  EFFECT_SHAKE: 'effect.shake',
   CAMERA_FOCUS: 'camera.focus',
 };
 
