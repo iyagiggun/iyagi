@@ -24,6 +24,10 @@
       "import": "./src/server/index.js",
       "require": "./src/server/index.js"
     },
+    "./server/const": {
+      "import": "./src/server/const/index.js",
+      "require": "./src/server/const/index.js"
+    },
     "./server/object": {
       "import": "./src/server/object/index.js",
       "require": "./src/server/object/index.js"
@@ -47,6 +51,14 @@
     "./server/director": {
       "import": "./src/server/director/index.js",
       "require": "./src/server/director/index.js"
+    },
+    "./server/debugger": {
+      "import": "./src/server/debugger/index.js",
+      "require": "./src/server/debugger/index.js"
+    },
+    "./commons/coords": {
+      "import": "./src/commons/coords.js",
+      "require": "./src/commons/coords.js"
     }
   },
   "types": "index.d.ts",

@@ -4,7 +4,7 @@ import camera from '../camera/index.js';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator.js';
 import { shard } from '../shard/index.js';
 import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
-import { CLIENT_SUPERVISOR_MESSAGE_HANDLER } from '../supervisor/index.js';
+import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger/index.js';
 
 /**
  * @typedef {Object} ServerPayload
@@ -22,7 +22,7 @@ const BASIC_HANDLER_MAP = {
     },
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
   ...CLIENT_EFFECT_MESSAGE_HANDLER,
-  ...CLIENT_SUPERVISOR_MESSAGE_HANDLER,
+  ...CLIENT_DEBUGGER_MESSAGE_HANDLER,
   [BASIC_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:
     /**
      * @param {import('../../server/const/index.js').ServerMessage} message
