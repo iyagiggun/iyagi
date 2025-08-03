@@ -101,8 +101,8 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     const object = toObject(data.target);
     const container = object.container;
 
-    const jumpHeight = 24;
-    const duration = 20; // 프레임 수 (약 0.67초 @60fps)
+    const jumpHeight = 18;
+    const duration = 18; // 프레임 수 (약 0.67초 @60fps)
     let frame = 0;
 
     const notShadow = container.children.filter((child) => child.label !== CLIENT_OBJECT_CONTAINER_LABEL.SHADOW);

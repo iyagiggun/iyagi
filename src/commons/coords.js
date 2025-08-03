@@ -8,10 +8,12 @@
  *  z: number;
  * }} XYZ
  *
- * @typedef { XY & {
+ * @typedef {{
  *  w: number;
  *  h: number;
- * }} Area
+ * }} WH
+ *
+ * @typedef { XY & WH } Area
  *
  * @typedef {'up' | 'down' | 'left' | 'right' } Direction
  */

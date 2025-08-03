@@ -1,6 +1,6 @@
 import { filter, fromEvent, throttleTime } from 'rxjs';
 
-const GESTURE_THRESHOLD = 30;
+const GESTURE_THRESHOLD = 12;
 
 export default class Gesture {
 
