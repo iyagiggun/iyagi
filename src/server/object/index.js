@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs';
+import { ServerObjectResource } from './resource.js';
 
 /**
  * @typedef {import("../../coords/index.js").Direction} Direction
@@ -6,45 +7,7 @@ import { Subject } from 'rxjs';
  */
 
 /**
- * @typedef SpriteImage
- * @property {string} url
- * @property {number} [scale]
- */
-
-/**
- * @typedef ActionArea
- * @property {SpriteImage} [image]
- * @property {Area} [hitbox]
- * @property {import('../../coords/index.js').Area[]} frames
- */
-
-/**
- * @typedef Motion
- * @property {SpriteImage} [image]
- * @property {Area} [hitbox]
- * @property {boolean} [loop]
- * @property {ActionArea} [up]
- * @property {ActionArea} [down]
- * @property {ActionArea} [left]
- * @property {ActionArea} [right]
- * @property {boolean=} playing
- */
-
-/**
- * @typedef SpriteInfo
- * @property {SpriteImage} [image]
- * @property {Area} [hitbox]
- * @property {{[key: string]: Motion}} motions
- */
-
-/**
  * @typedef {string | Object<string, string>} Portraits
- */
-
-/**
- * @typedef {Object} ServerObjectResource
- * @property {string} key
- * @property {SpriteInfo} sprite
  */
 
 const MOTION_BASE = 'base';
@@ -262,3 +225,5 @@ export class ServerObject {
     };
   }
 }
+
+export { ServerObjectResource };
