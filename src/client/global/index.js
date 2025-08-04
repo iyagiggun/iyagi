@@ -73,6 +73,11 @@ export default {
       resizeTo: window,
     });
     reply = _reply;
+
     document.body.appendChild(app.canvas);
+    const canvasStyle = app.canvas.style;
+    canvasStyle.userSelect = 'none';
+    canvasStyle.webkitUserSelect = 'none';
+    canvasStyle.touchAction = 'none'; // 터치 스크롤 방지
   },
 };

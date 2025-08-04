@@ -287,22 +287,20 @@ export default class ClientObject {
       sprite.animationSpeed = speed * 10 / FRAMES_PER_SECOND;
     }
 
-    // const speed = typeof _speed === 'number' ? _speed : _speed?.[0];
-    // if (speed > 0) {
-    //   sprite.animationSpeed = speed / FRAMES_PER_SECOND;
-    // }
-
     if (!motion) {
+      if (sprite.playing) {
+        return;
+      }
       sprite.play();
       return;
     }
 
-    sprite.on('iyagi.animation.complete', () => {
+    sprite.onComplete = () => {
       this.set(before);
-      if (this.#current instanceof AnimatedSprite) {
-        this.#current.gotoAndStop(0);
-      }
-    });
+      sprite.gotoAndStop(0);
+      sprite.onComplete = DEFAULT_COMPLETE;
+    };
+
     sprite.gotoAndPlay(0);
   }
 
