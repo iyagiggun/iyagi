@@ -1,8 +1,8 @@
 import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
-import ObjectOperator from '../object/operator.js';
 import { BASIC_CLIENT_MESSAGE_TYPES } from '../const/index.js';
 import global from '../global/index.js';
+import { client_object_manager } from '../object/manager.js';
 
 const container = new Container();
 
@@ -63,7 +63,7 @@ const load = async (message) => {
       obj.xyz = info;
       obj.direction = info.direction;
       container.addChild(obj.container);
-      ObjectOperator.push(obj);
+      client_object_manager.push(obj);
       return obj.load();;
     })
   );

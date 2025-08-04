@@ -6,6 +6,10 @@ import { FRAMES_PER_SECOND } from '../const/index.js';
 
 const DEFAULT_COMPLETE = () => undefined;
 
+export const CLIENT_OBJECT_CONTAINER_LABEL = {
+  SHADOW: 'shadow',
+};
+
 /**
  * @typedef {Object} ClientObjectParams
  * @property {string} id
@@ -59,6 +63,7 @@ export default class ClientObject {
 
     if (this.#info.shadow) {
       const shadow = new Graphics();
+      shadow.label = CLIENT_OBJECT_CONTAINER_LABEL.SHADOW;
       shadow.ellipse(0, 0, this.#info.shadow.w/2, this.#info.shadow.h/2);
       shadow.fill({
         color: 0x000000,

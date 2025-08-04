@@ -1,17 +1,13 @@
 import { BASIC_SERVER_MESSAGE_TYPES } from '../../server/const/index.js';
 import global from '../global/index.js';
 import { Rectangle } from 'pixi.js';
-
-/**
- * @type {import('./index.js').default[]}
- */
-const objects = [];
+import { client_object_manager } from './manager.js';
 
 /**
  * @param {string} id
  */
 const find = (id) => {
-  const obj = objects.find((obj) => obj.id === id);
+  const obj = client_object_manager.find(id);
   if (!obj) {
     throw new Error('Fail to find object.');
   }
@@ -41,7 +37,7 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
    * @param {import('../../server/const/index.js').ServerMessage} message
    */
   [BASIC_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: ({ data }) => {
-    const target = objects.find((obj) => obj.id === data.id);
+    const target = client_object_manager.find(data.id);
     if (target) {
       const parent = target.container.parent;
       if (parent){
@@ -95,14 +91,3 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
   },
 };
 
-
-const ObjectOperator = {
-  /**
-   * @param {import('./index.js').default} o
-   */
-  push: (o) => {
-    objects.push(o);
-  },
-};
-
-export default ObjectOperator;

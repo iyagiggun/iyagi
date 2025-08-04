@@ -13,6 +13,7 @@ export const BASIC_SERVER_MESSAGE_TYPES = {
   EFFECT_FADE_IN: 'effect.fade.in',
   EFFECT_FADE_OUT: 'effect.fade.out',
   EFFECT_SHAKE: 'effect.shake',
+  EFFECT_JUMP: 'effect.jump',
   CAMERA_FOCUS: 'camera.focus',
 };
 

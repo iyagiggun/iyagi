@@ -68,4 +68,18 @@ export const EffectDirector = {
 
     };
   },
+  /**
+   * @param {Shard | ServerObject} target
+   * @param {*} [options]
+   * @returns {import('../const/index.js').ServerMessage}
+   */
+  jump(target, options) {
+    return {
+      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_JUMP,
+      data: {
+        target: toClientEffectTarget(target),
+        ...options,
+      },
+    };
+  },
 };
