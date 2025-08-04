@@ -13,7 +13,8 @@ export default class Joystick {
 
   #et;
 
-  #pointerId = -1;
+  /** @type {number | null} */
+  #pointerId = null;
 
   #activateTime = -1;
 
@@ -114,14 +115,14 @@ export default class Joystick {
    * @returns
    */
   release(pointerId) {
-    if (pointerId !== undefined && (pointerId !== this.#pointerId || this.#pointerId < 0)) {
+    if (pointerId !== undefined && (pointerId === null || pointerId !== this.#pointerId)) {
       return;
     }
     window.clearInterval(this.#intervalId);
     if (performance.now() - this.#activateTime < 200 && Math.abs(this.#delta.x) < 5 && Math.abs(this.#delta.y) < 5) {
       this.#et.dispatchEvent(new CustomEvent('interaction'));
     }
-    this.#pointerId = -1;
+    this.#pointerId = null;
     this.#delta = { x: 0, y: 0 };
     this.#intervalId = 0;
     this.#activateTime = -1;

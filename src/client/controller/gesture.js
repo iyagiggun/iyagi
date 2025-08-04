@@ -8,7 +8,8 @@ export default class Gesture {
 
   #et;
 
-  #pointerId = -1;
+  /** @type {number | null} */
+  #pointerId = null;
 
   /** @type {('→' | '←' | '↑' | '↓')[]} */
   #gestureList = [];
@@ -96,7 +97,7 @@ export default class Gesture {
    * @param {number} [pointerId]
    */
   release(pointerId) {
-    if (pointerId !== undefined && (pointerId !== this.#pointerId || this.#pointerId < 0)) {
+    if (pointerId !== undefined && (pointerId === null || pointerId !== this.#pointerId)) {
       return;
     }
     if (pointerId !== undefined) {
@@ -106,6 +107,6 @@ export default class Gesture {
         this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: this.#gestureList.join('') } }));
       }
     }
-    this.#pointerId = -1;
+    this.#pointerId = null;;
   }
 }
