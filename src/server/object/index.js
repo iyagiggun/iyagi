@@ -30,12 +30,10 @@ const instanceIdxMap = new Map();
  */
 
 export class ServerObject {
-  #resource;
-
   /** @type {string | undefined} */
   #name;
 
-  // hitbox 는 한 개가 맞음. 여러개이면 z-index 처리가 매우 어려워짐
+  // hitbox 는 한 개가 맞음. 여러개면 object 의 z-index 처리가 매우 어려워짐
   #absHitbox;
 
   #sprite;
@@ -50,21 +48,21 @@ export class ServerObject {
   #id;
 
   /**
-   * @param {ServerObjectResource} p
+   * @param {ServerObjectResource} r
    * @param {ServerObjectOptions} [o]
    */
-  constructor(p, o) {
+  constructor(r, o) {
     this.#name = o?.name;
-    this.#sprite = p.sprite;
+    this.resource = r;
+    this.#sprite = r.data.sprite;
     this.x = o?.x ?? 0;
     this.y = o?.y ?? 0;
     this.z = o?.z ?? 1;
 
-    const idx = instanceIdxMap.get(p.key) ?? 0;
-    this.#id = `object:${p.key}:${idx}`;
-    instanceIdxMap.set(p.key, idx + 1); // set next index
+    const idx = instanceIdxMap.get(r.key) ?? 0;
+    this.#id = `object:${r.key}:${idx}`;
+    instanceIdxMap.set(r.key, idx + 1); // set next index
 
-    this.#resource = p.key;
     if (o?.direction) {
       this.#direction = o.direction;
     }
@@ -214,7 +212,7 @@ export class ServerObject {
     // eslint-disable-next-line no-unused-vars
     const { hitbox, ...clientSpriteData } = this.#sprite;
     return {
-      resource: this.#resource,
+      resource: this.resource.key,
       id: this.id,
       name: this.name,
       ...this.getClientXYZ(),

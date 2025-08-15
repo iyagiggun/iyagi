@@ -9,6 +9,7 @@
  * @typedef ActionArea
  * @property {SpriteImage} [image]
  * @property {import('../../commons/coords.js').Area} [hitbox]
+ * @property {import('../../commons/coords.js').Area} [shadow]
  * @property {import('../../commons/coords.js').Area[]} frames
  */
 
@@ -16,6 +17,7 @@
  * @typedef Motion
  * @property {SpriteImage} [image]
  * @property {import('../../commons/coords.js').Area} [hitbox]
+ * @property {import('../../commons/coords.js').Area} [shadow]
  * @property {boolean} [loop]
  * @property {ActionArea} [up]
  * @property {ActionArea} [down]
@@ -28,7 +30,14 @@
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
  * @property {import('../../commons/coords.js').Area} [hitbox]
+ * @property {import('../../commons/coords.js').Area} [shadow]
  * @property {{[key: string]: Motion}} motions
+ */
+
+/**
+ * @typedef ObjectResourceData
+ * @property {SpriteInfo} sprite
+ * @property {string | Object<string, string>} [portraits]
  */
 
 /**
@@ -38,25 +47,20 @@ const RESOURCE_KEY_SET = new Set();
 
 export class ServerObjectResource {
   #key;
-  #sprite;
   /**
    * @param {string} key 
-   * @param {SpriteInfo} sprite 
+   * @param {ObjectResourceData} data 
    */
-  constructor(key, sprite) {
+  constructor(key, data) {
     if (RESOURCE_KEY_SET.has(key)) {
       throw new Error(`Resource key "${key}" already exists.`);
     }
     RESOURCE_KEY_SET.add(key);
     this.#key = key;
-    this.#sprite = sprite;
+    this.data = data;
   }
 
   get key() {
     return this.#key;
-  }
-
-  get sprite() {
-    return this.#sprite;
   }
 }
