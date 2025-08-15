@@ -12,21 +12,23 @@ import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
  */
 
 const BASIC_HANDLER_MAP = {
-  /**
-   * @param {ServerPayload} payload
-   */
-  [BASIC_SERVER_MESSAGE_TYPES.WAIT]: ({ message }) => {
-    return new Promise((resolve) => {
-      window.setTimeout(resolve, message.data.delay);
-    });
-  },
-  /**
-   * @param {ServerPayload} payload
-   */
-  [BASIC_SERVER_MESSAGE_TYPES.LOAD]: ({ reply, message }) => {
-    shard.clear();
-    return shard.load(message, reply);
-  },
+  [BASIC_SERVER_MESSAGE_TYPES.WAIT]:
+    /**
+     * @param {ServerPayload} payload
+     */
+    ({ message }) => {
+      return new Promise((resolve) => {
+        window.setTimeout(resolve, message.data.delay);
+      });
+    },
+  [BASIC_SERVER_MESSAGE_TYPES.LOAD]:
+    /**
+       * @param {ServerPayload} payload
+       */
+    ({ reply, message }) => {
+      shard.clear();
+      return shard.load(message, reply);
+    },
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
   ...CLIENT_EFFECT_MESSAGE_HANDLER,
   /**
@@ -44,7 +46,7 @@ payload$
   .pipe(
     mergeMap(({ reply, message }) => {
       return from(message).pipe(
-        concatMap(async (sMessage) => {
+        concatMap(async(sMessage) => {
           const handler = BASIC_HANDLER_MAP[sMessage.type];
           if (!handler) {
             throw new Error(`No handler for message type: ${sMessage.type}`);

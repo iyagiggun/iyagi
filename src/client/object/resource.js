@@ -35,7 +35,6 @@ import ITexture from './texture.js';
 
 /**
  * @typedef ClientObjectResourceParams
- * @property {string} key
  * @property {string} [name]
  * @property {SpriteInfo} sprite
  * @property {import('./portrait.js').PortraitParams=} portraits
@@ -53,15 +52,11 @@ class ObjectResource {
 
   #portrait;
 
-  #key;
-
   /**
-   * @param {string} key
    * @param {ClientObjectResourceParams} params
    */
-  constructor(key, params) {
+  constructor(params) {
     this.#params = params;
-    this.#key = key;
     this.#texture = new ITexture(params.sprite);
     this.#portrait = new Portrait(params.portraits);
   }
@@ -72,31 +67,24 @@ class ObjectResource {
   }
 
   /**
-   * @param {string=} id
+   * @param {string} id
+   * @param {{ name?: string }} [options]
    * @returns
    */
-  stamp(id) {
+  stamp(id, options) {
     const cached = pool.get(id);
     if (cached) {
       return cached;
     }
     const created = ObjectConverter.convert({
       id,
-      name: this.#params.name,
+      name: options?.name,
       texture: this.#texture,
       info: this.#params.sprite,
       portrait: this.#portrait,
     });
     pool.set(id, created);
     return created;
-  }
-
-  set key(_) {
-    throw new Error('The key cannot be edited');
-  }
-
-  get key() {
-    return this.#key;
   }
 }
 

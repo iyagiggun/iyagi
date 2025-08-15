@@ -29,8 +29,8 @@ export const StageDirector = {
       type: BASIC_SERVER_MESSAGE_TYPES.LOAD,
       data: {
         shard: {
-          resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.data),
-          objects: shard.objects.map((o) => o.toLoadData()),
+          resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),
+          objects: shard.objects.map((o) => o.toClientData()),
         },
       },
     });

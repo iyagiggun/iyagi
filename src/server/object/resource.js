@@ -48,8 +48,8 @@ const RESOURCE_KEY_SET = new Set();
 export class ServerObjectResource {
   #key;
   /**
-   * @param {string} key 
-   * @param {ObjectResourceData} data 
+   * @param {string} key
+   * @param {ObjectResourceData} data
    */
   constructor(key, data) {
     if (RESOURCE_KEY_SET.has(key)) {
@@ -62,5 +62,12 @@ export class ServerObjectResource {
 
   get key() {
     return this.#key;
+  }
+
+  toClientData() {
+    return {
+      key: this.key,
+      data: this.data,
+    };
   }
 }

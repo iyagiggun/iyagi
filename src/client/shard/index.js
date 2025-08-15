@@ -1,6 +1,5 @@
 import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
-import resource from '../resource/index.js';
 import ObjectOperator from '../object/operator.js';
 
 const container = new Container();
@@ -10,6 +9,11 @@ const clear = () => {
 };
 
 /**
+ * @type {Map<string, ObjectResource>}
+ */
+const resource_pool = new Map();
+
+/**
  * @param {import('../../server/const/index.js').ServerMessage} message
  * @param {import('../const/index.js').ClientReply} reply
  */
@@ -17,19 +21,46 @@ const load = async (message, reply) => {
 
   const data = message.data;
 
-  await Promise.all(data.shard.objects.map(async (info) => {
-    if (!resource.objects.contains(info.resource)) {
-      resource.objects.add(new ObjectResource(info.resource, info));
-    }
+  await Promise.all(
+    data.shard.resources.map(
+      /**
+       * @param {ReturnType<import('../../server/object/resource.js').ServerObjectResource['toClientData']>} r
+       */
+      (r) => {
+        const rsc = (() => {
+          const cached = resource_pool.get(r.key);
+          if (cached) {
+            return cached;
+          }
+          const resource = new ObjectResource(r.data);
+          resource_pool.set(r.key, resource);
+          return resource;
+        })();
+        return rsc.load();
+      }
+    )
+  );
 
-    const object_resource = resource.objects.find(info.resource);
-    const obj = (await object_resource.load()).stamp(info.id);
-    obj.xyz = info;
-    obj.direction = info.direction;
-    container.addChild(obj.container);
-    ObjectOperator.push(obj);
-    return obj;
-  }));
+  data.shard.objects.map(
+    /**
+     * @param {ReturnType<import('../../server/object/index.js').ServerObject['toClientData']>} info
+     * @returns
+     */
+    (info) => {
+      const resource = resource_pool.get(info.resource);
+      if (!resource) {
+        throw new Error(`Resource not found: ${info.resource}`);
+      }
+      const obj = resource.stamp(info.id, {
+        name: info.name,
+      });
+      obj.xyz = info;
+      obj.direction = info.direction;
+      container.addChild(obj.container);
+      ObjectOperator.push(obj);
+      return obj;
+    });
+
   reply({
     type: 'shard.loaded',
   });
