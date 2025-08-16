@@ -60,6 +60,7 @@ const load = async (message) => {
     });
 
   global.app.stage.addChild(container);
+
   global.reply({
     type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
   });

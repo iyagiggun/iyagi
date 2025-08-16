@@ -1,6 +1,7 @@
 import global from './global/index.js';
 import { ObjectConverter } from './object/converter.js';
 import { payload$ } from './message/index.js';
+import { BASIC_CLIENT_MESSAGE_TYPES } from './const/index.js';
 
 /** @typedef {import('./global/index.js').Controller} Controller */
 
@@ -12,6 +13,7 @@ const iclient = {
    */
   async init(p) {
     await global.init(p);
+    global.reply({ type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOAD });
 
     // reciever.init(global.ws);
 
