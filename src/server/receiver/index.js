@@ -7,6 +7,7 @@
  * }} ClientPayload
  */
 
+import { BASIC_CLIENT_MESSAGE_TYPES } from '../../client/const/index.js';
 import { ControllerReceiver } from './controller.js';
 
 export class ServerReceiver {
@@ -18,7 +19,7 @@ export class ServerReceiver {
       case 'shard.load':
         payload.shard.load$.next(payload);
         return;
-      case 'shard.loaded':
+      case BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
         payload.shard.loaded$.next(payload);
         return;
       case 'controller.move':

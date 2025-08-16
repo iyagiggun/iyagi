@@ -20,9 +20,9 @@ const toContainer = (target) => {
 
 export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   /**
-   * @param {import('../message/index.js').ServerPayload} param0
+   * @param {import('../../server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ message: { data } }) => {
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ data }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -40,9 +40,9 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('../message/index.js').ServerPayload} param0
+   * @param {import('../../server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ message: { data } }) => {
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ data }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -59,9 +59,9 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('../message/index.js').ServerPayload} param0
+   * @param {import('../../server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ message: { data } }) => {
+  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ data }) => {
     const ticker = global.app.ticker;
     const container = toContainer(data.target);
 

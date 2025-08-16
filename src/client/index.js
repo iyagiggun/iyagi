@@ -1,7 +1,5 @@
 import global from './global/index.js';
-import imessenger from './messenger/imessenger.js';
 import { ObjectConverter } from './object/converter.js';
-import { shard } from './shard/index.js';
 import { payload$ } from './message/index.js';
 
 /** @typedef {import('./global/index.js').Controller} Controller */
@@ -9,21 +7,11 @@ import { payload$ } from './message/index.js';
 const iclient = {
   payload$,
   /**
-   * @param {Object} [params]
-   * @param {Object} [params.object]
-   * @param {import('./object/converter.js').ObjectConverterType} [params.object.converter]
+   * @param {Object} p
+   * @param {import('./const/index.js').ClientReply} p.reply
    */
-  async init(params) {
-    await global.init({
-      messenger: imessenger,
-    });
-
-    const converter = params?.object?.converter;
-    if (converter) {
-      ObjectConverter.set(converter);
-    }
-
-    const app = global.app;
+  async init(p) {
+    await global.init(p);
 
     // reciever.init(global.ws);
 
@@ -34,10 +22,6 @@ const iclient = {
     //   container.height = app.screen.height;
     //   container.hitArea = new PIXI.Rectangle(0, 0, app.screen.width, app.screen.height);
     // });
-    app.stage.addChild(shard.container);
-    // scene.init();
-    // scene.play();
-    // inited = true;
   },
   get application() {
     return global.app;

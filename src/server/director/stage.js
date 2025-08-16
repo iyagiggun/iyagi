@@ -26,7 +26,7 @@ export const StageDirector = {
     const shard = ShardForge.seek(shardKey);
     user.shard = shardKey;
     return ({
-      type: BASIC_SERVER_MESSAGE_TYPES.LOAD,
+      type: BASIC_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {
         shard: {
           resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),

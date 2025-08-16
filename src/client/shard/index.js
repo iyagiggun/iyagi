@@ -1,6 +1,8 @@
 import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
 import ObjectOperator from '../object/operator.js';
+import { BASIC_CLIENT_MESSAGE_TYPES } from '../const/index.js';
+import global from '../global/index.js';
 
 const container = new Container();
 
@@ -15,9 +17,8 @@ const resource_pool = new Map();
 
 /**
  * @param {import('../../server/const/index.js').ServerMessage} message
- * @param {import('../const/index.js').ClientReply} reply
  */
-const load = async (message, reply) => {
+const load = async (message) => {
 
   const data = message.data;
 
@@ -58,8 +59,9 @@ const load = async (message, reply) => {
       return obj;
     });
 
-  reply({
-    type: 'shard.loaded',
+  global.app.stage.addChild(container);
+  global.reply({
+    type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
   });
 };
 

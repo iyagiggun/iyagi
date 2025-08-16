@@ -3,9 +3,9 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND; // 10 fps
 
 export const BASIC_SERVER_MESSAGE_TYPES = {
   WAIT: 'wait',
-  LOAD: 'load',
   CONTROL: 'control',
   CONTROL_RELEASE: 'control.release',
+  SHARD_LOAD: 'shard.load',
   OBJECT_MOVE: 'object.move',
   OBJECT_TALK: 'object.talk',
   OBJECT_ACTION: 'object.action',

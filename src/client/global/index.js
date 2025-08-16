@@ -1,4 +1,5 @@
 import { Application } from 'pixi.js';
+import imessenger from '../messenger/imessenger.js';
 
 /**
  * @typedef {{
@@ -10,10 +11,9 @@ import { Application } from 'pixi.js';
 
 /** @type { Application= } */
 let app;
-/** @type { Controller | null } */
-let controller = null;
-/** @type {import('../messenger/index.js').Messenger} */
-let messenger;
+
+/** @type {import('../const/index.js').ClientReply=} */
+let reply;
 
 const ERR_NOT_INITED = 'client has not been initialized yet.';
 
@@ -24,35 +24,43 @@ export default {
     }
     return app;
   },
-  get controller() {
-    return controller;
-  },
-  /**
-   * @type {Controller} _
-   */
-  set controller(_) {
-    controller = _;
-  },
-  get messenger() {
-    if (!messenger) {
+
+  get reply() {
+    if (!reply) {
       throw new Error(ERR_NOT_INITED);
     }
-    return messenger;
+    return reply;
+  },
+  /**
+   * @param {import('../const/index.js').ClientReply} next
+   */
+  set reply(next) {
+    reply = next;
   },
 
   /**
+   * @type {Controller | null}
+   */
+  controller: null,
+
+  /**
+   * @type {import('../messenger/index.js').Messenger}
+   */
+  messenger: imessenger,
+
+  /**
    * @param {Object} p
-   * @param {import('../messenger/index.js').Messenger} p.messenger
+   * @param {import('../const/index.js').ClientReply} p.reply
    */
   async init({
-    messenger: _messenger,
+    reply: _reply,
   }) {
     app = new Application();
     await app.init({
       backgroundColor: 0x000000,
       resizeTo: window,
     });
+    reply = _reply;
     document.body.appendChild(app.canvas);
-    messenger = _messenger;
   },
 };
