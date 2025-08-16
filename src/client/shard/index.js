@@ -27,16 +27,13 @@ const load = async (message, reply) => {
        * @param {ReturnType<import('../../server/object/resource.js').ServerObjectResource['toClientData']>} r
        */
       (r) => {
-        const rsc = (() => {
-          const cached = resource_pool.get(r.key);
-          if (cached) {
-            return cached;
-          }
-          const resource = new ObjectResource(r.data);
-          resource_pool.set(r.key, resource);
-          return resource;
-        })();
-        return rsc.load();
+        const cached = resource_pool.get(r.key);
+        if (cached) {
+          return cached.load();
+        }
+        const created = new ObjectResource(r.data);
+        resource_pool.set(r.key, created);
+        return created.load();
       }
     )
   );
