@@ -1,5 +1,4 @@
 import { Application } from 'pixi.js';
-import imessenger from '../messenger/imessenger.js';
 
 /**
  * @typedef {{
@@ -14,6 +13,10 @@ let app;
 
 /** @type {import('../const/index.js').ClientReply=} */
 let reply;
+
+
+/** @type {import('../messenger/index.js').Messenger} */
+let messenger;
 
 const ERR_NOT_INITED = 'client has not been initialized yet.';
 
@@ -38,15 +41,24 @@ export default {
     reply = next;
   },
 
+  get messenger() {
+    if (!messenger) {
+      throw new Error(ERR_NOT_INITED);
+    }
+    return messenger;
+  },
+
+  /**
+   * @param {import('../messenger/index.js').Messenger} next
+   */
+  set messenger(next) {
+    messenger = next;
+  },
+
   /**
    * @type {Controller | null}
    */
   controller: null,
-
-  /**
-   * @type {import('../messenger/index.js').Messenger}
-   */
-  messenger: imessenger,
 
   /**
    * @param {Object} p
