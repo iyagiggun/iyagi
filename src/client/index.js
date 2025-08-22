@@ -16,7 +16,6 @@ const iclient = {
    */
   async init(p) {
 
-
     await global.init(p);
 
     global.reply({ type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOAD });

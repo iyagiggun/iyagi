@@ -20,6 +20,14 @@ const resource_pool = new Map();
  */
 const load = async (message) => {
 
+  /**
+   * @type {{
+   *  shard: {
+   *   resources: ReturnType<import('../../server/object/resource.js').ServerObjectResource['toClientData']>[],
+   *   objects: ReturnType<import('../../server/object/index.js').ServerObject['toClientData']>[]
+   *  }
+   * }}
+   */
   const data = message.data;
 
   await Promise.all(
@@ -39,10 +47,9 @@ const load = async (message) => {
     )
   );
 
-  data.shard.objects.map(
+  await Promise.all(data.shard.objects.map(
     /**
      * @param {ReturnType<import('../../server/object/index.js').ServerObject['toClientData']>} info
-     * @returns
      */
     (info) => {
       const resource = resource_pool.get(info.resource);
@@ -51,13 +58,16 @@ const load = async (message) => {
       }
       const obj = resource.stamp(info.id, {
         name: info.name,
+        portraits: info.portraits,
       });
       obj.xyz = info;
       obj.direction = info.direction;
       container.addChild(obj.container);
       ObjectOperator.push(obj);
-      return obj;
-    });
+      return obj.load();;
+    })
+  );
+
 
   global.app.stage.addChild(container);
 

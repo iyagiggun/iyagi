@@ -37,7 +37,6 @@ import ITexture from './texture.js';
  * @typedef ClientObjectResourceParams
  * @property {string} [name]
  * @property {SpriteInfo} sprite
- * @property {import('./portrait.js').PortraitParams=} portraits
  */
 
 /**
@@ -50,25 +49,25 @@ class ObjectResource {
 
   #texture;
 
-  #portrait;
-
   /**
    * @param {ClientObjectResourceParams} params
    */
   constructor(params) {
     this.#params = params;
     this.#texture = new ITexture(params.sprite);
-    this.#portrait = new Portrait(params.portraits);
   }
 
   async load() {
-    await Promise.all([this.#texture.load(), this.#portrait.load()]);
+    await this.#texture.load();
     return this;
   }
 
   /**
    * @param {string} id
-   * @param {{ name?: string }} [options]
+   * @param {{
+   *  name?: string
+   *  portraits?: string | { [key: string]: string }
+   * }} [options]
    * @returns
    */
   stamp(id, options) {
@@ -81,7 +80,8 @@ class ObjectResource {
       name: options?.name,
       texture: this.#texture,
       info: this.#params.sprite,
-      portrait: this.#portrait,
+      // todo: json
+      portrait: new Portrait(options?.portraits),
     });
     pool.set(id, created);
     return created;

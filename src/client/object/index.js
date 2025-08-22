@@ -71,6 +71,10 @@ export default class ClientObject {
     }
   }
 
+  load() {
+    return this.#portrait.load();
+  }
+
   /**
    * @param {string} motion
    * @param {import('../../coords/index.js').Direction} [_direction]

@@ -6,9 +6,6 @@ import { ServerObjectResource } from './resource.js';
  * @typedef {import("../../coords/index.js").Area} Area
  */
 
-/**
- * @typedef {string | Object<string, string>} Portraits
- */
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
@@ -26,7 +23,7 @@ const instanceIdxMap = new Map();
  * @property {number} [y]
  * @property {number} [z]
  * @property {Direction} [direction]
- * @property {Portraits} [portraits]
+ * @property {string | Object<string, string>} [portraits]
  */
 
 export class ServerObject {

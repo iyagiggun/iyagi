@@ -37,7 +37,6 @@
 /**
  * @typedef ObjectResourceData
  * @property {SpriteInfo} sprite
- * @property {string | Object<string, string>} [portraits]
  */
 
 /**
