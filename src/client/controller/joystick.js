@@ -2,14 +2,20 @@
 /**
  * @typedef {{
  *  container: import('pixi.js').Container;
- *  start: import('../coords/index.js').XY;
+ *  start: import('../../commons/coords.js').XY;
  *  pointerId: number;
  * }} JoystickInfo
  */
 
+import { Graphics } from 'pixi.js';
+import global from '../global/index.js';
+
 export default class Joystick {
 
   #container;
+
+  #anchor;
+  #offset;
 
   #et;
 
@@ -41,6 +47,21 @@ export default class Joystick {
     this.#container = container;
     this.#et = eventTarget;
     this.#rate = rate ?? 50;
+
+    this.#anchor = new Graphics();
+    this.#anchor.circle(0, 0, 10);
+    this.#anchor.fill({
+      color: 0xff0000,
+      alpha: 0.4,
+    });
+
+    this.#offset = new Graphics();
+    this.#offset.circle(0, 0, 10);
+    this.#offset.fill({
+      color: 0x0000ff,
+      alpha: 0.4,
+    });
+
   }
 
   /**
@@ -57,6 +78,9 @@ export default class Joystick {
     const { x, y } = evt.global;
     this.#delta.x = x - this.#start.x;
     this.#delta.y = y - this.#start.y;
+
+    this.#offset.x = this.#anchor.x + this.#delta.x;
+    this.#offset.y = this.#anchor.y + this.#delta.y;
     // const { player } = info;
     // if (distance === 0) {
     //   return;
@@ -85,7 +109,7 @@ export default class Joystick {
   /**
    * @param {{
    *  pointerId: number;
-   *  start: import('../coords/index.js').XY;
+   *  start: import('../../commons/coords.js').XY;
    * }} p
    */
   activate({
@@ -107,6 +131,19 @@ export default class Joystick {
         ));
 
     }, this.#rate);
+
+    const app = global.app;
+    const center = {
+      x: app.canvas.width / 2,
+      y: app.canvas.height / 2,
+    };
+
+    this.#anchor.x = center.x;
+    this.#anchor.y = center.y;
+    this.#offset.x = center.x;
+    this.#offset.y = center.y;
+    this.#container.addChild(this.#anchor);
+    this.#container.addChild(this.#offset);
     // player.application.ticker.add(tick);
   }
 
@@ -127,6 +164,9 @@ export default class Joystick {
     this.#intervalId = 0;
     this.#activateTime = -1;
     this.#container.removeEventListener('touchmove', this.#onTouchMove);
+
+    this.#container.removeChild(this.#anchor);
+    this.#container.removeChild(this.#offset);
     // player.application.ticker.remove(tick);
   }
 }
