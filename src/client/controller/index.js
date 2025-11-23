@@ -1,14 +1,10 @@
 import { Container } from 'pixi.js';
 import Joystick from './joystick.js';
-import Gesture from './gesture.js';
+import Pad from './pad.js';
 
 export default class IController {
 
   container = new Container();
-
-  joystick;
-
-  gesture;
 
   /** @type { import('../object/index.js').default | null } */
   target = null;
@@ -21,12 +17,15 @@ export default class IController {
     this.joystick = new Joystick({
       container: this.container,
       rate: 50,
-      eventTarget: this.#et,
     });
 
-    this.gesture = new Gesture({
+    // this.gesture = new Gesture({
+    //   container: this.container,
+    //   eventTarget: this.#et,
+    // });
+
+    this.pad = new Pad({
       container: this.container,
-      eventTarget: this.#et,
     });
 
     this.container.on('touchstart', (evt) => {
@@ -38,8 +37,8 @@ export default class IController {
         });
         return;
       }
-      if (this.gesture.isIn(x)) {
-        this.gesture.activate(evt.pointerId);
+      if (this.pad.isIn(x)) {
+        this.pad.activate(evt.pointerId);
         return;
       }
     });
@@ -52,7 +51,7 @@ export default class IController {
       this.container.on(type, (evt) => {
         const { pointerId } = evt;
         this.joystick.release(pointerId);
-        this.gesture.release(pointerId);
+        this.pad.release(pointerId);
       });
     });
 
@@ -70,6 +69,6 @@ export default class IController {
   release() {
     console.error('release');
     this.joystick.release();
-    this.gesture.release();
+    this.pad.release();
   }
 }

@@ -1,17 +1,19 @@
-import { filter, fromEvent, throttleTime } from 'rxjs';
+import { filter, fromEvent, Subject, throttleTime } from 'rxjs';
+
+/**
+ * @typedef {('→' | '←' | '↑' | '↓')} Gesture
+ */
 
 const GESTURE_THRESHOLD = 12;
 
-export default class Gesture {
+export default class Pad {
 
   #container;
-
-  #et;
 
   /** @type {number | null} */
   #pointerId = null;
 
-  /** @type {('→' | '←' | '↑' | '↓')[]} */
+  /** @type {Gesture[]} */
   #gestureList = [];
 
   /**
@@ -19,18 +21,21 @@ export default class Gesture {
    */
   #last = null;
 
+  /** @type {Subject<string>} */
+  gesture$ = new Subject();
+
+  /** @type {Subject<void>} */
+  tap$ = new Subject();
+
   /**
    * @param {{
    *  container: import('pixi.js').Container;
-   *  eventTarget: EventTarget;
    * }} param0
    */
   constructor({
     container,
-    eventTarget,
   }) {
     this.#container = container;
-    this.#et = eventTarget;
 
     fromEvent(this.#container, 'touchmove')
       .pipe(
@@ -69,7 +74,6 @@ export default class Gesture {
       const dir = xDelta > 0 ? '→' : '←';
       if (this.#gestureList.length === 0 || this.#gestureList[this.#gestureList.length - 1] !== dir) {
         this.#gestureList.push(dir);
-        // info?.eventEmitter.emit(gestureList.join(''));
       }
       this.#last = cur;
       return;
@@ -78,7 +82,6 @@ export default class Gesture {
       const dir = yDelta > 0 ? '↓' : '↑';
       if (this.#gestureList.length === 0 || this.#gestureList[this.#gestureList.length - 1] !== dir) {
         this.#gestureList.push(dir);
-        // info?.eventEmitter.emit(gestureList.join(''));
       }
       this.#last = cur;
     }
@@ -102,9 +105,9 @@ export default class Gesture {
     }
     if (pointerId !== undefined) {
       if (this.#gestureList.length === 0) {
-        this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: 'tap' } }));
+        this.tap$.next();
       } else {
-        this.#et.dispatchEvent(new CustomEvent('action', { detail: { input: this.#gestureList.join('') } }));
+        this.gesture$.next(this.#gestureList.join(''));
       }
     }
     this.#pointerId = null;;

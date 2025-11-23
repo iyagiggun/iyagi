@@ -9,6 +9,7 @@
 
 import { Graphics } from 'pixi.js';
 import global from '../global/index.js';
+import { Subject } from 'rxjs';
 
 export default class Joystick {
 
@@ -16,8 +17,6 @@ export default class Joystick {
 
   #anchor;
   #offset;
-
-  #et;
 
   /** @type {number | null} */
   #pointerId = null;
@@ -33,19 +32,26 @@ export default class Joystick {
   #intervalId = 0;
 
   /**
+   * @type { Subject<import('../../commons/coords.js').XY> }
+   */
+  move$ = new Subject();
+
+  /**
+   * @type { Subject<void> }
+   */
+  tap$ = new Subject();
+
+  /**
    * @param {{
    *  container: import('pixi.js').Container;
    *  rate: number;
-   *  eventTarget: EventTarget;
    * }} p
    */
   constructor({
     container,
     rate,
-    eventTarget,
   }) {
     this.#container = container;
-    this.#et = eventTarget;
     this.#rate = rate ?? 50;
 
     this.#anchor = new Graphics();
@@ -121,15 +127,7 @@ export default class Joystick {
     this.#container.addEventListener('touchmove', this.#onTouchMove.bind(this));
     this.#activateTime = performance.now();
     this.#intervalId = window.setInterval(() => {
-      this.#et.dispatchEvent(
-        new CustomEvent('move',
-          {
-            detail:{
-              delta: this.#delta,
-            },
-          }
-        ));
-
+      this.move$.next(this.#delta);
     }, this.#rate);
 
     const app = global.app;
@@ -157,7 +155,7 @@ export default class Joystick {
     }
     window.clearInterval(this.#intervalId);
     if (performance.now() - this.#activateTime < 200 && Math.abs(this.#delta.x) < 5 && Math.abs(this.#delta.y) < 5) {
-      this.#et.dispatchEvent(new CustomEvent('interaction'));
+      this.tap$.next();
     }
     this.#pointerId = null;
     this.#delta = { x: 0, y: 0 };
