@@ -1,9 +1,23 @@
 {
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",               
-    "checkJs": true,
-    "strict": true,
+    "target": "ES2020",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": false,
+    "strict": false,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@iyagi/commons": ["packages/commons/src"],
+      "@iyagi/commons/*": ["packages/commons/src/*"],
+      "@iyagi/server": ["packages/server/src"],
+      "@iyagi/server/*": ["packages/server/src/*"],
+      "@iyagi/client": ["packages/client/src"],
+      "@iyagi/client/*": ["packages/client/src/*"]
+    }
   },
-  "include": ["src"]
+  "include": ["packages/*/src/**/*"],
+  "exclude": ["node_modules"]
 }

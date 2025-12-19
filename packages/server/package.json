@@ -1,0 +1,54 @@
+{
+  "name": "@iyagi/server",
+  "version": "1.0.0",
+  "description": "Server-side game engine for Iyagi",
+  "main": "src/index.js",
+  "exports": {
+    ".": {
+      "import": "./src/index.js",
+      "require": "./src/index.js"
+    },
+    "./const": {
+      "import": "./src/const/index.js",
+      "require": "./src/const/index.js"
+    },
+    "./object": {
+      "import": "./src/object/index.js",
+      "require": "./src/object/index.js"
+    },
+    "./user": {
+      "import": "./src/user/index.js",
+      "require": "./src/user/index.js"
+    },
+    "./scene": {
+      "import": "./src/scene/index.js",
+      "require": "./src/scene/index.js"
+    },
+    "./message": {
+      "import": "./src/message/index.js",
+      "require": "./src/message/index.js"
+    },
+    "./director": {
+      "import": "./src/director/index.js",
+      "require": "./src/director/index.js"
+    },
+    "./debugger": {
+      "import": "./src/debugger/index.js",
+      "require": "./src/debugger/index.js"
+    },
+    "./shard": {
+      "import": "./src/shard/index.js",
+      "require": "./src/shard/index.js"
+    },
+    "./receiver": {
+      "import": "./src/receiver/index.js",
+      "require": "./src/receiver/index.js"
+    }
+  },
+  "type": "module",
+  "dependencies": {
+    "@iyagi/commons": "file:../commons",
+    "rxjs": "^7.8.2"
+  },
+  "license": "ISC"
+}

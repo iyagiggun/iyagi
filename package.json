@@ -2,68 +2,17 @@
   "name": "iyagi",
   "version": "1.0.0",
   "description": "",
-  "main": "src/index.js",
-  "exports": {
-    "./types": {
-      "import": "./src/index.d.ts",
-      "require": "./src/index.d.ts"
-    },
-    "./client": {
-      "import": "./src/client/index.js",
-      "require": "./src/client/index.js"
-    },
-    "./client/object": {
-      "import": "./src/client/object/index.js",
-      "require": "./src/client/object/index.js"
-    },
-    "./client/controller": {
-      "import": "./src/client/controller/index.js",
-      "require": "./src/client/controller/index.js"
-    },
-    "./server": {
-      "import": "./src/server/index.js",
-      "require": "./src/server/index.js"
-    },
-    "./server/const": {
-      "import": "./src/server/const/index.js",
-      "require": "./src/server/const/index.js"
-    },
-    "./server/object": {
-      "import": "./src/server/object/index.js",
-      "require": "./src/server/object/index.js"
-    },
-    "./server/user": {
-      "import": "./src/server/user/index.js",
-      "require": "./src/server/user/index.js"
-    },
-    "./server/scene": {
-      "import": "./src/server/scene/index.js",
-      "require": "./src/server/scene/index.js"
-    },
-    "./server/coords": {
-      "import": "./src/server/coords/index.js",
-      "require": "./src/server/coords/index.js"
-    },
-    "./server/message": {
-      "import": "./src/server/message/index.js",
-      "require": "./src/server/message/index.js"
-    },
-    "./server/director": {
-      "import": "./src/server/director/index.js",
-      "require": "./src/server/director/index.js"
-    },
-    "./server/debugger": {
-      "import": "./src/server/debugger/index.js",
-      "require": "./src/server/debugger/index.js"
-    },
-    "./commons/coords": {
-      "import": "./src/commons/coords.js",
-      "require": "./src/commons/coords.js"
-    }
-  },
-  "types": "index.d.ts",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/commons",
+    "packages/client",
+    "packages/server"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint packages/*/src",
+    "dev": "cd packages/client && vite"
   },
   "repository": {
     "type": "git",
@@ -80,10 +29,5 @@
     "eslint": "^8.57.1",
     "globals": "^15.3.0",
     "typescript": "^5.4.5"
-  },
-  "type": "module",
-  "dependencies": {
-    "pixi.js": "^8.10.1",
-    "rxjs": "^7.8.2"
   }
 }
