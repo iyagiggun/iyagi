@@ -1,5 +1,4 @@
-import { getDirectionByDelta } from '@iyagi/commons';
-import { BASIC_SERVER_MESSAGE_TYPES } from '../const/index.js';
+import { BUILT_IN_SERVER_MESSAGE_TYPES, getDirectionByDelta } from '@iyagi/commons';
 import { ShardForge } from '../shard/forge.js';
 
 export const StageDirector = {
@@ -10,7 +9,7 @@ export const StageDirector = {
    */
   wait(delay) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.WAIT,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.WAIT,
       data: {
         delay,
       },
@@ -26,7 +25,7 @@ export const StageDirector = {
     const shard = ShardForge.seek(shardKey);
     user.shard = shardKey;
     return ({
-      type: BASIC_SERVER_MESSAGE_TYPES.SHARD_LOAD,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {
         shard: {
           resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),
@@ -45,6 +44,7 @@ export const StageDirector = {
    *  speed?: 1 | 2 | 3,
    *  direction?: import('@iyagi/commons/coords').Direction,
    *  instant?: boolean;
+   *  track?: boolean;
    * }} info
    * @returns {import('../const/index.js').ServerMessage}
    */
@@ -69,13 +69,14 @@ export const StageDirector = {
      * @type {import('../const/index.js').ServerMessage}
      */
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
       data: {
         target: target.id,
         ...target.getClientXYZ(),
         direction: target.direction,
         speed: info.speed,
         instant: !!info.instant,
+        track: info.track,
       },
     };
   },
@@ -87,7 +88,7 @@ export const StageDirector = {
    */
   talk(target, ...message) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.OBJECT_TALK,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK,
       data: {
         target: target.id,
         message: message,
@@ -104,7 +105,7 @@ export const StageDirector = {
   action(target, motion, options = {}) {
     target.motion = motion;
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.OBJECT_ACTION,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION,
       data: {
         target: target.id,
         motion,
@@ -125,7 +126,7 @@ export const StageDirector = {
     //   this.#objects.splice(idx, 1);
     // }
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.OBJECT_REMOVE,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE,
       data: {
         id,
       },
@@ -137,7 +138,7 @@ export const StageDirector = {
    */
   control(target) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.CONTROL,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL,
       data: {
         target: target.id,
       },
@@ -146,7 +147,7 @@ export const StageDirector = {
 
   release() {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.CONTROL_RELEASE,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL_RELEASE,
     };
   },
 };

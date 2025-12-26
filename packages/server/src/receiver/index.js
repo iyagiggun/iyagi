@@ -22,13 +22,13 @@ export class ServerReceiver {
       case BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
         payload.shard.loaded$.next(payload);
         return;
-      case 'controller.move':
+      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE:
         ControllerReceiver.move(payload, payload.message);
         return;
-      case 'controller.interaction':
+      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION:
         ControllerReceiver.interact(payload, payload.message);
         return;
-      case 'controller.action':
+      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_ACTION:
         ControllerReceiver.action(payload, payload.message);
         return;
       default:

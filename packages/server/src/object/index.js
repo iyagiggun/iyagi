@@ -3,8 +3,8 @@ import { ServerObjectResource } from './resource.js';
 import { isOverlap } from '@iyagi/commons';
 
 /**
- * @typedef {import("../../coords/index.js").Direction} Direction
- * @typedef {import("../../coords/index.js").Area} Area
+ * @typedef {import("@iyagi/commons").Direction} Direction
+ * @typedef {import("@iyagi/commons").Area} Area
  */
 
 
@@ -81,6 +81,11 @@ export class ServerObject {
      * @type {Subject<import('../const/index.js').ServerPayload & { input: string }>}
      */
     this.action$ = new Subject();
+
+    /**
+     * @type {Subject<import('../const/index.js').ServerPayload>}
+     */
+    this.impulse$ = new Subject();
   }
 
   /**

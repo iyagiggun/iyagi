@@ -1,7 +1,8 @@
-import { BASIC_SERVER_MESSAGE_TYPES } from '@iyagi/server/const';
 import global from '../global/index.js';
 import { Rectangle } from 'pixi.js';
 import { client_object_manager } from './manager.js';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import camera from '../camera/index.js';
 
 /**
  * @param {string} id
@@ -16,9 +17,9 @@ const find = (id) => {
 
 export const CLIENT_OBJECT_MESSAGE_HANDLER = {
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BASIC_SERVER_MESSAGE_TYPES.OBJECT_MOVE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE]: ({ data }) => {
     const target = find(data.target);
     const direction = data.direction;
     if (direction) {
@@ -27,16 +28,16 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     return target.move(data);
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BASIC_SERVER_MESSAGE_TYPES.OBJECT_TALK]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK]: ({ data }) => {
     const target = find(data.target);
     return target.talk(data.message);
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BASIC_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: ({ data }) => {
     const target = client_object_manager.find(data.id);
     if (target) {
       const parent = target.container.parent;
@@ -56,24 +57,28 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     return Promise.resolve();
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BASIC_SERVER_MESSAGE_TYPES.OBJECT_ACTION]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION]: ({ data }) => {
     const target = find(data.target);
     target.play({ motion: data.motion, ...data.options });
     return Promise.resolve();
   },
 
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BASIC_SERVER_MESSAGE_TYPES.CONTROL]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL]: ({ data }) => {
     const { controller, app } = global;
     if (!controller) {
       throw new Error('No controller.');
     }
     const { width, height } = app.screen;
-    controller.target = find(data.target);
+
+    const target = find(data.target);
+    controller.target = target;
+    camera.target = target;
+
     const cc = controller.container;
     cc.hitArea = new Rectangle(0, 0, width, height);
     app.stage.addChild(cc);
@@ -81,7 +86,7 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     return Promise.resolve();
   },
 
-  [BASIC_SERVER_MESSAGE_TYPES.CONTROL_RELEASE]: () => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL_RELEASE]: () => {
     const { controller, app } = global;
     if (!controller) {
       throw new Error('No controller.');

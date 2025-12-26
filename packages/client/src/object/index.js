@@ -1,8 +1,8 @@
 import { getMDKey } from './texture.js';
 import { AnimatedSprite, Container, Graphics } from 'pixi.js';
-import camera from '../camera/index.js';
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
+import camera from '../camera/index.js';
 
 const DEFAULT_COMPLETE = () => undefined;
 
@@ -173,7 +173,7 @@ export default class ClientObject {
   }
 
   /**
-   * @param {import('../../coords/index.js').Direction} dir
+   * @param {import('@iyagi/commons').Direction} dir
    */
   set direction(dir) {
     switch (dir) {
@@ -193,7 +193,7 @@ export default class ClientObject {
   }
 
   /**
-   * @param {import('../../coords/index.js').XYZ & {
+   * @param {import('@iyagi/commons').XYZ & {
    *  speed?: number;
    *  instant: boolean;
    * }} p
@@ -206,6 +206,7 @@ export default class ClientObject {
     instant,
   }) {
     this.#complete();
+
 
     const speed = _speed ?? 1;
     return new Promise((resolve) => {
@@ -227,7 +228,9 @@ export default class ClientObject {
           const deltaX = Math.round(speed * (diffX / distance));
           const deltaY = Math.round(speed * (diffY / distance));
           this.xyz = { x: curX + deltaX, y: curY + deltaY, z: curZ + deltaY };
-          camera.adjust({ x: deltaX, y: deltaY });
+          if (camera.target === this) {
+            camera.adjust({ x: deltaX, y: deltaY });
+          }
           // if (camera) {
           //   camera.point(name);
           // }

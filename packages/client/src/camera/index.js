@@ -1,4 +1,3 @@
-
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
 import { shard } from '../shard/index.js';
@@ -27,6 +26,7 @@ const move = (info) => {
   }
   const speed = info.speed * 300 / FRAMES_PER_SECOND;
   const ticker = global.app.ticker;
+
   return new Promise((resolve, reject) => {
     const tick = () => {
       const curX = container.x;
@@ -64,6 +64,8 @@ const adjust = ({ x: deltaX, y: deltaY }) => {
 };
 
 export default {
+  /** @type {import('../object/index.js').default | null} */
+  target: null,
   move,
   adjust,
 };

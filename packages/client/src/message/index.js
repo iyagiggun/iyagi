@@ -1,10 +1,10 @@
 import { concatMap, from, mergeMap, Subject } from 'rxjs';
-import { BASIC_SERVER_MESSAGE_TYPES } from '@iyagi/server/const';
 import camera from '../camera/index.js';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator.js';
 import { shard } from '../shard/index.js';
 import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
 import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger/index.js';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 /**
  * @typedef {Object} ServerPayload
@@ -12,7 +12,7 @@ import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger/index.js';
  */
 
 const BASIC_HANDLER_MAP = {
-  [BASIC_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
+  [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
     /**
      * @param {import('@iyagi/server/const').ServerMessage} message
      */
@@ -23,12 +23,12 @@ const BASIC_HANDLER_MAP = {
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
   ...CLIENT_EFFECT_MESSAGE_HANDLER,
   ...CLIENT_DEBUGGER_MESSAGE_HANDLER,
-  [BASIC_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:
     /**
      * @param {import('@iyagi/server/const').ServerMessage} message
      */
     (message) => camera.move(message.data),
-  [BASIC_SERVER_MESSAGE_TYPES.WAIT]:
+  [BUILT_IN_SERVER_MESSAGE_TYPES.WAIT]:
     /**
      * @param {import('@iyagi/server/const').ServerMessage} message
      */
@@ -40,7 +40,7 @@ const BASIC_HANDLER_MAP = {
 };
 
 /**
- * @type {Subject<{ message: import('../../server/const/index.js').ServerMessage[]}>}
+ * @type {Subject<{ message: import('@iyagi/server/const').ServerMessage[]}>}
  */
 export const payload$ = new Subject();
 
