@@ -1,4 +1,4 @@
-import { BASIC_SERVER_MESSAGE_TYPES } from '../const/index.js';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 export const Debugger = {
   /**
@@ -6,7 +6,7 @@ export const Debugger = {
    */
   highlight: (target) => {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT,
       data: {
         area: target,
       },

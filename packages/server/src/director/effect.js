@@ -2,7 +2,7 @@
  * @typedef {Shard | ServerObject} EffectTarget
  */
 
-import { BASIC_SERVER_MESSAGE_TYPES } from '../const/index.js';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { ServerObject } from '../object/index.js';
 import { Shard } from '../shard/index.js';
 
@@ -32,7 +32,7 @@ export const EffectDirector = {
    */
   fadeIn(target, options) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN,
       data: {
         target: toClientEffectTarget(target),
         ...options,
@@ -46,7 +46,7 @@ export const EffectDirector = {
    */
   fadeOut(target, options) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT,
       data: {
         target: toClientEffectTarget(target),
         ...options,
@@ -60,7 +60,7 @@ export const EffectDirector = {
    */
   shake(target, options) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_SHAKE,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE,
       data: {
         target: toClientEffectTarget(target),
         ...options,
@@ -75,7 +75,7 @@ export const EffectDirector = {
    */
   jump(target, options) {
     return {
-      type: BASIC_SERVER_MESSAGE_TYPES.EFFECT_JUMP,
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP,
       data: {
         target: toClientEffectTarget(target),
         ...options,

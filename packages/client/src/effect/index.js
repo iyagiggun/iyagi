@@ -1,9 +1,8 @@
-import { BASIC_SERVER_MESSAGE_TYPES } from '@iyagi/server/const';
 import global from '../global/index.js';
 import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { client_object_manager } from '../object/manager.js';
 import { shard } from '../shard/index.js';
-import { easeInOutSine } from '@iyagi/commons';
+import { BUILT_IN_SERVER_MESSAGE_TYPES, easeInOutSine } from '@iyagi/commons';
 
 /**
  * @param {Object} target
@@ -32,9 +31,9 @@ const toContainer = (target) => {
 
 export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ data }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -52,9 +51,9 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ data }) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -71,9 +70,9 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ data }) => {
     const ticker = global.app.ticker;
     const container = toContainer(data.target);
 
@@ -93,9 +92,9 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('../../server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
    */
-  [BASIC_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: ({ data }) => {
     const ticker = global.app.ticker;
 
     const object = toObject(data.target);
