@@ -1,9 +1,10 @@
 import { Subject } from 'rxjs';
 import { StageDirector } from '../director/stage.js';
-import { Impulser } from './impulser.js';
 
 export class Shard {
   #key;
+  /** @type {number | null} */
+  #tick_interval = null;
 
   /**
    * @param {Object} p
@@ -16,7 +17,6 @@ export class Shard {
   }) {
     this.#key = key;
     this.objects = objects;
-    this.impulser = new Impulser();
 
     /**
      * @type {Subject<import('../const/index.js').ServerPayload>}
@@ -29,17 +29,31 @@ export class Shard {
 
     /**
      * @type {Subject<import('../const/index.js').ServerPayload>}
-     * @description Operates based on delta values
      */
-    this.move$ = new Subject();
+    this.tick$ = new Subject();
 
-    this.load$.subscribe(({ user, reply }) => {
+    /**
+     * @type {Subject<import('../const/index.js').ServerPayload>}
+     */
+    this.leave$ = new Subject();
+
+    this.load$.subscribe(({ user, reply, shard }) => {
       reply([
         StageDirector.enter({
           user,
           shard: this.#key,
         }),
       ]);
+      this.#tick_interval = setInterval(() => {
+        this.tick$.next({ user, shard, reply });
+      }, 50);
+    });
+
+    this.leave$.subscribe(() => {
+      if (this.#tick_interval !== null) {
+        clearInterval(this.#tick_interval);
+        this.#tick_interval = null;
+      }
     });
   }
 
