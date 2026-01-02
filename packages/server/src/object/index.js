@@ -181,7 +181,6 @@ export class ServerObject {
 
   /**
    * @param {{
-   *  target: ServerObject;
    *  objects: ServerObject[];
    *  destination: import('@iyagi/commons').XY | import('@iyagi/commons').XYZ;
    * }} p

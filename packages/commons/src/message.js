@@ -18,4 +18,8 @@ export const BUILT_IN_SERVER_MESSAGE_TYPES = {
 export const BUILT_IN_CLIENT_MESSAGE_TYPES = {
   SHARD_LOAD: 'shard.load',
   SHARD_LOADED: 'shard.loaded',
+  // OBJECT_MOVE: 'object.move',
+  CONTROLLER_MOVE: 'controller.move',
+  CONTROLLER_INTERACTION: 'controller.interaction',
+  CONTROLLER_ACTION: 'controller.action',
 };

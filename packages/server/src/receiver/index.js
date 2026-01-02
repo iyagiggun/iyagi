@@ -1,3 +1,7 @@
+
+import { ControllerReceiver } from './controller.js';
+import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
+
 /**
  * @typedef {{
  *  user: import('../user/index.js').User;
@@ -7,28 +11,25 @@
  * }} ClientPayload
  */
 
-import { BASIC_CLIENT_MESSAGE_TYPES } from '@iyagi/client/const';
-import { ControllerReceiver } from './controller.js';
-
 export class ServerReceiver {
   /**
    * @param {ClientPayload} payload
    */
   receive(payload) {
     switch(payload.message.type) {
-      case BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOAD:
+      case BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOAD:
         payload.shard.load$.next(payload);
         return;
-      case BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
+      case BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
         payload.shard.loaded$.next(payload);
         return;
-      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE:
+      case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE:
         ControllerReceiver.move(payload, payload.message);
         return;
-      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION:
+      case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION:
         ControllerReceiver.interact(payload, payload.message);
         return;
-      case BASIC_CLIENT_MESSAGE_TYPES.CONTROLLER_ACTION:
+      case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_ACTION:
         ControllerReceiver.action(payload, payload.message);
         return;
       default:

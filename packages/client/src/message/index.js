@@ -48,7 +48,7 @@ payload$
   .pipe(
     mergeMap(({ message }) => {
       return from(message).pipe(
-        concatMap(async(sMessage) => {
+        concatMap(async (sMessage) => {
           const handler = BASIC_HANDLER_MAP[sMessage.type];
           if (!handler) {
             throw new Error(`No handler for message type: ${sMessage.type}`);

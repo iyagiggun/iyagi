@@ -1,7 +1,6 @@
 import global from './global/index.js';
 import { ObjectConverter } from './object/converter.js';
 import { payload$ } from './message/index.js';
-import { BASIC_CLIENT_MESSAGE_TYPES } from './const/index.js';
 import imessenger from './messenger/imessenger.js';
 
 global.messenger = imessenger;
@@ -18,8 +17,6 @@ const iclient = {
 
     await global.init(p);
 
-    global.reply({ type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOAD });
-
     // reciever.init(global.ws);
 
     // Pixi.js 애플리케이션 자동 리사이즈 처리 (옵션)
@@ -32,6 +29,9 @@ const iclient = {
   },
   get application() {
     return global.app;
+  },
+  get reply() {
+    return global.reply;
   },
   get controller() {
     return global.controller;

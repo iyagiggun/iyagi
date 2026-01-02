@@ -1,8 +1,8 @@
 import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
-import { BASIC_CLIENT_MESSAGE_TYPES } from '../const/index.js';
 import global from '../global/index.js';
 import { client_object_manager } from '../object/manager.js';
+import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 
 const container = new Container();
 
@@ -16,7 +16,7 @@ const clear = () => {
 const resource_pool = new Map();
 
 /**
- * @param {import('../../server/const/index.js').ServerMessage} message
+ * @param {import(import('@iyagi/server/const/index.js').ServerMessage} message
  */
 const load = async (message) => {
 
@@ -72,7 +72,7 @@ const load = async (message) => {
   global.app.stage.addChild(container);
 
   global.reply({
-    type: BASIC_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
+    type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
   });
 };
 
