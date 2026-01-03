@@ -24,6 +24,7 @@ export const StageDirector = {
   enter({ user, shard: shardKey }) {
     const shard = ShardForge.seek(shardKey);
     user.shard = shardKey;
+
     return ({
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {

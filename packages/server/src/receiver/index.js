@@ -17,9 +17,6 @@ export class ServerReceiver {
    */
   receive(payload) {
     switch(payload.message.type) {
-      case BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOAD:
-        payload.shard.load$.next(payload);
-        return;
       case BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
         payload.shard.loaded$.next(payload);
         return;

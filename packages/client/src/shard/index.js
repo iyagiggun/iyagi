@@ -3,6 +3,7 @@ import ObjectResource from '../object/resource.js';
 import global from '../global/index.js';
 import { client_object_manager } from '../object/manager.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
+import sender from '../sender/index.js';
 
 const container = new Container();
 
@@ -16,15 +17,15 @@ const clear = () => {
 const resource_pool = new Map();
 
 /**
- * @param {import(import('@iyagi/server/const/index.js').ServerMessage} message
+ * @param {import('@iyagi/server/const').ServerMessage} message
  */
 const load = async (message) => {
 
   /**
    * @type {{
    *  shard: {
-   *   resources: ReturnType<import('../../server/object/resource.js').ServerObjectResource['toClientData']>[],
-   *   objects: ReturnType<import('../../server/object/index.js').ServerObject['toClientData']>[]
+   *   resources: ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>[],
+   *   objects: ReturnType<import('@iyagi/server/object/index.js').ServerObject['toClientData']>[]
    *  }
    * }}
    */
@@ -33,7 +34,7 @@ const load = async (message) => {
   await Promise.all(
     data.shard.resources.map(
       /**
-       * @param {ReturnType<import('../../server/object/resource.js').ServerObjectResource['toClientData']>} r
+       * @param {ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>} r
        */
       (r) => {
         const cached = resource_pool.get(r.key);
@@ -49,7 +50,7 @@ const load = async (message) => {
 
   await Promise.all(data.shard.objects.map(
     /**
-     * @param {ReturnType<import('../../server/object/index.js').ServerObject['toClientData']>} info
+     * @param {ReturnType<import('@iyagi/server/object/index.js').ServerObject['toClientData']>} info
      */
     (info) => {
       const resource = resource_pool.get(info.resource);
@@ -71,7 +72,7 @@ const load = async (message) => {
 
   global.app.stage.addChild(container);
 
-  global.reply({
+  sender.send({
     type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
   });
 };

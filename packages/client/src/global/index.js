@@ -11,10 +11,6 @@ import { Application } from 'pixi.js';
 /** @type { Application= } */
 let app;
 
-/** @type {import('../const/index.js').ClientReply=} */
-let reply;
-
-
 /** @type {import('../messenger/index.js').Messenger} */
 let messenger;
 
@@ -28,19 +24,6 @@ export default {
     return app;
   },
 
-  get reply() {
-    if (!reply) {
-      throw new Error(ERR_NOT_INITED);
-    }
-    return reply;
-  },
-  /**
-   * @param {import('../const/index.js').ClientReply} next
-   */
-  set reply(next) {
-    reply = next;
-  },
-
   get messenger() {
     if (!messenger) {
       throw new Error(ERR_NOT_INITED);
@@ -49,7 +32,7 @@ export default {
   },
 
   /**
-   * @param {import('../messenger/index.js').Messenger} next
+   * @param {Messenger} next
    */
   set messenger(next) {
     messenger = next;
@@ -64,20 +47,16 @@ export default {
    * @param {Object} p
    * @param {import('../const/index.js').ClientReply} p.reply
    */
-  async init({
-    reply: _reply,
-  }) {
+  async init() {
     app = new Application();
     await app.init({
       backgroundColor: 0x000000,
       resizeTo: window,
     });
-    reply = _reply;
 
     document.body.appendChild(app.canvas);
     const canvasStyle = app.canvas.style;
     canvasStyle.userSelect = 'none';
-    canvasStyle.webkitUserSelect = 'none';
     canvasStyle.touchAction = 'none'; // 터치 스크롤 방지
   },
 };

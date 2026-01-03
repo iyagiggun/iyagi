@@ -1,23 +1,24 @@
 import global from './global/index.js';
 import { ObjectConverter } from './object/converter.js';
-import { payload$ } from './message/index.js';
 import imessenger from './messenger/imessenger.js';
+import sender from './sender/index.js';
+import reciever from './receiver/index.js';
 
 global.messenger = imessenger;
 
 /** @typedef {import('./global/index.js').Controller} Controller */
 
 const iclient = {
-  payload$,
   /**
    * @param {Object} p
-   * @param {import('./const/index.js').ClientReply} p.reply
+   * @param {WebSocket} p.websocket
    */
-  async init(p) {
+  async init({ websocket }) {
 
-    await global.init(p);
+    sender.init(websocket);
+    reciever.init(websocket);
 
-    // reciever.init(global.ws);
+    await global.init();
 
     // Pixi.js 애플리케이션 자동 리사이즈 처리 (옵션)
     // window.addEventListener('resize', () => {
@@ -27,15 +28,19 @@ const iclient = {
     //   container.hitArea = new PIXI.Rectangle(0, 0, app.screen.width, app.screen.height);
     // });
   },
+
+  get send() {
+    return sender.send;
+  },
+
   get application() {
     return global.app;
   },
-  get reply() {
-    return global.reply;
-  },
+
   get controller() {
     return global.controller;
   },
+
   /** @param { Controller | null } next */
   set controller(next) {
     const last = global.controller;
@@ -44,6 +49,7 @@ const iclient = {
     }
     global.controller = next;
   },
+
   object: {
     get converter() {
       return ObjectConverter.convert;

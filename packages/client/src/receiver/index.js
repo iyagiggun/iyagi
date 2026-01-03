@@ -1,15 +1,15 @@
-import { concatMap, from, mergeMap, Subject } from 'rxjs';
-import camera from '../camera/index.js';
-import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator.js';
-import { shard } from '../shard/index.js';
-import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
-import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger/index.js';
-import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 /**
  * @typedef {Object} ServerPayload
  * @property {import('@iyagi/server/const').ServerMessage} p.message
  */
+
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { shard } from '../shard';
+import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator';
+import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect';
+import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger';
+import camera from '../camera';
 
 const BASIC_HANDLER_MAP = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
@@ -39,22 +39,29 @@ const BASIC_HANDLER_MAP = {
     },
 };
 
-/**
- * @type {Subject<{ message: import('@iyagi/server/const').ServerMessage[]}>}
- */
-export const payload$ = new Subject();
-
-payload$
-  .pipe(
-    mergeMap(({ message }) => {
-      return from(message).pipe(
-        concatMap(async (sMessage) => {
-          const handler = BASIC_HANDLER_MAP[sMessage.type];
+const reciever = {
+  /**
+   * @param {WebSocket} ws
+   */
+  init(ws) {
+    ws.addEventListener('message',
+      /**
+       * @param {MessageEvent} event
+       */
+      (event) => {
+        /** @type {import("@iyagi/server/const").ServerMessage[]} */
+        const msg_list = JSON.parse(event.data);
+        console.info('client receive', msg_list);
+        msg_list.forEach(async (msg) => {
+          const handler = BASIC_HANDLER_MAP[msg.type];
           if (!handler) {
-            throw new Error(`No handler for message type: ${sMessage.type}`);
+            throw new Error(`No handler for message type: ${msg.type}`);
           }
-          await handler(sMessage);
-        })
-      );
-    })
-  ).subscribe();
+          await handler(msg);
+        });
+      }
+    );
+  },
+};
+
+export default reciever;
