@@ -1,5 +1,4 @@
 import { Subject } from 'rxjs';
-import { ShardForge } from './forge.js';
 
 export class Shard {
   #key;
@@ -37,20 +36,16 @@ export class Shard {
     this.leave$ = new Subject();
 
     this.loaded$.subscribe((user) => {
+      this.users.add(user);
       if (this.#tick_interval === null) {
-        // TODO:: clear 생각할 것
         this.#tick_interval = setInterval(() => {
           this.tick$.next(user);
         }, 50);
       }
-      const lastShard = ShardForge.seek(user.shard);
-      // TODO:: leave 를 수행 시켜줌 (함수로 하는게 나을 듯 ?)
-      lastShard.leave$.next(user);
-
-      this.users.add(user);
     });
 
     this.leave$.subscribe((user) => {
+      this.users.delete(user);
       if (this.users.size === 0) {
         if (this.#tick_interval === null) {
           console.warn('Invalid case. Shard tick interval is already null.');
