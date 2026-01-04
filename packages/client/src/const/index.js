@@ -7,7 +7,3 @@ export const DEFAULT_ANIMATION_SPEED = 6 / FRAMES_PER_SECOND;
  * @property {string} type
  * @property {*} [data]
  */
-
-/**
- * @typedef {(message: ClientMessage) => void} ClientReply
- */
