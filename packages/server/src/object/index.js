@@ -68,7 +68,7 @@ export class ServerObject {
     this.#portraits = o?.portraits;
 
     /**
-     * @type {Subject<import('../const/index.js').ServerPayload>}
+     * @type {Subject<import('../user/index.js').UserType>}
      */
     this.interaction$ = new Subject();
 

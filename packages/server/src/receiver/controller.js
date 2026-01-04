@@ -133,28 +133,22 @@ export const ControllerReceiver = {
       }
     })();
 
-    nearest.interaction$.next({
-      user,
-      shard,
-      reply: (arr) => {
-        if (nearest.canDirectTo(interactDirection)) {
-          const rollbackDirection = nearest.direction;
-          const before = StageDirector
-            .move(nearest, {
-              direction: interactDirection,
-            });
-          const after = StageDirector
-            .move(nearest, {
-              direction: rollbackDirection,
-            });
+    if (nearest.canDirectTo(interactDirection)) {
+      // const rollbackDirection = nearest.direction;
+      const before = StageDirector
+        .move(nearest, {
+          direction: interactDirection,
+        });
+      // const after = StageDirector
+      //   .move(nearest, {
+      //     direction: rollbackDirection,
+      //   });
+      user.send([before]);
+    }
 
-          user.send([before, ...arr, after]);
 
-        } else {
-          user.send(arr);
-        }
-      },
-    });
+
+    nearest.interaction$.next(user);
   },
   /**
    * @param {import('../user/index.js').UserType} user
