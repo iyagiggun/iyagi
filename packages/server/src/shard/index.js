@@ -25,12 +25,6 @@ export class Shard {
     this.loaded$ = new Subject();
 
     /**
-     * tick 마다 network 가 발생하게 구현하면 안됨. tick 과 클라이언트로 전송하는 snapshot 의 별도 분리가 필요
-     * @type {Subject<import('../user/index.js').UserType>}
-     */
-    this.tick$ = new Subject();
-
-    /**
      * @type {Subject<import('../user/index.js').UserType>}
      */
     this.leave$ = new Subject();
