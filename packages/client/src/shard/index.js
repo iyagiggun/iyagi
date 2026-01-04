@@ -65,7 +65,7 @@ const load = async (message) => {
       obj.direction = info.direction;
       container.addChild(obj.container);
       client_object_manager.push(obj);
-      return obj.load();;
+      return obj.load();
     })
   );
 

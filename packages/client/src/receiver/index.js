@@ -42,17 +42,17 @@ const reciever = {
       /**
        * @param {MessageEvent} event
        */
-      (event) => {
+      async (event) => {
         /** @type {import("@iyagi/server/const").ServerMessage[]} */
         const msg_list = JSON.parse(event.data);
         console.info('client receive', msg_list);
-        msg_list.forEach(async (msg) => {
+        for(const msg of msg_list) {
           const handler = BASIC_HANDLER_MAP[msg.type];
           if (!handler) {
             throw new Error(`No handler for message type: ${msg.type}`);
           }
           await handler(msg);
-        });
+        }
       }
     );
   },
