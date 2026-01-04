@@ -1,9 +1,3 @@
-
-/**
- * @typedef {Object} ServerPayload
- * @property {import('@iyagi/server/const').ServerMessage} p.message
- */
-
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { shard } from '../shard';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator';
