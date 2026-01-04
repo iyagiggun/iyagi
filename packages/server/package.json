@@ -50,5 +50,8 @@
     "@iyagi/commons": "file:../commons",
     "rxjs": "^7.8.2"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^25.0.3"
+  }
 }

@@ -73,12 +73,12 @@ export class ServerObject {
     this.interaction$ = new Subject();
 
     /**
-     * @type {Subject<import('../const/index.js').ServerPayload>}
+     * @type {Subject<import('../user/index.js').UserType>}
      */
     this.pressed$ = new Subject();
 
     /**
-     * @type {Subject<import('../const/index.js').ServerPayload & { input: string }>}
+     * @type {Subject<{ user: import('../user/index.js').UserType, input: string }>}
      */
     this.action$ = new Subject();
 

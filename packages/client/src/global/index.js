@@ -11,7 +11,7 @@ import { Application } from 'pixi.js';
 /** @type { Application= } */
 let app;
 
-/** @type {import('../messenger/index.js').Messenger} */
+/** @type {Messenger} */
 let messenger;
 
 const ERR_NOT_INITED = 'client has not been initialized yet.';
@@ -43,10 +43,6 @@ export default {
    */
   controller: null,
 
-  /**
-   * @param {Object} p
-   * @param {import('../const/index.js').ClientReply} p.reply
-   */
   async init() {
     app = new Application();
     await app.init({
