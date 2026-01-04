@@ -3,7 +3,7 @@ import { ShardForge } from './forge.js';
 
 export class Shard {
   #key;
-  /** @type {number | null} */
+  /** @type {NodeJS.Timeout | null} */
   #tick_interval = null;
   /** @type {Set<import('../user/index.js').UserType>} */
   users = new Set();

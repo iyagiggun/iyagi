@@ -17,15 +17,19 @@ export const StageDirector = {
   },
 
   /**
+   * Side effects occur
    * @param {object} param
+   * @param {import('../user/index.js').UserType} param.user
    * @param {string} param.shard
    */
-  enter({ shard: shardKey }) {
+  enter({ user, shard: shardKey }) {
     const shard = ShardForge.seek(shardKey);
+    user.shard = shardKey;
     return ({
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {
         shard: {
+          key: shardKey,
           resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),
           objects: shard.objects.map((o) => o.toClientData()),
         },
@@ -40,7 +44,7 @@ export const StageDirector = {
    *  y?: number,
    *  z?: number,
    *  speed?: 1 | 2 | 3,
-   *  direction?: import('@iyagi/commons/coords').Direction,
+   *  direction?: import('@iyagi/commons').Direction,
    *  instant?: boolean;
    *  track?: boolean;
    * }} info
