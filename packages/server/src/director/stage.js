@@ -18,13 +18,10 @@ export const StageDirector = {
 
   /**
    * @param {object} param
-   * @param {import('../user/index.js').UserType} param.user
    * @param {string} param.shard
    */
-  enter({ user, shard: shardKey }) {
+  enter({ shard: shardKey }) {
     const shard = ShardForge.seek(shardKey);
-    user.shard = shardKey;
-
     return ({
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {

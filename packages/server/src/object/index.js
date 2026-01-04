@@ -83,7 +83,7 @@ export class ServerObject {
     this.action$ = new Subject();
 
     /**
-     * @type {Subject<import('../const/index.js').ServerPayload>}
+     * @type {Subject<import('../user/index.js').UserType>}
      */
     this.impulse$ = new Subject();
   }

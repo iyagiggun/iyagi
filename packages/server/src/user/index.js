@@ -17,6 +17,14 @@ export class User {
     this.shard = shard;
     this.state = state;
   }
+
+  /**
+   * @param {import("../const/index.js").ServerMessage} _message
+   */
+  // eslint-disable-next-line no-unused-vars
+  send(message) {
+    throw new Error('Not implemented');
+  }
 }
 
 /**

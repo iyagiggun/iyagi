@@ -18,7 +18,7 @@ export class ServerReceiver {
   receive(payload) {
     switch(payload.message.type) {
       case BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED:
-        payload.shard.loaded$.next(payload);
+        payload.shard.loaded$.next(payload.user);
         return;
       case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE:
         ControllerReceiver.move(payload, payload.message);
