@@ -83,7 +83,7 @@ export class ServerObject {
     this.action$ = new Subject();
 
     /**
-     * @type {Subject<import('../user/index.js').UserType>}
+     * @type {Subject<import('../shard/index.js').ShardType>}
      */
     this.impulse$ = new Subject();
   }

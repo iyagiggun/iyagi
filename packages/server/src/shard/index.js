@@ -39,21 +39,17 @@ export class Shard {
       this.users.add(user);
       if (this.#tick_interval === null) {
         this.#tick_interval = setInterval(() => {
-          this.tick$.next(user);
+          this.objects.forEach((object)=> object.impulse$.next(this));
+          if (this.users.size === 0 && this.#tick_interval !== null) {
+            clearInterval(this.#tick_interval);
+            this.#tick_interval = null;
+          }
         }, 50);
       }
     });
 
     this.leave$.subscribe((user) => {
       this.users.delete(user);
-      if (this.users.size === 0) {
-        if (this.#tick_interval === null) {
-          console.warn('Invalid case. Shard tick interval is already null.');
-        } else {
-          clearInterval(this.#tick_interval);
-          this.#tick_interval = null;
-        }
-      }
     });
   }
 
@@ -65,3 +61,7 @@ export class Shard {
     return 'SHARD';
   }
 }
+
+/**
+ * @typedef {Shard} ShardType
+ */
