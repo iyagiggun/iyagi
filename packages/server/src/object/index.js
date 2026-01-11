@@ -1,6 +1,7 @@
 import { Subject } from 'rxjs';
 import { ServerObjectResource } from './resource.js';
 import { isOverlap } from '@iyagi/commons';
+import { NAI } from './NAI/index.js';
 
 /**
  * @typedef {import("@iyagi/commons").Direction} Direction
@@ -180,6 +181,7 @@ export class ServerObject {
   }
 
   /**
+   * @hack 재귀 문을 쓰고 있어서 실제 서버에선 쓸 수 없을 듯
    * @param {{
    *  objects: ServerObject[];
    *  destination: import('@iyagi/commons').XY | import('@iyagi/commons').XYZ;
@@ -288,3 +290,8 @@ export class ServerObject {
 }
 
 export { ServerObjectResource };
+export { NAI };
+
+/**
+ * @typedef { ServerObject } ServerObjectType
+ */

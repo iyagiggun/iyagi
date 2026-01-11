@@ -1,10 +1,10 @@
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { Shard } from '../shard/index.js';
+import { ServerObject } from '../object/index.js';
+
 /**
  * @typedef {Shard | ServerObject} EffectTarget
  */
-
-import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { ServerObject } from '../object/index.js';
-import { Shard } from '../shard/index.js';
 
 /**
  * @param {EffectTarget} target
