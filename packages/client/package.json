@@ -19,6 +19,10 @@
     "./const": {
       "import": "./src/const/index.js",
       "require": "./src/const/index.js"
+    },
+    "./time": {
+      "import": "./src/time/index.js",
+      "require": "./src/time/index.js"
     }
   },
   "type": "module",
