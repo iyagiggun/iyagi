@@ -1,3 +1,5 @@
+import { ShardForge } from '../shard/forge.js';
+
 /**
  * @template [T=unknown]
  */
@@ -5,24 +7,24 @@ export class User {
   /**
    * @param {object} param
    * @param {string} param.key
-   * @param {string} param.shard
+   * @param {string} param.shardKey
    * @param {T} param.state
    */
   constructor({
     key,
-    shard,
+    shardKey,
     state,
   }) {
     this.key = key;
-    this.shard = shard;
+    this.shard = ShardForge.seek(shardKey);
     this.state = state;
   }
 
   /**
-   * @param {import("../const/index.js").ServerMessage} _message
+   * @param {import("../const/index.js").ServerMessage[]} _message
    */
   // eslint-disable-next-line no-unused-vars
-  send(message) {
+  send(_message) {
     throw new Error('Not implemented');
   }
 }

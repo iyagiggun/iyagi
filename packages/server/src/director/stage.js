@@ -23,9 +23,9 @@ export const StageDirector = {
    * @param {string} param.shard
    */
   enter({ user, shard: shardKey }) {
-    ShardForge.seek(user.shard).leave$.next(user);
+    user.shard.leave$.next(user);
     const shard = ShardForge.seek(shardKey);
-    user.shard = shardKey;
+    user.shard = shard;
     return ({
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {

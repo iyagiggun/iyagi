@@ -1,6 +1,5 @@
 import { getDirectionByDelta, isIn, isOverlap } from '@iyagi/commons';
 import { StageDirector } from '../director/stage.js';
-import { ShardForge } from '../shard/forge.js';
 
 export const ControllerReceiver = {
   /**
@@ -8,7 +7,7 @@ export const ControllerReceiver = {
    * @param {*} message
    */
   move: (user, message) => {
-    const shard = ShardForge.seek(user.shard);
+    const shard = user.shard;
     const objects = shard.objects;
     const data = message.data;
     const target = shard.objects.find((o) => o.id === data.id);
@@ -54,9 +53,54 @@ export const ControllerReceiver = {
    * @param {import('../user/index.js').UserType} user
    * @param {*} message
    */
-  interact: (user, message) => {
-    const shard = ShardForge.seek(user.shard);
+  movetest: (user, message) => {
+    const shard = user.shard;
     const objects = shard.objects;
+    const data = message.data;
+    const target = shard.objects.find((o) => o.id === data.id);
+    if (!target) {
+      throw new Error(`Fail to move. No target (${message.data.id}).`);
+    }
+    const beforeCenter = target.center();
+
+    const x = target.x + Math.cos(data.angle) * 5;
+    const y = target.y + Math.sin(data.angle) * 5;
+    const z = data.z ?? target.z;
+    const next = target.getNextXYZ({ objects, destination : { x, y, z } });
+    target.direction = data.direction || getDirectionByDelta(target, next);
+    target.x = next.x;
+    target.y = next.y;
+    target.z = next.z;
+
+    const afterCenter = target.center();
+    const pressed = objects.filter((o) => {
+      if (o.hitbox.z !== target.z - 1) {
+        return false;
+      }
+      if (!isIn(afterCenter, o.hitbox)) {
+        return false;
+      }
+      return !isIn(beforeCenter, o.hitbox);
+    });
+
+    shard.sync([
+      StageDirector.move(target, {
+        ...target.xyz,
+        direction: target.direction,
+        speed: data.speed,
+      }),
+    ]);
+
+    pressed.forEach((o) => {
+      o.pressed$.next(user);
+    });
+  },
+  /**
+   * @param {import('../user/index.js').UserType} user
+   * @param {*} message
+   */
+  interact: (user, message) => {
+    const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.target);
 
@@ -155,8 +199,7 @@ export const ControllerReceiver = {
    * @param {*} message
    */
   action: (user, message) => {
-    const shard = ShardForge.seek(user.shard);
-    const objects = shard.objects;
+    const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.id);
 
