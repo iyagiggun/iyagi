@@ -54,6 +54,15 @@ export class Shard {
   get id() {
     return 'SHARD';
   }
+
+  /**
+   * @param {import('../const/index.js').ServerMessage[]} messages
+   */
+  sync(messages) {
+    this.users.forEach((user) => {
+      user.send(messages);
+    });
+  }
 }
 
 /**
