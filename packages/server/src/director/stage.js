@@ -29,6 +29,7 @@ export const StageDirector = {
     return ({
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {
+        now: performance.now(),
         shard: {
           key: shardKey,
           resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),

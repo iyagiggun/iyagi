@@ -33,7 +33,7 @@ const move = (info) => {
       const curY = container.y;
       const diffX = destX - curX;
       const diffY = destY - curY;
-      const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+      const distance = Math.hypot(diffX, diffY);
       const arrived = distance < speed;
       if (arrived) {
         container.x = destX;

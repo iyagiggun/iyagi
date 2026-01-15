@@ -218,7 +218,7 @@ export default class ClientObject {
 
         const diffX = x - curX;
         const diffY = y - curY;
-        const distance = Math.sqrt(diffX ** 2 + diffY ** 2);
+        const distance = Math.hypot(diffX, diffY);
 
         const arrived = distance < speed || instant;
 

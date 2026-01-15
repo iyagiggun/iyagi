@@ -4,6 +4,7 @@ import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator';
 import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect';
 import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debugger';
 import camera from '../camera';
+import { Time } from '../time';
 
 const BASIC_HANDLER_MAP = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
@@ -12,6 +13,7 @@ const BASIC_HANDLER_MAP = {
      */
     (message) => {
       shard.clear();
+      Time.sync(message.data.now);
       return shard.load(message);
     },
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
