@@ -7,16 +7,16 @@ export class User {
   /**
    * @param {object} param
    * @param {string} param.key
-   * @param {string} param.shardKey
+   * @param {string} param.shard
    * @param {T} param.state
    */
   constructor({
     key,
-    shardKey,
+    shard,
     state,
   }) {
     this.key = key;
-    this.shard = ShardForge.seek(shardKey);
+    this.shard = ShardForge.seek(shard);
     this.state = state;
   }
 
