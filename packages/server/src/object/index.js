@@ -1,17 +1,17 @@
 import { Subject } from 'rxjs';
 import { ServerObjectResource } from './resource.js';
-import { isOverlap } from '@iyagi/commons';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { NAI } from './NAI/index.js';
+import { getDirectionByDelta, isOverlap } from '@iyagi/commons/coords';
 
 /**
- * @typedef {import("@iyagi/commons").Direction} Direction
- * @typedef {import("@iyagi/commons").Area} Area
+ * @typedef {import("@iyagi/commons/coords").Direction} Direction
+ * @typedef {import("@iyagi/commons/coords").XYWH} Area
  */
 
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
-const MAX_Z_INDEX = 999;
 
 /**
  * @type {Map<string, number>}
@@ -52,7 +52,10 @@ export class ServerObject {
    */
   constructor(r, o) {
     this.#name = o?.name;
+    this.shape = r.data.shape;
+
     this.resource = r;
+    // TODO:: sprite 는 없어져야 함
     this.#sprite = r.data.sprite;
     this.x = o?.x ?? 0;
     this.y = o?.y ?? 0;
@@ -122,22 +125,32 @@ export class ServerObject {
   /**
    * @readonly
    */
-  get w() {
-    return this.#absHitbox.w;
-  }
-
-  /**
-   * @readonly
-   */
-  get h() {
-    return this.#absHitbox.h;
-  }
-
-  /**
-   * @readonly
-   */
   get xyz() {
     return { x: this.x, y: this.y, z: this.z };
+  }
+
+  /**
+   * @readonly
+   * @return {import('@iyagi/commons/coords').Area}
+   */
+  get area() {
+    if ('radius' in this.shape) {
+      return {
+        x: this.x,
+        y: this.y,
+        radius: this.shape.radius,
+      };
+    }
+    if ('halfW' in this.shape && 'halfH' in this.shape) {
+      const { halfW, halfH } = this.shape;
+      return {
+        left: this.x - halfW,
+        right: this.x + halfW,
+        top: this.y - halfH,
+        bottom: this.y + halfH,
+      };
+    }
+    throw new Error('invalid shape');
   }
 
   get direction() {
@@ -181,10 +194,18 @@ export class ServerObject {
   }
 
   /**
+   * @param {import('../shard/index.js').ShardType} shard
+   * @param {import('@iyagi/commons/coords').XY | import('@iyagi/commons/coords').XYZ} dest
+   */
+  resolveXYZ(shard, dest) {
+
+  }
+
+  /**
    * @hack 재귀 문을 쓰고 있어서 실제 서버에선 쓸 수 없을 듯
    * @param {{
    *  objects: ServerObject[];
-   *  destination: import('@iyagi/commons').XY | import('@iyagi/commons').XYZ;
+   *  destination: import('@iyagi/commons/coords').XY | import('@iyagi/commons/coords').XYZ;
    * }} p
    */
   getNextXYZ({
@@ -265,32 +286,69 @@ export class ServerObject {
     this.#absHitbox = this.#calcAbsHitbox();
   }
 
-  getClientXYZ() {
-    const hitbox = this.hitbox;
-    return {
-      x: hitbox.x - this.#absHitbox.x,
-      y: hitbox.y - this.#absHitbox.y,
-      z: this.z * (MAX_Z_INDEX + 1) + hitbox.y + hitbox.h,
-    };
-  }
-
   toClientData() {
     // eslint-disable-next-line no-unused-vars
-    const { hitbox, ...clientSpriteData } = this.#sprite;
+    // const { hitbox, ...clientSpriteData } = this.#sprite;
     return {
       resource: this.resource.key,
       id: this.id,
       name: this.name,
-      ...this.getClientXYZ(),
+      ...this.xyz,
       motion: this.#motion,
       direction: this.#direction,
       portraits: this.#portraits,
+    };
+  }
+
+  /**
+   * @param {{
+   *  x?: number,
+   *  y?: number,
+   *  z?: number,
+   *  direction?: import('@iyagi/commons/coords').Direction,
+   *  instant?: boolean;
+   * }} info
+   */
+  move(info) {
+    const lastXYZ = this.xyz;
+
+    if (typeof info.x === 'number') {
+      this.x = info.x;
+      // this.x = info.x;
+    }
+
+    if (typeof info.y === 'number') {
+      this.y = info.y;
+      // this.y = info.y;
+    }
+
+    if (typeof info.z === 'number') {
+      // this.z = info.z;
+    }
+
+    this.direction = info.direction || (info.instant ? this.direction : getDirectionByDelta(lastXYZ, this));
+
+    /**
+     * @type {import('../const/index.js').ServerMessage}
+     */
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
+      data: {
+        target: this.id,
+        ...this.xyz,
+        direction: this.direction,
+        // TODO::
+        speed: 1,
+        instant: !!info.instant,
+      },
     };
   }
 }
 
 export { ServerObjectResource };
 export { NAI };
+export { Circle } from './shape/circle.js';
+export { Rect } from './shape/rect.js';
 
 /**
  * @typedef { ServerObject } ServerObjectType

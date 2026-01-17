@@ -31,22 +31,20 @@ const load = async (message) => {
    */
   const data = message.data;
 
-  await Promise.all(
-    data.shard.resources.map(
-      /**
+  await Promise.all(data.shard.resources.map(
+    /**
        * @param {ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>} r
        */
-      (r) => {
-        const cached = resource_pool.get(r.key);
-        if (cached) {
-          return cached.load();
-        }
-        const created = new ObjectResource(r.data);
-        resource_pool.set(r.key, created);
-        return created.load();
+    (r) => {
+      const cached = resource_pool.get(r.key);
+      if (cached) {
+        return cached.load();
       }
-    )
-  );
+      const created = new ObjectResource(r.sprite);
+      resource_pool.set(r.key, created);
+      return created.load();
+    }
+  ));
 
   await Promise.all(data.shard.objects.map(
     /**
@@ -57,10 +55,11 @@ const load = async (message) => {
       if (!resource) {
         throw new Error(`Resource not found: ${info.resource}`);
       }
-      const obj = resource.stamp(info.id, {
+      const obj = resource.spawn(info.id, {
         name: info.name,
         portraits: info.portraits,
       });
+
       obj.xyz = info;
       obj.direction = info.direction;
       container.addChild(obj.container);

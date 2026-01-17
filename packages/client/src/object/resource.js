@@ -9,28 +9,35 @@ import ITexture from './texture.js';
  */
 
 /**
- * @typedef ActionArea
- * @property {SpriteImage} [image]
- * @property {import('@iyagi/commons/coords').Area[]} frames
+ * @typedef {{
+ *  image?: SpriteImage
+ *  offset?: import('@iyagi/commons').XY
+ *  frames: import('@iyagi/commons/coords').Area[]
+ * }} ActionArea
  */
 
 /**
- * @typedef Motion
- * @property {SpriteImage} [image]
- * @property {boolean} [loop]
- * @property {number | Object<number, number>} [fps]
- * @property {ActionArea} [up]
- * @property {ActionArea} [down]
- * @property {ActionArea} [left]
- * @property {ActionArea} [right]
- * @property {boolean=} playing
+ * @typedef {{
+ *  image?: SpriteImage;
+ *  offset?: import('@iyagi/commons').XY
+ *  loop?: boolean
+ *  fps?: number | Object<number, number>
+ *  up?: ActionArea
+ *  down?: ActionArea
+ *  left?: ActionArea
+ *  right?: ActionArea
+ *  playing?: boolean
+ * }} Motion
  */
 
 /**
- * @typedef SpriteInfo
- * @property {SpriteImage} [image]
- * @property {import('@iyagi/commons/coords').Area} [shadow]
- * @property {{[key: string]: Motion}} [motions]
+ * @typedef {{
+ *  offset?: import('@iyagi/commons').XY
+ *  shadow?: import('@iyagi/commons').Area
+ *  motions: {
+ *   [key: string]: Motion
+ *  }
+ * }} SpriteInfo
  */
 
 /**
@@ -45,16 +52,16 @@ import ITexture from './texture.js';
 const pool = new Map();
 
 class ObjectResource {
-  #params;
+  #sprite;
 
   #texture;
 
   /**
-   * @param {ClientObjectResourceParams} params
+   * @param {import('@iyagi/server/object/resource.js').ObjectResourceData['sprite']} sprite
    */
-  constructor(params) {
-    this.#params = params;
-    this.#texture = new ITexture(params.sprite);
+  constructor(sprite) {
+    this.#sprite = sprite;
+    this.#texture = new ITexture(sprite);
   }
 
   async load() {
@@ -70,7 +77,7 @@ class ObjectResource {
    * }} [options]
    * @returns
    */
-  stamp(id, options) {
+  spawn(id, options) {
     const cached = pool.get(id);
     if (cached) {
       return cached;
@@ -79,7 +86,7 @@ class ObjectResource {
       id,
       name: options?.name,
       texture: this.#texture,
-      info: this.#params.sprite,
+      sprite: this.#sprite,
       // todo: json
       portrait: new Portrait(options?.portraits),
     });

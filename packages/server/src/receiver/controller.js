@@ -1,4 +1,4 @@
-import { getDirectionByDelta, isIn, isOverlap } from '@iyagi/commons';
+import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
 import { StageDirector } from '../director/stage.js';
 
 export const ControllerReceiver = {
@@ -61,16 +61,27 @@ export const ControllerReceiver = {
     if (!target) {
       throw new Error(`Fail to move. No target (${message.data.id}).`);
     }
+    const area = target.area;
+    if (('radius' in area) === false) {
+      throw new Error('controller.move only supports circle area.');
+    }
+
     const beforeCenter = target.center();
 
-    const x = target.x + Math.cos(data.angle) * 5;
-    const y = target.y + Math.sin(data.angle) * 5;
+    const x = Math.round(target.x + Math.cos(data.angle) * 5);
+    const y = Math.round(target.y + Math.sin(data.angle) * 5);
     const z = data.z ?? target.z;
-    const next = target.getNextXYZ({ objects, destination : { x, y, z } });
+
+    const obstacles = objects
+      .filter((o) => o !== target && o.z === z)
+      .map((o) => o.area);
+
+    const next = resolveXY(area, obstacles, { x, y });
+
     target.direction = data.direction || getDirectionByDelta(target, next);
     target.x = next.x;
     target.y = next.y;
-    target.z = next.z;
+    target.z = z;
 
     const afterCenter = target.center();
     const pressed = objects.filter((o) => {
@@ -189,8 +200,6 @@ export const ControllerReceiver = {
       //   });
       user.send([before]);
     }
-
-
 
     nearest.interaction$.next(user);
   },

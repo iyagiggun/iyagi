@@ -8,9 +8,9 @@
 /**
  * @typedef ActionArea
  * @property {SpriteImage} [image]
- * @property {import('@iyagi/commons/coords').Area} [hitbox]
- * @property {import('@iyagi/commons/coords').Area} [shadow]
- * @property {import('@iyagi/commons/coords').Area[]} frames
+ * @property {import('@iyagi/commons').Area} [hitbox]
+ * @property {import('@iyagi/commons').Area} [shadow]
+ * @property {import('@iyagi/commons').Area[]} frames
  */
 
 /**
@@ -22,16 +22,17 @@
  * @property {ActionArea} [left]
  * @property {ActionArea} [right]
  * @property {boolean=} playing
- * @property {import('@iyagi/commons/coords').Area} [hitbox]
- * @property {import('@iyagi/commons/coords').Area} [shadow]
+ * @property {import('@iyagi/commons').Area} [hitbox]
+ * @property {import('@iyagi/commons').Area} [shadow]
  */
 
 /**
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
  * @property {{[key: string]: Motion}} motions
- * @property {import('@iyagi/commons/coords').Area} [hitbox]
- * @property {import('@iyagi/commons/coords').Area} [shadow]
+ * @property {import('@iyagi/commons').XY} [offset]
+ * @property {import('@iyagi/commons').Area} [hitbox]
+ * @property {import('@iyagi/commons').Area} [shadow]
  */
 
 /**
@@ -66,7 +67,7 @@ export class ServerObjectResource {
   toClientData() {
     return {
       key: this.key,
-      data: this.data,
+      sprite: this.data.sprite,
     };
   }
 }

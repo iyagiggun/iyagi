@@ -1,5 +1,6 @@
-import { BUILT_IN_SERVER_MESSAGE_TYPES, getDirectionByDelta } from '@iyagi/commons';
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { ShardForge } from '../shard/forge.js';
+import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 export const StageDirector = {
 
@@ -46,9 +47,8 @@ export const StageDirector = {
    *  y?: number,
    *  z?: number,
    *  speed?: 1 | 2 | 3,
-   *  direction?: import('@iyagi/commons').Direction,
+   *  direction?: import('@iyagi/commons/coords').Direction,
    *  instant?: boolean;
-   *  track?: boolean;
    * }} info
    * @returns {import('../const/index.js').ServerMessage}
    */
@@ -76,11 +76,10 @@ export const StageDirector = {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
       data: {
         target: target.id,
-        ...target.getClientXYZ(),
+        ...target.xyz,
         direction: target.direction,
         speed: info.speed,
         instant: !!info.instant,
-        track: info.track,
       },
     };
   },

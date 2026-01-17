@@ -62,9 +62,7 @@ export default class ITexture {
       return this;
     }
 
-    /** @type {{[key: string]: import('./resource.js').Motion}} */
     const motions = this.#info.motions;
-
     const promises = Object.keys(motions)
       .map(async (motion) => {
 

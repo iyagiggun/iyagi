@@ -7,6 +7,10 @@
     ".": {
       "import": "./src/index.js",
       "require": "./src/index.js"
+    },
+    "./coords": {
+      "import": "./src/coords/index.js",
+      "require": "./src/coords/index.js"
     }
   },
   "type": "module",

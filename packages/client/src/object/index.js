@@ -11,12 +11,13 @@ export const CLIENT_OBJECT_CONTAINER_LABEL = {
 };
 
 /**
- * @typedef {Object} ClientObjectParams
- * @property {string} id
- * @property {string=} name
- * @property {import('./texture.js').default} texture
- * @property {import('./resource.js').SpriteInfo} info
- * @property {import('./portrait.js').PortraitType} portrait
+ * @typedef {{
+ *  id: string
+ *  name?: string
+ *  texture: import('./texture.js').default
+ *  sprite: import('@iyagi/server/object/resource.js').ObjectResourceData['sprite']
+ *  portrait: import('./portrait.js').PortraitType
+ * }} ClientObjectParams
  */
 
 export default class ClientObject {
@@ -26,7 +27,9 @@ export default class ClientObject {
 
   #motion = 'base';
 
-  #info;
+  #offset;
+
+  #sprite;
 
   #texture;
 
@@ -50,7 +53,7 @@ export default class ClientObject {
     name,
     texture,
     portrait,
-    info,
+    sprite: info,
   }) {
     this.container = new Container();
     this.id = id;
@@ -58,19 +61,20 @@ export default class ClientObject {
     this.#texture = texture;
     this.#direction = 'down';
     this.#portrait = portrait;
-    this.#info = info;
+    this.#sprite = info;
+    this.#offset = info.offset ?? { x: 0, y: 0 };
     this.set(this.#motion, this.#direction);
 
-    if (this.#info.shadow) {
+    if (this.#sprite.shadow) {
       const shadow = new Graphics();
       shadow.label = CLIENT_OBJECT_CONTAINER_LABEL.SHADOW;
-      shadow.ellipse(0, 0, this.#info.shadow.w/2, this.#info.shadow.h/2);
+      shadow.ellipse(0, 0, this.#sprite.shadow.w/2, this.#sprite.shadow.h/2);
       shadow.fill({
         color: 0x000000,
         alpha: 0.4,
       });
-      shadow.x = this.#info.shadow.x + this.#info.shadow.w/2;
-      shadow.y = this.#info.shadow.y + this.#info.shadow.h/2;
+      shadow.x = this.#sprite.shadow.x + this.#sprite.shadow.w/2;
+      shadow.y = this.#sprite.shadow.y + this.#sprite.shadow.h/2;
 
       this.container.addChildAt(shadow, 0);
     }
@@ -106,7 +110,7 @@ export default class ClientObject {
     }
     this.container.addChild(next);
     this.#current = next;
-    if (this.#info.motions?.[motion].playing) {
+    if (this.#sprite.motions?.[motion].playing) {
       this.play();
     }
   }
@@ -151,10 +155,10 @@ export default class ClientObject {
    */
   set xyz({ x, y, z }) {
     if (typeof x === 'number') {
-      this.container.x = x;
+      this.container.x = x + this.#offset.x;
     }
     if (typeof y === 'number') {
-      this.container.y = y;
+      this.container.y = y + this.#offset.y;
     }
     if (typeof z === 'number') {
       this.container.zIndex = z;

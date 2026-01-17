@@ -13,10 +13,13 @@
  *  h: number;
  * }} WH
  *
- * @typedef { XY & WH } Area
+ * @typedef { XY & WH } XYWH
  *
  * @typedef {'up' | 'down' | 'left' | 'right' } Direction
  */
+
+export const Z_MAX = 999;
+export const Z_LAYER = Z_MAX + 1;
 
 /**
  * https://easings.net/#easeInOutSine
@@ -27,8 +30,8 @@ export function easeInOutSine(t) {
 }
 
 /**
- * @param {Area} areaA
- * @param {Area} areaB
+ * @param {XYWH} areaA
+ * @param {XYWH} areaB
  * @returns
  */
 export function isOverlap(areaA, areaB) {
@@ -53,10 +56,11 @@ export function getDirectionByDelta(before, after) {
 
 /**
  * @param {XY} xy
- * @param {Area} area
+ * @param {XYWH} area
  * @returns
  */
 export function isIn(xy, area) {
   return xy.x >= area.x && xy.x <= area.x + area.w && xy.y >= area.y && xy.y <= area.y + area.h;
 }
 
+export * from './sweep.js';
