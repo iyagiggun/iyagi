@@ -8,9 +8,9 @@
 /**
  * @typedef ActionArea
  * @property {SpriteImage} [image]
- * @property {import('@iyagi/commons').Area} [hitbox]
- * @property {import('@iyagi/commons').Area} [shadow]
- * @property {import('@iyagi/commons').Area[]} frames
+ * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
+ * @property {import('@iyagi/commons/coords').XYWH} [shadow]
+ * @property {import('@iyagi/commons/coords').XYWH[]} frames
  */
 
 /**
@@ -22,28 +22,42 @@
  * @property {ActionArea} [left]
  * @property {ActionArea} [right]
  * @property {boolean=} playing
- * @property {import('@iyagi/commons').Area} [hitbox]
- * @property {import('@iyagi/commons').Area} [shadow]
+ * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
+ * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  */
 
 /**
  * @typedef SpriteInfo
  * @property {SpriteImage} [image]
  * @property {{[key: string]: Motion}} motions
- * @property {import('@iyagi/commons').XY} [offset]
- * @property {import('@iyagi/commons').Area} [hitbox]
- * @property {import('@iyagi/commons').Area} [shadow]
+ * @property {import('@iyagi/commons/coords').XY} [offset]
+ * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
+ * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  */
 
 /**
  * @typedef ObjectResourceData
  * @property {SpriteInfo} sprite
+ * @property {import('@iyagi/commons/coords').Shape} shape
  */
 
 /**
  * @type {Set<string>}
  */
 const RESOURCE_KEY_SET = new Set();
+
+/**
+ * @param {import('@iyagi/commons/coords').Shape} shape
+ */
+const calcOffset = (shape) => {
+  if ('radius' in shape) {
+    return { x: -shape.radius, y: -shape.radius };
+  }
+  if ('halfW' in shape && 'halfH' in shape) {
+    return { x: -shape.halfW, y: -shape.halfH };
+  }
+  throw new Error('invalid shape');
+};
 
 export class ServerObjectResource {
   #key;
@@ -58,6 +72,8 @@ export class ServerObjectResource {
     RESOURCE_KEY_SET.add(key);
     this.#key = key;
     this.data = data;
+
+    this.data.sprite.offset = this.data.sprite.offset || calcOffset(this.data.shape);
   }
 
   get key() {
