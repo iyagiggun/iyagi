@@ -14,7 +14,7 @@ export const ControllerReceiver = {
     if (!target) {
       throw new Error(`Fail to move. No target (${message.data.id}).`);
     }
-    const area = target.area();
+    const area = target.area;
     if (('radius' in area) === false) {
       throw new Error('controller.move only supports circle area.');
     }
@@ -27,7 +27,7 @@ export const ControllerReceiver = {
 
     const obstacles = objects
       .filter((o) => o !== target && o.z === z)
-      .map((o) => o.area());
+      .map((o) => o.area);
 
     const next = resolveXY(area, obstacles, { x, y });
 

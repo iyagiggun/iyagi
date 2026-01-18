@@ -131,9 +131,10 @@ export class ServerObject {
   }
 
   /**
+   * @readonly
    * @return {import('@iyagi/commons/coords').Area}
    */
-  area() {
+  get area() {
     if ('radius' in this.shape) {
       return {
         x: this.x,
