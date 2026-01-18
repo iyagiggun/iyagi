@@ -68,7 +68,6 @@ const load = async (message) => {
     })
   );
 
-
   global.app.stage.addChild(container);
 
   sender.send({

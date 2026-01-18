@@ -122,18 +122,18 @@ export class ServerObject {
     };
   }
 
-  /**
-   * @readonly
-   */
-  get xyz() {
+  xy() {
+    return { x: this.x, y: this.y };
+  }
+
+  xyz() {
     return { x: this.x, y: this.y, z: this.z };
   }
 
   /**
-   * @readonly
    * @return {import('@iyagi/commons/coords').Area}
    */
-  get area() {
+  area() {
     if ('radius' in this.shape) {
       return {
         x: this.x,
@@ -191,14 +191,6 @@ export class ServerObject {
       w,
       h,
     };
-  }
-
-  /**
-   * @param {import('../shard/index.js').ShardType} shard
-   * @param {import('@iyagi/commons/coords').XY | import('@iyagi/commons/coords').XYZ} dest
-   */
-  resolveXYZ(shard, dest) {
-
   }
 
   /**
@@ -293,7 +285,7 @@ export class ServerObject {
       resource: this.resource.key,
       id: this.id,
       name: this.name,
-      ...this.xyz,
+      ...this.xyz(),
       motion: this.#motion,
       direction: this.#direction,
       portraits: this.#portraits,
@@ -310,7 +302,7 @@ export class ServerObject {
    * }} info
    */
   move(info) {
-    const lastXYZ = this.xyz;
+    const lastXYZ = this.xyz();
 
     if (typeof info.x === 'number') {
       this.x = info.x;
@@ -335,7 +327,7 @@ export class ServerObject {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
       data: {
         target: this.id,
-        ...this.xyz,
+        ...this.xyz(),
         direction: this.direction,
         // TODO::
         speed: 1,
@@ -347,8 +339,6 @@ export class ServerObject {
 
 export { ServerObjectResource };
 export { NAI };
-export { Circle } from './shape/circle.js';
-export { Rect } from './shape/rect.js';
 
 /**
  * @typedef { ServerObject } ServerObjectType

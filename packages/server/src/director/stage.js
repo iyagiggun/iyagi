@@ -53,7 +53,7 @@ export const StageDirector = {
    * @returns {import('../const/index.js').ServerMessage}
    */
   move(target, info) {
-    const lastXYZ = target.xyz;
+    const lastXYZ = target.xyz();
 
     if (typeof info.x === 'number') {
       target.x = info.x;
@@ -76,7 +76,7 @@ export const StageDirector = {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
       data: {
         target: target.id,
-        ...target.xyz,
+        ...target.xyz(),
         direction: target.direction,
         speed: info.speed,
         instant: !!info.instant,

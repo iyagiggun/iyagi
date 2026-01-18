@@ -3,6 +3,7 @@ import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
 import camera from '../camera/index.js';
+import { Z_LAYER } from '@iyagi/commons/coords';
 
 const DEFAULT_COMPLETE = () => undefined;
 
@@ -22,12 +23,14 @@ export const CLIENT_OBJECT_CONTAINER_LABEL = {
 
 export default class ClientObject {
 
-  /** @type {import('@iyagi/commons').Direction} */
+  /** @type {import('@iyagi/commons/coords').Direction} */
   #direction;
 
   #motion = 'base';
 
   #offset;
+
+  #z = 0;
 
   #sprite;
 
@@ -86,7 +89,7 @@ export default class ClientObject {
 
   /**
    * @param {string} motion
-   * @param {import('@iyagi/commons').Direction} [_direction]
+   * @param {import('@iyagi/commons/coords').Direction} [_direction]
    */
   set(motion, _direction) {
     const direction = _direction ?? this.#direction;
@@ -142,12 +145,8 @@ export default class ClientObject {
     };
   }
 
-  /**
-   * @return {{ x: number, y: number }};
-   */
-  get xy() {
-    const { x, y } = this.xyz;
-    return { x, y };
+  #calcContainerZ() {
+    this.container.zIndex = this.#z * Z_LAYER + this.container.y - this.#offset.y;
   }
 
   /**
@@ -159,9 +158,12 @@ export default class ClientObject {
     }
     if (typeof y === 'number') {
       this.container.y = y + this.#offset.y;
+      this.#calcContainerZ();
     }
-    if (typeof z === 'number') {
-      this.container.zIndex = z;
+    const nextZ = z ?? this.#z;
+    if (nextZ !== this.#z) {
+      this.#z = nextZ;
+      this.#calcContainerZ();
     }
   }
 
@@ -170,14 +172,14 @@ export default class ClientObject {
    */
   get xyz() {
     return {
-      x: this.container.x,
-      y: this.container.y,
-      z: this.container.zIndex,
+      x: this.container.x - this.#offset.x,
+      y: this.container.y - this.#offset.y,
+      z: this.#z,
     };
   }
 
   /**
-   * @param {import('@iyagi/commons').Direction} dir
+   * @param {import('@iyagi/commons/coords').Direction} dir
    */
   set direction(dir) {
     switch (dir) {
@@ -197,7 +199,7 @@ export default class ClientObject {
   }
 
   /**
-   * @param {import('@iyagi/commons').XYZ & {
+   * @param {import('@iyagi/commons/coords').XYZ & {
    *  speed?: number;
    *  instant: boolean;
    * }} p
@@ -211,14 +213,12 @@ export default class ClientObject {
   }) {
     this.#complete();
 
-
     const speed = _speed ?? 1;
     return new Promise((resolve) => {
-
       this.play({ speed });
 
       const tick = () => {
-        const { x: curX, y: curY, z: curZ } = this.xyz;
+        const { x: curX, y: curY } = this.xyz;
 
         const diffX = x - curX;
         const diffY = y - curY;
@@ -231,7 +231,7 @@ export default class ClientObject {
         } else {
           const deltaX = Math.round(speed * (diffX / distance));
           const deltaY = Math.round(speed * (diffY / distance));
-          this.xyz = { x: curX + deltaX, y: curY + deltaY, z: curZ + deltaY };
+          this.xyz = { x: curX + deltaX, y: curY + deltaY, z };
           if (camera.target === this) {
             camera.adjust({ x: deltaX, y: deltaY });
           }

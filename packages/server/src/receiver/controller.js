@@ -14,59 +14,12 @@ export const ControllerReceiver = {
     if (!target) {
       throw new Error(`Fail to move. No target (${message.data.id}).`);
     }
-    const beforeCenter = target.center();
-
-    const delta = data.delta;
-    const x = target.x + (delta.x ?? 0);
-    const y = target.y + (delta.y ?? 0);
-    const z = target.z + (delta.z ?? 0);
-    const next = target.getNextXYZ({ objects, destination : { x, y, z } });
-    target.direction = data.direction || getDirectionByDelta(target, next);
-    target.x = next.x;
-    target.y = next.y;
-    target.z = next.z;
-
-    const afterCenter = target.center();
-    const pressed = objects.filter((o) => {
-      if (o.hitbox.z !== target.z - 1) {
-        return false;
-      }
-      if (!isIn(afterCenter, o.hitbox)) {
-        return false;
-      }
-      return !isIn(beforeCenter, o.hitbox);
-    });
-
-    user.send([
-      StageDirector.move(target, {
-        ...target.xyz,
-        direction: target.direction,
-        speed: data.speed,
-      }),
-    ]);
-
-    pressed.forEach((o) => {
-      o.pressed$.next(user);
-    });
-  },
-  /**
-   * @param {import('../user/index.js').UserType} user
-   * @param {*} message
-   */
-  movetest: (user, message) => {
-    const shard = user.shard;
-    const objects = shard.objects;
-    const data = message.data;
-    const target = shard.objects.find((o) => o.id === data.id);
-    if (!target) {
-      throw new Error(`Fail to move. No target (${message.data.id}).`);
-    }
-    const area = target.area;
+    const area = target.area();
     if (('radius' in area) === false) {
       throw new Error('controller.move only supports circle area.');
     }
 
-    const beforeCenter = target.center();
+    const before = target.xy();
 
     const x = Math.round(target.x + Math.cos(data.angle) * 5);
     const y = Math.round(target.y + Math.sin(data.angle) * 5);
@@ -74,7 +27,7 @@ export const ControllerReceiver = {
 
     const obstacles = objects
       .filter((o) => o !== target && o.z === z)
-      .map((o) => o.area);
+      .map((o) => o.area());
 
     const next = resolveXY(area, obstacles, { x, y });
 
@@ -83,20 +36,20 @@ export const ControllerReceiver = {
     target.y = next.y;
     target.z = z;
 
-    const afterCenter = target.center();
+    const after = target.xy();
     const pressed = objects.filter((o) => {
       if (o.hitbox.z !== target.z - 1) {
         return false;
       }
-      if (!isIn(afterCenter, o.hitbox)) {
+      if (!isIn(after, o.hitbox)) {
         return false;
       }
-      return !isIn(beforeCenter, o.hitbox);
+      return !isIn(before, o.hitbox);
     });
 
     shard.sync([
       StageDirector.move(target, {
-        ...target.xyz,
+        ...target.xyz(),
         direction: target.direction,
         speed: data.speed,
       }),

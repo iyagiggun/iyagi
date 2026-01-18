@@ -32,7 +32,6 @@
  * @typedef {CircleArea | RectArea} Area
  */
 
-
 /**
  * @param {number} start
  * @param {number} dest

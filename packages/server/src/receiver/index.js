@@ -21,9 +21,6 @@ export class ServerReceiver {
       case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE:
         ControllerReceiver.move(user, message);
         return;
-      case 'move.test':
-        ControllerReceiver.movetest(user, message);
-        return;
       case BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION:
         ControllerReceiver.interact(user, message);
         return;
