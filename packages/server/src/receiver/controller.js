@@ -19,7 +19,7 @@ export const ControllerReceiver = {
       throw new Error('controller.move only supports circle area.');
     }
 
-    const before = target.xy();
+    const before = target.xy;
 
     const x = Math.round(target.x + Math.cos(data.angle) * 5);
     const y = Math.round(target.y + Math.sin(data.angle) * 5);
@@ -36,7 +36,7 @@ export const ControllerReceiver = {
     target.y = next.y;
     target.z = z;
 
-    const after = target.xy();
+    const after = target.xy;
     const pressed = objects.filter((o) => {
       if (o.hitbox.z !== target.z - 1) {
         return false;
@@ -49,7 +49,7 @@ export const ControllerReceiver = {
 
     shard.sync([
       StageDirector.move(target, {
-        ...target.xyz(),
+        ...target.xyz,
         direction: target.direction,
         speed: data.speed,
       }),

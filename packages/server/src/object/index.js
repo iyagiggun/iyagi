@@ -2,7 +2,7 @@ import { Subject } from 'rxjs';
 import { ServerObjectResource } from './resource.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { NAI } from './NAI/index.js';
-import { getDirectionByDelta, isOverlap } from '@iyagi/commons/coords';
+import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 /**
  * @typedef {import("@iyagi/commons/coords").Direction} Direction
@@ -122,11 +122,17 @@ export class ServerObject {
     };
   }
 
-  xy() {
+  /**
+   * @readonly
+   */
+  get xy() {
     return { x: this.x, y: this.y };
   }
 
-  xyz() {
+  /**
+   * @readonly
+   */
+  get xyz() {
     return { x: this.x, y: this.y, z: this.z };
   }
 
@@ -194,68 +200,6 @@ export class ServerObject {
     };
   }
 
-  /**
-   * @hack 재귀 문을 쓰고 있어서 실제 서버에선 쓸 수 없을 듯
-   * @param {{
-   *  objects: ServerObject[];
-   *  destination: import('@iyagi/commons/coords').XY | import('@iyagi/commons/coords').XYZ;
-   * }} p
-   */
-  getNextXYZ({
-    objects,
-    destination,
-  }) {
-    const { x: curX, y: curY  } = this;
-    const curZ = this.z;
-    const destZ = 'z' in destination ? destination.z : curZ;
-    const hitbox = this.hitbox;
-
-    // if (!hitbox) {
-    //   return { ...destination, z: destZ };
-    // }
-
-    let deltaX = destination.x - curX;
-    let deltaY = destination.y - curY;
-
-    const interval_length = Math.max(Math.abs(deltaX), Math.abs(deltaY));
-    const intervalX = deltaX / interval_length;
-    const intervalY = deltaY / interval_length;
-
-    const canHit = objects.filter((o) => {
-      if (o.id === this.id) {
-        return false;
-      }
-      const oHitBox = o.hitbox;
-      if (oHitBox.w === 0 || oHitBox.h === 0) {
-        return false;
-      }
-      return o.z === curZ;
-    });
-
-    let step = 0;
-    while (step < interval_length) {
-      step++;
-      const hitboxInStep = {
-        ...hitbox,
-        x: hitbox.x + Math.round(intervalX * step),
-        y: hitbox.y + Math.round(intervalY * step),
-      };
-
-      const hit = canHit.find((o) => {
-        return isOverlap(hitboxInStep, o.hitbox);
-      });
-      if (hit) {
-        return {
-          x: curX + Math.round(intervalX * (step - 1)),
-          y: curY + Math.round(intervalY * (step - 1)),
-          // is valid??
-          z: destZ,
-        };
-      }
-    }
-    return { ...destination, z: destZ };
-  };
-
   center() {
     const { w, h } = this.#absHitbox;
     return {
@@ -286,7 +230,7 @@ export class ServerObject {
       resource: this.resource.key,
       id: this.id,
       name: this.name,
-      ...this.xyz(),
+      ...this.xyz,
       motion: this.#motion,
       direction: this.#direction,
       portraits: this.#portraits,
@@ -303,7 +247,7 @@ export class ServerObject {
    * }} info
    */
   move(info) {
-    const lastXYZ = this.xyz();
+    const lastXYZ = this.xyz;
 
     if (typeof info.x === 'number') {
       this.x = info.x;
@@ -328,7 +272,7 @@ export class ServerObject {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
       data: {
         target: this.id,
-        ...this.xyz(),
+        ...this.xyz,
         direction: this.direction,
         // TODO::
         speed: 1,

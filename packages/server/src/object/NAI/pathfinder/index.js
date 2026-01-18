@@ -8,7 +8,7 @@ export const Pathfinder = {
    * }} p
    */
   findNextStep({ finder, dest, size }) {
-    const center = finder.xy();
+    const center = finder.xy;
 
     const distance = Math.hypot(dest.x - center.x, dest.y - center.y);
     return distance <= size

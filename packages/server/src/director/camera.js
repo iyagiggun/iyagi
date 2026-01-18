@@ -10,7 +10,7 @@ export const CameraDirector = {
    * @return {import('../const/index.js').ServerMessage}
    */
   focus(target, options) {
-    const xy = target instanceof ServerObject ? target.xy() : target;
+    const xy = target instanceof ServerObject ? target.xy : target;
     return {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOCUS,
       data: {
