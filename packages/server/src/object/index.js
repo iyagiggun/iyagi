@@ -224,8 +224,6 @@ export class ServerObject {
   }
 
   toClientData() {
-    // eslint-disable-next-line no-unused-vars
-    // const { hitbox, ...clientSpriteData } = this.#sprite;
     return {
       resource: this.resource.key,
       id: this.id,

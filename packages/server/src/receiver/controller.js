@@ -19,7 +19,7 @@ export const ControllerReceiver = {
       throw new Error('controller.move only supports circle area.');
     }
 
-    const before = target.xy;
+    // const before = target.xy;
 
     const x = Math.round(target.x + Math.cos(data.angle) * 5);
     const y = Math.round(target.y + Math.sin(data.angle) * 5);
@@ -36,16 +36,17 @@ export const ControllerReceiver = {
     target.y = next.y;
     target.z = z;
 
-    const after = target.xy;
-    const pressed = objects.filter((o) => {
-      if (o.hitbox.z !== target.z - 1) {
-        return false;
-      }
-      if (!isIn(after, o.hitbox)) {
-        return false;
-      }
-      return !isIn(before, o.hitbox);
-    });
+    // TODO:: press 처리
+    // const after = target.xy;
+    // const pressed = objects.filter((o) => {
+    //   if (o.hitbox.z !== target.z - 1) {
+    //     return false;
+    //   }
+    //   if (!isIn(after, o.hitbox)) {
+    //     return false;
+    //   }
+    //   return !isIn(before, o.hitbox);
+    // });
 
     shard.sync([
       StageDirector.move(target, {
@@ -55,9 +56,9 @@ export const ControllerReceiver = {
       }),
     ]);
 
-    pressed.forEach((o) => {
-      o.pressed$.next(user);
-    });
+    // pressed.forEach((o) => {
+    //   o.pressed$.next(user);
+    // });
   },
   /**
    * @param {import('../user/index.js').UserType} user
