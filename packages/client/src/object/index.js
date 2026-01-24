@@ -146,7 +146,7 @@ export default class ClientObject {
   }
 
   #calcContainerZ() {
-    this.container.zIndex = this.#z * Z_LAYER + this.container.y - this.#offset.y;
+    this.container.zIndex = this.#z * Z_LAYER + this.xyz.y;
   }
 
   /**
