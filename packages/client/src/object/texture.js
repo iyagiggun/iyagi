@@ -10,9 +10,9 @@ export const getMDKey = (motion, direction) => `${motion}:${direction}`;
 let frameNo = 0;
 
 /**
- * @param {import('./resource.js').SpriteImage} image
+ * @param {import('@iyagi/server/object/resource.js').SpriteImage} image
  * @param {Object} options
- * @param {import('@iyagi/commons/coords').Area[]} [options.frames]
+ * @param {import('@iyagi/commons/coords').XYWH[]} [options.frames]
  * @param {boolean} [options.scale]
  */
 const createTexture = async (image, options) => {
@@ -51,7 +51,7 @@ export default class ITexture {
   #loaded = false;
 
   /**
-   * @param {import('./resource.js').SpriteInfo} info
+   * @param {import('@iyagi/server/object/resource.js').ObjectResourceData['sprite']} info
    */
   constructor(info) {
     this.#info = info;
@@ -98,7 +98,7 @@ export default class ITexture {
     }
     const data = this.#motions[getMDKey(motion, direction)];
     if (!data) {
-      throw new Error(`Fail to create sprite. No texture data. ${JSON.stringify(this.#info)}-${motion}:${direction}`);
+      throw new Error(`Fail to create sprite. No texture data. ${motion}:${direction}. ${JSON.stringify(this.#info)}-`);
     }
 
     if (data instanceof Texture) {

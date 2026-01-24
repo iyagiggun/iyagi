@@ -16,7 +16,7 @@ export const CLIENT_OBJECT_CONTAINER_LABEL = {
  *  id: string
  *  name?: string
  *  texture: import('./texture.js').default
- *  sprite: import('@iyagi/server/object/resource.js').ObjectResourceData['sprite']
+ *  sprite: ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>['sprite']
  *  portrait: import('./portrait.js').PortraitType
  * }} ClientObjectParams
  */
@@ -56,7 +56,7 @@ export default class ClientObject {
     name,
     texture,
     portrait,
-    sprite: info,
+    sprite,
   }) {
     this.container = new Container();
     this.id = id;
@@ -64,20 +64,20 @@ export default class ClientObject {
     this.#texture = texture;
     this.#direction = 'down';
     this.#portrait = portrait;
-    this.#sprite = info;
-    this.#offset = info.offset ?? { x: 0, y: 0 };
+    this.#sprite = sprite;
+    this.#offset = sprite.offset;
     this.set(this.#motion, this.#direction);
 
-    if (this.#sprite.shadow) {
+    if (sprite.shadow) {
       const shadow = new Graphics();
       shadow.label = CLIENT_OBJECT_CONTAINER_LABEL.SHADOW;
-      shadow.ellipse(0, 0, this.#sprite.shadow.w/2, this.#sprite.shadow.h/2);
+      shadow.ellipse(0, 0, sprite.shadow.w/2, sprite.shadow.h/2);
       shadow.fill({
         color: 0x000000,
         alpha: 0.4,
       });
-      shadow.x = this.#sprite.shadow.x + this.#sprite.shadow.w/2;
-      shadow.y = this.#sprite.shadow.y + this.#sprite.shadow.h/2;
+      shadow.x = sprite.shadow.x + sprite.shadow.w/2;
+      shadow.y = sprite.shadow.y + sprite.shadow.h/2;
 
       this.container.addChildAt(shadow, 0);
     }
@@ -154,10 +154,10 @@ export default class ClientObject {
    */
   set xyz({ x, y, z }) {
     if (typeof x === 'number') {
-      this.container.x = x + this.#offset.x;
+      this.container.x = x - this.#offset.x;
     }
     if (typeof y === 'number') {
-      this.container.y = y + this.#offset.y;
+      this.container.y = y - this.#offset.y;
       this.#calcContainerZ();
     }
     const nextZ = z ?? this.#z;
@@ -172,8 +172,8 @@ export default class ClientObject {
    */
   get xyz() {
     return {
-      x: this.container.x - this.#offset.x,
-      y: this.container.y - this.#offset.y,
+      x: this.container.x + this.#offset.x,
+      y: this.container.y + this.#offset.y,
       z: this.#z,
     };
   }

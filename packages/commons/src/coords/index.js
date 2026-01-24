@@ -55,6 +55,22 @@ export function getDirectionByDelta(before, after) {
 };
 
 /**
+ * @param {number} angle
+ */
+export function getDirectionByAngle(angle) {
+  const normalizedAngle = (angle % 360 + 360) % 360;
+  if (normalizedAngle < 45 || normalizedAngle >= 315) {
+    return 'right';
+  }
+  if (normalizedAngle >= 45 && normalizedAngle < 135) {
+    return 'down';
+  }
+  if (normalizedAngle >= 135 && normalizedAngle < 225) {
+    return 'left';
+  }
+  return 'up';
+}
+/**
  * @param {XY} xy
  * @param {XYWH} area
  * @returns

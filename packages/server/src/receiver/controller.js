@@ -1,4 +1,4 @@
-import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByAngle, isOverlap, resolveXY } from '@iyagi/commons/coords';
 import { StageDirector } from '../director/stage.js';
 
 export const ControllerReceiver = {
@@ -19,22 +19,19 @@ export const ControllerReceiver = {
       throw new Error('controller.move only supports circle area.');
     }
 
-    // const before = target.xy;
+    const lastXYZ = target.xyz;
 
-    const x = Math.round(target.x + Math.cos(data.angle) * 5);
-    const y = Math.round(target.y + Math.sin(data.angle) * 5);
-    const z = data.z ?? target.z;
+    const x = Math.round(lastXYZ.x + Math.cos(data.angle) * 5);
+    const y = Math.round(lastXYZ.y + Math.sin(data.angle) * 5);
+    const z = data.z ?? lastXYZ.z;
 
     const obstacles = objects
-      .filter((o) => o !== target && o.z === z)
+      .filter((o) => o !== target && o.xyz.z === z)
       .map((o) => o.area);
 
     const next = resolveXY(area, obstacles, { x, y });
 
-    target.direction = data.direction || getDirectionByDelta(target, next);
-    target.x = next.x;
-    target.y = next.y;
-    target.z = z;
+    target.direction = data.direction || getDirectionByAngle(data.angle);
 
     // TODO:: press 처리
     // const after = target.xy;
@@ -49,11 +46,7 @@ export const ControllerReceiver = {
     // });
 
     shard.sync([
-      StageDirector.move(target, {
-        ...target.xyz,
-        direction: target.direction,
-        speed: data.speed,
-      }),
+      target.move({ ...next, direction: target.direction }),
     ]);
 
     // pressed.forEach((o) => {
@@ -102,7 +95,7 @@ export const ControllerReceiver = {
 
     const interactables = objects.filter((object) => {
       return object !== target
-        && object.z === target.z
+        && object.xyz.z === target.xyz.z
         && isOverlap(object.hitbox, interactionArea);
     });
 

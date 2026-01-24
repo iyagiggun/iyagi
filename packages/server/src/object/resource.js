@@ -28,9 +28,9 @@
 
 /**
  * @typedef SpriteInfo
- * @property {SpriteImage} [image]
+ * @property {SpriteImage} image
  * @property {{[key: string]: Motion}} motions
- * @property {import('@iyagi/commons/coords').XY} [offset]
+ * @property {{ x?: number, y?: number }} [offset]
  * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
  * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  */
@@ -51,10 +51,10 @@ const RESOURCE_KEY_SET = new Set();
  */
 const calcOffset = (shape) => {
   if ('radius' in shape) {
-    return { x: -shape.radius, y: -shape.radius };
+    return { x: shape.radius, y: shape.radius };
   }
   if ('halfW' in shape && 'halfH' in shape) {
-    return { x: -shape.halfW, y: -shape.halfH };
+    return { x: shape.halfW, y: shape.halfH };
   }
   throw new Error('invalid shape');
 };
@@ -71,9 +71,18 @@ export class ServerObjectResource {
     }
     RESOURCE_KEY_SET.add(key);
     this.#key = key;
-    this.data = data;
 
-    this.data.sprite.offset = this.data.sprite.offset || calcOffset(this.data.shape);
+    const offsetByShape = calcOffset(data.shape);
+    this.data = {
+      ...data,
+      sprite: {
+        ...data.sprite,
+        offset: {
+          x: data.sprite.offset?.x || offsetByShape.x,
+          y: data.sprite.offset?.y || offsetByShape.y,
+        },
+      },
+    };
   }
 
   get key() {

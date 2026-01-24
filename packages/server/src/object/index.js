@@ -6,7 +6,6 @@ import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 /**
  * @typedef {import("@iyagi/commons/coords").Direction} Direction
- * @typedef {import("@iyagi/commons/coords").XYWH} Area
  */
 
 
@@ -21,9 +20,6 @@ const instanceIdxMap = new Map();
 /**
  * @typedef {Object} ServerObjectOptions
  * @property {string} [name]
- * @property {number} [x]
- * @property {number} [y]
- * @property {number} [z]
  * @property {Direction} [direction]
  * @property {string | Object<string, string>} [portraits]
  */
@@ -46,6 +42,12 @@ export class ServerObject {
 
   #id;
 
+  #x = 0;
+
+  #y = 0;
+
+  #z = 1;
+
   /**
    * @param {ServerObjectResource} r
    * @param {ServerObjectOptions} [o]
@@ -57,9 +59,13 @@ export class ServerObject {
     this.resource = r;
     // TODO:: sprite 는 없어져야 함
     this.#sprite = r.data.sprite;
-    this.x = o?.x ?? 0;
-    this.y = o?.y ?? 0;
-    this.z = o?.z ?? 1;
+    // this.x = o?.x ?? 0;
+    // this.y = o?.y ?? 0;
+    // this.z = o?.z ?? 1;
+
+    // this.x = 0;
+    // this.y = 0;
+    // this.z = 1;
 
     const idx = instanceIdxMap.get(r.key) ?? 0;
     this.#id = `object:${r.key}:${idx}`;
@@ -116,9 +122,9 @@ export class ServerObject {
   get hitbox() {
     return {
       ...this.#absHitbox,
-      x: this.x,
-      y: this.y,
-      z: this.z,
+      x: this.#x,
+      y: this.#y,
+      z: this.#z,
     };
   }
 
@@ -126,14 +132,14 @@ export class ServerObject {
    * @readonly
    */
   get xy() {
-    return { x: this.x, y: this.y };
+    return { x: this.#x, y: this.#y };
   }
 
   /**
    * @readonly
    */
   get xyz() {
-    return { x: this.x, y: this.y, z: this.z };
+    return { x: this.#x, y: this.#y, z: this.#z };
   }
 
   /**
@@ -143,18 +149,18 @@ export class ServerObject {
   get area() {
     if ('radius' in this.shape) {
       return {
-        x: this.x,
-        y: this.y,
+        x: this.#x,
+        y: this.#y,
         radius: this.shape.radius,
       };
     }
     if ('halfW' in this.shape && 'halfH' in this.shape) {
       const { halfW, halfH } = this.shape;
       return {
-        left: this.x - halfW,
-        right: this.x + halfW,
-        top: this.y - halfH,
-        bottom: this.y + halfH,
+        left: this.#x - halfW,
+        right: this.#x + halfW,
+        top: this.#y - halfH,
+        bottom: this.#y + halfH,
       };
     }
     throw new Error('invalid shape');
@@ -169,7 +175,7 @@ export class ServerObject {
       return;
     }
     this.#direction = next;
-    this.#absHitbox = this.#calcAbsHitbox();
+    // this.#absHitbox = this.#calcAbsHitbox();
   }
 
   /**
@@ -203,8 +209,8 @@ export class ServerObject {
   center() {
     const { w, h } = this.#absHitbox;
     return {
-      x: this.x + w / 2,
-      y: this.y + h / 2,
+      x: this.#x + w / 2,
+      y: this.#y + h / 2,
     };
   }
 
@@ -243,26 +249,29 @@ export class ServerObject {
    *  direction?: import('@iyagi/commons/coords').Direction,
    *  instant?: boolean;
    * }} info
+   * @returns {import('../const/index.js').ServerMessage}
    */
-  move(info) {
+  move({ x, y, z, direction, instant }) {
     const lastXYZ = this.xyz;
 
-    if (typeof info.x === 'number') {
-      this.x = info.x;
+    if (typeof x === 'number') {
+      this.#x = x;
       // this.x = info.x;
     }
 
-    if (typeof info.y === 'number') {
-      this.y = info.y;
+    if (typeof y === 'number') {
+      this.#y = y;
       // this.y = info.y;
     }
 
-    if (typeof info.z === 'number') {
+    if (typeof z === 'number') {
+      this.#z = z;
       // this.z = info.z;
     }
 
-    this.direction = info.direction || (info.instant ? this.direction : getDirectionByDelta(lastXYZ, this));
+    const moveDirection = getDirectionByDelta(lastXYZ, this.xyz);
 
+    this.direction = direction || (instant || !this.canDirectTo(moveDirection) ? this.direction : moveDirection);
     /**
      * @type {import('../const/index.js').ServerMessage}
      */
@@ -274,7 +283,7 @@ export class ServerObject {
         direction: this.direction,
         // TODO::
         speed: 1,
-        instant: !!info.instant,
+        instant: !!instant,
       },
     };
   }
