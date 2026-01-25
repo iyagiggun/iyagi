@@ -11,6 +11,8 @@ import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
+const DEFAULT_MOVE_SPEED = 64;
+const MOVE_TIME_UNIT = 1000; // 1sec
 
 /**
  * @type {Map<string, number>}
@@ -48,7 +50,7 @@ export class ServerObject {
 
   #z = 1;
 
-  #moveSpeed = 100;
+  #moveSpeed = DEFAULT_MOVE_SPEED;
 
   /**
    * @param {ServerObjectResource} r
@@ -61,13 +63,6 @@ export class ServerObject {
     this.resource = r;
     // TODO:: sprite 는 없어져야 함
     this.#sprite = r.data.sprite;
-    // this.x = o?.x ?? 0;
-    // this.y = o?.y ?? 0;
-    // this.z = o?.z ?? 1;
-
-    // this.x = 0;
-    // this.y = 0;
-    // this.z = 1;
 
     const idx = instanceIdxMap.get(r.key) ?? 0;
     this.#id = `object:${r.key}:${idx}`;
@@ -240,6 +235,19 @@ export class ServerObject {
       motion: this.#motion,
       direction: this.#direction,
       portraits: this.#portraits,
+    };
+  }
+
+  /**
+   * @param {object} param0
+   * @param {number} param0.angle
+   * @param {number} param0.duration ms
+   */
+  nextPos({ angle, duration }) {
+    const distance = this.#moveSpeed * duration / MOVE_TIME_UNIT;
+    return {
+      x: this.#x + Math.cos(angle) * distance,
+      y: this.#y + Math.sin(angle) * distance,
     };
   }
 

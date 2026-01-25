@@ -19,17 +19,14 @@ export const ControllerReceiver = {
       throw new Error('controller.move only supports circle area.');
     }
 
-    const lastXYZ = target.xyz;
-
-    const x = Math.round(lastXYZ.x + Math.cos(data.angle) * 5);
-    const y = Math.round(lastXYZ.y + Math.sin(data.angle) * 5);
-    const z = data.z ?? lastXYZ.z;
+    const nextXY = target.nextPos({ angle: data.angle, duration: 50 });
+    const z = data.z ?? target.xyz.z;
 
     const obstacles = objects
       .filter((o) => o !== target && o.xyz.z === z)
       .map((o) => o.area);
 
-    const next = resolveXY(area, obstacles, { x, y });
+    const next = resolveXY(area, obstacles, nextXY);
 
     target.direction = data.direction || getDirectionByAngle(data.angle);
 
