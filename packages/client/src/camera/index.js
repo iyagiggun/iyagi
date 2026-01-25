@@ -3,7 +3,7 @@ import { FRAMES_PER_SECOND } from '../const/index.js';
 import { shard } from '../shard/index.js';
 
 /**
- * @param {import('@iyagi/commons').XY} xy
+ * @param {import('@iyagi/commons/coords').XY} xy
  */
 const getContainerPos = ({ x, y }) => {
   const { width, height } = global.app.screen;
@@ -14,7 +14,7 @@ const getContainerPos = ({ x, y }) => {
 };
 
 /**
- * @param {import('@iyagi/commons').XY & { speed?: 1 | 2 | 3 }} info
+ * @param {import('@iyagi/commons/coords').XY & { speed?: 1 | 2 | 3 }} info
  */
 const move = (info) => {
   const container = shard.container;
@@ -56,16 +56,17 @@ const move = (info) => {
 };
 
 /**
- * @param {import('@iyagi/commons').XY} xy
+ * @param {import('@iyagi/commons/coords').XY} xy
  */
-const adjust = ({ x: deltaX, y: deltaY }) => {
-  shard.container.x -= deltaX;
-  shard.container.y -= deltaY;
+const point = (xy) => {
+  const { x, y } = getContainerPos(xy);
+  shard.container.x = x;
+  shard.container.y = y;
 };
 
 export default {
   /** @type {import('../object/index.js').default | null} */
   target: null,
   move,
-  adjust,
+  point,
 };

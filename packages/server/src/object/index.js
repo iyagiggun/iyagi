@@ -48,6 +48,8 @@ export class ServerObject {
 
   #z = 1;
 
+  #moveSpeed = 100;
+
   /**
    * @param {ServerObjectResource} r
    * @param {ServerObjectOptions} [o]
@@ -253,23 +255,29 @@ export class ServerObject {
    */
   move({ x, y, z, direction, instant }) {
     const lastXYZ = this.xyz;
+    let diffX = 0;
+    let diffY = 0;
 
     if (typeof x === 'number') {
       this.#x = x;
-      // this.x = info.x;
+      diffX = x - lastXYZ.x;
     }
 
     if (typeof y === 'number') {
       this.#y = y;
-      // this.y = info.y;
+      diffY = y - lastXYZ.y;
     }
 
     if (typeof z === 'number') {
       this.#z = z;
-      // this.z = info.z;
     }
 
     const moveDirection = getDirectionByDelta(lastXYZ, this.xyz);
+
+    const now = performance.now();
+    const distance = Math.hypot(diffX, diffY);
+    const duration = 1000 * distance / this.#moveSpeed;
+    const endTime = now + duration;
 
     this.direction = direction || (instant || !this.canDirectTo(moveDirection) ? this.direction : moveDirection);
     /**
@@ -281,8 +289,7 @@ export class ServerObject {
         target: this.id,
         ...this.xyz,
         direction: this.direction,
-        // TODO::
-        speed: 1,
+        endTime,
         instant: !!instant,
       },
     };

@@ -2,8 +2,9 @@ import { getMDKey } from './texture.js';
 import { AnimatedSprite, Container, Graphics } from 'pixi.js';
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
-import camera from '../camera/index.js';
 import { Z_LAYER } from '@iyagi/commons/coords';
+import { Time } from '../time/index.js';
+import camera from '../camera/index.js';
 
 const DEFAULT_COMPLETE = () => undefined;
 
@@ -202,47 +203,42 @@ export default class ClientObject {
    * @param {import('@iyagi/commons/coords').XYZ & {
    *  speed?: number;
    *  instant: boolean;
+   *  endTime?: number;
    * }} p
    */
   move({
     x,
     y,
     z,
-    speed: _speed,
     instant,
+    endTime,
   }) {
     this.#complete();
 
-    const speed = _speed ?? 1;
+    const { x: startX, y: startY } = this.xyz;
+
+    const angle = Math.atan2(y - startY, x - startX);
+    const distance = Math.hypot(x - startX, y - startY);
+
+    const start = Time.now();
+    const duration = Math.max(endTime && endTime > 0 ? endTime - start : 0, 0);
+
     return new Promise((resolve) => {
-      this.play({ speed });
+      this.play({ speed: 1 });
 
       const tick = () => {
-        const { x: curX, y: curY } = this.xyz;
-
-        const diffX = x - curX;
-        const diffY = y - curY;
-        const distance = Math.hypot(diffX, diffY);
-
-        const arrived = distance < speed || instant;
-
-        if (arrived) {
-          this.xyz = { x, y, z };
-        } else {
-          const deltaX = Math.round(speed * (diffX / distance));
-          const deltaY = Math.round(speed * (diffY / distance));
-          this.xyz = { x: curX + deltaX, y: curY + deltaY, z };
+        const now = Time.now();
+        const progress = (now - start) / duration;
+        const arrived = instant || progress >= 1;
+        if (!arrived) {
+          const nextX = startX + Math.cos(angle) * progress * distance;
+          const nextY = startY + Math.sin(angle) * progress * distance;
+          this.xy = { x: nextX, y: nextY };
           if (camera.target === this) {
-            camera.adjust({ x: deltaX, y: deltaY });
+            camera.point({ x: nextX, y: nextY });
           }
-          // if (camera) {
-          //   camera.point(name);
-          // }
-          // scene.objects.move(this, { x: deltaX, y: deltaY });
-          // const { camera } = scene;
-          // if (options?.trace) {
-          //   camera.point(this);
-          // }
+        } else {
+          this.xyz = { x, y, z };
         }
         if (arrived) {
           this.#complete();
@@ -259,7 +255,7 @@ export default class ClientObject {
 
       this.stop();
       this.play({
-        speed,
+        speed: 1,
       });
       global.app.ticker.add(tick);
     });
