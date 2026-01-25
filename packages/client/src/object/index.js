@@ -201,17 +201,18 @@ export default class ClientObject {
 
   /**
    * @param {import('@iyagi/commons/coords').XYZ & {
-   *  speed?: number;
-   *  instant: boolean;
    *  endTime?: number;
+   *  duration: number;
+   *  speed: number;
    * }} p
    */
   move({
     x,
     y,
     z,
-    instant,
     endTime,
+    duration: _duration,
+    speed,
   }) {
     this.#complete();
 
@@ -221,15 +222,15 @@ export default class ClientObject {
     const distance = Math.hypot(x - startX, y - startY);
 
     const start = Time.now();
-    const duration = Math.max(endTime && endTime > 0 ? endTime - start : 0, 0);
+    const duration = _duration ?? Math.max(endTime && endTime > 0 ? endTime - start : 0, 0);
 
     return new Promise((resolve) => {
-      this.play({ speed: 1 });
+      this.play({ speed });
 
       const tick = () => {
         const now = Time.now();
-        const progress = (now - start) / duration;
-        const arrived = instant || progress >= 1;
+        const progress = duration === 0 ? 1 : (now - start) / duration;
+        const arrived = progress >= 1;
         if (!arrived) {
           const nextX = startX + Math.cos(angle) * progress * distance;
           const nextY = startY + Math.sin(angle) * progress * distance;
@@ -255,7 +256,7 @@ export default class ClientObject {
 
       this.stop();
       this.play({
-        speed: 1,
+        speed,
       });
       global.app.ticker.add(tick);
     });

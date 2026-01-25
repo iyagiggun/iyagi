@@ -252,16 +252,17 @@ export class ServerObject {
   }
 
   /**
-   * @param {{
-   *  x?: number,
-   *  y?: number,
-   *  z?: number,
-   *  direction?: import('@iyagi/commons/coords').Direction,
-   *  instant?: boolean;
-   * }} info
+   * @param {object} param
+   * @param {number} [param.x]
+   * @param {number} [param.y]
+   * @param {number} [param.z]
+   * @param {import('@iyagi/commons/coords').Direction} [param.direction]
+   * @param {boolean} [param.instant]
+   * @param {boolean} [param.cutscene]
+   * @param {number} [param.speed]
    * @returns {import('../const/index.js').ServerMessage}
    */
-  move({ x, y, z, direction, instant }) {
+  move({ x, y, z, direction, instant, cutscene, speed: _speed }) {
     const lastXYZ = this.xyz;
     let diffX = 0;
     let diffY = 0;
@@ -280,12 +281,15 @@ export class ServerObject {
       this.#z = z;
     }
 
+    const speed = _speed ?? 1;
+
     const moveDirection = getDirectionByDelta(lastXYZ, this.xyz);
 
     const now = performance.now();
     const distance = Math.hypot(diffX, diffY);
-    const duration = 1000 * distance / this.#moveSpeed;
+    const duration = instant ? 0 : (1000 * distance) / (this.#moveSpeed * speed);
     const endTime = now + duration;
+    const extra = cutscene ? { duration } : { endTime };
 
     this.direction = direction || (instant || !this.canDirectTo(moveDirection) ? this.direction : moveDirection);
     /**
@@ -297,8 +301,22 @@ export class ServerObject {
         target: this.id,
         ...this.xyz,
         direction: this.direction,
-        endTime,
-        instant: !!instant,
+        ...extra,
+        speed,
+      },
+    };
+  }
+
+  /**
+   * @param {string[]} messages
+   * @return {import('../const/index.js').ServerMessage}
+   */
+  talk(...messages) {
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK,
+      data: {
+        target: this.id,
+        message: messages,
       },
     };
   }

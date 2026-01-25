@@ -1,6 +1,5 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { ShardForge } from '../shard/forge.js';
-import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 export const StageDirector = {
 
@@ -38,65 +37,6 @@ export const StageDirector = {
         },
       },
     });
-  },
-
-  /**
-   * @param {import('../object/index.js').ServerObject} target
-   * @param {{
-   *  x?: number,
-   *  y?: number,
-   *  z?: number,
-   *  speed?: 1 | 2 | 3,
-   *  direction?: import('@iyagi/commons/coords').Direction,
-   *  instant?: boolean;
-   * }} info
-   * @returns {import('../const/index.js').ServerMessage}
-   */
-  move(target, info) {
-    const lastXYZ = target.xyz;
-
-    if (typeof info.x === 'number') {
-      target.x = info.x;
-    }
-
-    if (typeof info.y === 'number') {
-      target.y = info.y;
-    }
-
-    if (typeof info.z === 'number') {
-      target.z = info.z;
-    }
-
-    target.direction = info.direction || (info.instant ? target.direction : getDirectionByDelta(lastXYZ, target));
-
-    /**
-     * @type {import('../const/index.js').ServerMessage}
-     */
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
-      data: {
-        target: target.id,
-        ...target.xyz,
-        direction: target.direction,
-        speed: info.speed,
-        instant: !!info.instant,
-      },
-    };
-  },
-
-  /**
-   * @param {import('../object/index.js').ServerObject} target
-   * @param {string[]} message
-   * @return {import('../const/index.js').ServerMessage}
-   */
-  talk(target, ...message) {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK,
-      data: {
-        target: target.id,
-        message: message,
-      },
-    };
   },
 
   /**
