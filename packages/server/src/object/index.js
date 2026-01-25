@@ -289,7 +289,7 @@ export class ServerObject {
     const distance = Math.hypot(diffX, diffY);
     const duration = instant ? 0 : (1000 * distance) / (this.#moveSpeed * speed);
     const endTime = now + duration;
-    const extra = cutscene ? { duration } : { endTime };
+    const extra = cutscene || duration === 0 ? { duration } : { endTime };
 
     this.direction = direction || (instant || !this.canDirectTo(moveDirection) ? this.direction : moveDirection);
     /**
