@@ -23,6 +23,10 @@
     "./time": {
       "import": "./src/time/index.js",
       "require": "./src/time/index.js"
+    },
+    "./debug": {
+      "import": "./src/debug/index.js",
+      "require": "./src/debug/index.js"
     }
   },
   "type": "module",
