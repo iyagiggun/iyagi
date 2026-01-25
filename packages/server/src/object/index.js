@@ -50,7 +50,7 @@ export class ServerObject {
 
   #z = 1;
 
-  #moveSpeed = DEFAULT_MOVE_SPEED;
+  #moveSpeed = DEFAULT_MOVE_SPEED; // pixels per second
 
   /**
    * @param {ServerObjectResource} r
@@ -243,7 +243,7 @@ export class ServerObject {
    * @param {number} param0.angle
    * @param {number} param0.duration ms
    */
-  nextPos({ angle, duration }) {
+  calcNextPos({ angle, duration }) {
     const distance = this.#moveSpeed * duration / MOVE_TIME_UNIT;
     return {
       x: this.#x + Math.cos(angle) * distance,
