@@ -8,11 +8,7 @@ import camera from '../camera/index.js';
  * @param {string} id
  */
 const find = (id) => {
-  const obj = client_object_manager.find(id);
-  if (!obj) {
-    throw new Error('Fail to find object.');
-  }
-  return obj;
+  return client_object_manager.find(id);
 };
 
 export const CLIENT_OBJECT_MESSAGE_HANDLER = {

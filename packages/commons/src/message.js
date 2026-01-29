@@ -13,6 +13,7 @@ export const BUILT_IN_SERVER_MESSAGE_TYPES = {
   EFFECT_JUMP: 'effect.jump',
   DEBUGGER_HIGHLIGHT: 'debugger.highlight',
   CAMERA_FOCUS: 'camera.focus',
+  CAMERA_FOLLOW: 'camera.follow',
 };
 
 export const BUILT_IN_CLIENT_MESSAGE_TYPES = {

@@ -1,6 +1,10 @@
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
 import { shard } from '../shard/index.js';
+import { client_object_manager } from '../object/manager.js';
+
+/** @type {import('../object/index.js').default | null} */
+let target = null;
 
 /**
  * @param {import('@iyagi/commons/coords').XY} xy
@@ -62,11 +66,25 @@ const point = (xy) => {
   const { x, y } = getContainerPos(xy);
   shard.container.x = x;
   shard.container.y = y;
+  return Promise.resolve();
+};
+
+/**
+ * @param {import('@iyagi/server/const/index.js').ServerMessage['data']} data
+ */
+const follow = (data) => {
+  target = client_object_manager.find(data.target);
+  return point(target.xyz);
 };
 
 export default {
-  /** @type {import('../object/index.js').default | null} */
-  target: null,
+  get target() {
+    return target;
+  },
+  set target(value) {
+    target = value;
+  },
   move,
+  follow,
   point,
 };
