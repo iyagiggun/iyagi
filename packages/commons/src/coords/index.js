@@ -71,12 +71,25 @@ export function getDirectionByAngle(angle) {
   return 'up';
 }
 /**
- * @param {XY} xy
- * @param {XYWH} area
- * @returns
+ * @param {XY} point
+ * @param {import('@iyagi/server/object/index.js').ServerObjectType} object
+ * @param {number} [threshold=0.7] - shape 크기 대비 비율 (0~1)
+ * @returns {boolean}
  */
-export function isIn(xy, area) {
-  return xy.x >= area.x && xy.x <= area.x + area.w && xy.y >= area.y && xy.y <= area.y + area.h;
+export function isIn(point, object, threshold = 0.7) {
+  const shape = object.shape;
+  const center = object.xyz;
+  if ('radius' in shape) {
+    // Circle - threshold 비율 영역 체크
+    const dx = point.x - center.x;
+    const dy = point.y - center.y;
+    const effectiveRadius = shape.radius * threshold;
+    return dx * dx + dy * dy <= effectiveRadius * effectiveRadius;
+  } else {
+    // Rectangle - threshold 비율 영역 체크
+    return Math.abs(point.x - center.x) <= shape.halfW * threshold &&
+           Math.abs(point.y - center.y) <= shape.halfH * threshold;
+  }
 }
 
 export * from './sweep.js';

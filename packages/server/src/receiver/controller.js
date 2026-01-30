@@ -1,5 +1,4 @@
-import { getDirectionByAngle, isOverlap, resolveXY } from '@iyagi/commons/coords';
-import { StageDirector } from '../director/stage.js';
+import { getDirectionByAngle, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
 
 export const ControllerReceiver = {
   /**
@@ -19,36 +18,34 @@ export const ControllerReceiver = {
       throw new Error('controller.move only supports circle area.');
     }
 
-    const nextXY = target.calcNextPos({ angle: data.angle, duration: 50 });
+    const start = target.xyz;
+    const dest = target.calcNextPos({ angle: data.angle, duration: 50 });
     const z = data.z ?? target.xyz.z;
 
     const obstacles = objects
       .filter((o) => o !== target && o.xyz.z === z)
       .map((o) => o.area);
 
-    const next = resolveXY(area, obstacles, nextXY);
-
     target.direction = data.direction || getDirectionByAngle(data.angle);
+    const next = resolveXY(area, obstacles, dest);
 
-    // TODO:: press 처리
-    // const after = target.xy;
-    // const pressed = objects.filter((o) => {
-    //   if (o.hitbox.z !== target.z - 1) {
-    //     return false;
-    //   }
-    //   if (!isIn(after, o.hitbox)) {
-    //     return false;
-    //   }
-    //   return !isIn(before, o.hitbox);
-    // });
+    const pressed = objects.filter((o) => {
+      if (o.xyz.z !== target.xyz.z - 1) {
+        return false;
+      }
+      if (isIn(start, o)) {
+        return false;
+      }
+      return isIn(next, o);
+    });
+
+    pressed.forEach((o) => {
+      o.pressed$.next(user);
+    });
 
     shard.sync([
       target.move({ ...next, direction: target.direction }),
     ]);
-
-    // pressed.forEach((o) => {
-    //   o.pressed$.next(user);
-    // });
   },
   /**
    * @param {import('../user/index.js').UserType} user
@@ -134,10 +131,9 @@ export const ControllerReceiver = {
 
     if (nearest.canDirectTo(interactDirection)) {
       // const rollbackDirection = nearest.direction;
-      const before = StageDirector
-        .move(nearest, {
-          direction: interactDirection,
-        });
+      const before = nearest.move({
+        direction: interactDirection,
+      });
       // const after = StageDirector
       //   .move(nearest, {
       //     direction: rollbackDirection,

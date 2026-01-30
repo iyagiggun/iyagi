@@ -128,13 +128,6 @@ export class ServerObject {
   /**
    * @readonly
    */
-  get xy() {
-    return { x: this.#x, y: this.#y };
-  }
-
-  /**
-   * @readonly
-   */
   get xyz() {
     return { x: this.#x, y: this.#y, z: this.#z };
   }
