@@ -233,14 +233,17 @@ export class ServerObject {
 
   /**
    * @param {object} param0
-   * @param {number} param0.angle
+   * @param {import('@iyagi/commons/coords').XY} param0.xy
    * @param {number} param0.duration ms
    */
-  calcNextPos({ angle, duration }) {
+  calcNextPos({ xy: { x, y }, duration }) {
     const distance = this.#moveSpeed * duration / MOVE_TIME_UNIT;
+    const length = Math.hypot(x, y);
+    const normalizedDx = length > 0 ? x / length : 0;
+    const normalizedDy = length > 0 ? y / length : 0;
     return {
-      x: this.#x + Math.cos(angle) * distance,
-      y: this.#y + Math.sin(angle) * distance,
+      x: this.#x + normalizedDx * distance,
+      y: this.#y + normalizedDy * distance,
     };
   }
 

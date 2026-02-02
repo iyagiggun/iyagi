@@ -1,4 +1,4 @@
-import { getDirectionByAngle, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
 
 export const ControllerReceiver = {
   /**
@@ -19,14 +19,14 @@ export const ControllerReceiver = {
     }
 
     const start = target.xyz;
-    const dest = target.calcNextPos({ angle: data.angle, duration: 50 });
+    const dest = target.calcNextPos({ xy: data.xy, duration: 50 });
     const z = data.z ?? target.xyz.z;
 
     const obstacles = objects
       .filter((o) => o !== target && o.xyz.z === z)
       .map((o) => o.area);
 
-    target.direction = data.direction || getDirectionByAngle(data.angle);
+    target.direction = data.direction ?? getDirectionByDelta(start, dest);
     const next = resolveXY(area, obstacles, dest);
 
     const pressed = objects.filter((o) => {

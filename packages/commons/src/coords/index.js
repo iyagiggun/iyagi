@@ -84,12 +84,46 @@ export function isIn(point, object, threshold = 0.7) {
     const dx = point.x - center.x;
     const dy = point.y - center.y;
     const effectiveRadius = shape.radius * threshold;
-    return dx * dx + dy * dy <= effectiveRadius * effectiveRadius;
+    return dx ** 2 + dy ** 2 <= effectiveRadius ** 2;
   } else {
     // Rectangle - threshold 비율 영역 체크
     return Math.abs(point.x - center.x) <= shape.halfW * threshold &&
            Math.abs(point.y - center.y) <= shape.halfH * threshold;
   }
 }
+
+
+/**
+ * @param {object} param0
+ * @param {import("@iyagi/commons/coords").XY} param0.position
+ * @param {import("@iyagi/commons/coords").Direction} param0.direction
+ * @param {number} param0.distance
+ * @return {import("@iyagi/commons/coords").XY}
+ */
+export const getPositionInDirection = ({
+  position,
+  direction,
+  distance,
+}) => {
+  switch (direction) {
+    case 'up': return {
+      x: position.x,
+      y: position.y - distance,
+    };
+    case 'down': return {
+      x: position.x,
+      y: position.y + distance,
+    };
+    case 'left': return {
+      x: position.x - distance,
+      y: position.y,
+    };
+    case 'right': return {
+      x: position.x + distance,
+      y: position.y,
+    };
+    default: throw new Error(`Unknown direction ${direction}`);
+  }
+};
 
 export * from './sweep.js';
