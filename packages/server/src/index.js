@@ -1,5 +1,5 @@
 import { ShardForge } from './shard/forge.js';
 import { Shard } from './shard/index.js';
-import { ServerReceiver } from './receiver/index.js';
+import { ServerHandler } from './handler/index.js';
 
-export { ServerReceiver, ShardForge, Shard };
+export { ServerHandler, ShardForge, Shard };

@@ -55,22 +55,6 @@ export function getDirectionByDelta(before, after) {
 };
 
 /**
- * @param {number} angle
- */
-export function getDirectionByAngle(angle) {
-  const normalizedAngle = (angle % 360 + 360) % 360;
-  if (normalizedAngle < 45 || normalizedAngle >= 315) {
-    return 'right';
-  }
-  if (normalizedAngle >= 45 && normalizedAngle < 135) {
-    return 'down';
-  }
-  if (normalizedAngle >= 135 && normalizedAngle < 225) {
-    return 'left';
-  }
-  return 'up';
-}
-/**
  * @param {XY} point
  * @param {import('@iyagi/server/object/index.js').ServerObjectType} object
  * @param {number} [threshold=0.7] - shape 크기 대비 비율 (0~1)

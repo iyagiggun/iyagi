@@ -9,7 +9,7 @@ import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
  * }} ClientPayload
  */
 
-export class ServerReceiver {
+export class ServerHandler {
   /**
    * @param {ClientPayload} payload
    */
@@ -28,7 +28,7 @@ export class ServerReceiver {
         ControllerReceiver.action(user, message);
         return;
       default:
-        console.error('server recieve unknown message', message);
+        console.error('server receive unknown message', message);
     }
   }
 }
