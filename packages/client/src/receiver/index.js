@@ -1,9 +1,9 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { shard } from '../shard';
-import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/operator';
-import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect';
-import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debug/handler';
-import camera from '../camera';
+import { shard } from '../shard/index.js';
+import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
+import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/handler.js';
+import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debug/handler.js';
+import camera from '../camera/index.js';
 
 const BASIC_HANDLER_MAP = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
