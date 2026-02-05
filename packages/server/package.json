@@ -40,9 +40,9 @@
       "import": "./src/shard/index.js",
       "require": "./src/shard/index.js"
     },
-    "./receiver": {
-      "import": "./src/receiver/index.js",
-      "require": "./src/receiver/index.js"
+    "./handler": {
+      "import": "./src/handler/index.js",
+      "require": "./src/handler/index.js"
     }
   },
   "type": "module",
