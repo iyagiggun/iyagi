@@ -12,13 +12,4 @@ export const CLIENT_CAMERA_MESSAGE_HANDLER = {
      * @param {import('@iyagi/server/const').ServerMessage} message
      */
     (message) => camera.follow(message.data),
-  [BUILT_IN_SERVER_MESSAGE_TYPES.WAIT]:
-    /**
-     * @param {import('@iyagi/server/const').ServerMessage} message
-     */
-    (message) => {
-      return new Promise((resolve) => {
-        setTimeout(resolve, message.data.delay);
-      });
-    },
 };
