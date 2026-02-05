@@ -28,4 +28,11 @@ export const ServerHandler = {
     }
     handler(user, message);
   },
+  /**
+   * @param {string} type
+   * @param {*} handler
+   */
+  register(type, handler) {
+    map.set(type, handler);
+  },
 };
