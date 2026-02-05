@@ -1,11 +1,12 @@
 import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
+import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
 
-export const ControllerReceiver = {
+export const ControllerHandler = {
   /**
    * @param {import('../user/index.js').UserType} user
    * @param {*} message
    */
-  move: (user, message) => {
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE]: (user, message) => {
     const shard = user.shard;
     const objects = shard.objects;
     const data = message.data;
@@ -51,7 +52,7 @@ export const ControllerReceiver = {
    * @param {import('../user/index.js').UserType} user
    * @param {*} message
    */
-  interact: (user, message) => {
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION]: (user, message) => {
     const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.target);
@@ -147,7 +148,7 @@ export const ControllerReceiver = {
    * @param {import('../user/index.js').UserType} user
    * @param {*} message
    */
-  action: (user, message) => {
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_ACTION]: (user, message) => {
     const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.id);
