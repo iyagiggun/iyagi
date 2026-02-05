@@ -323,4 +323,5 @@ export { NAI };
 
 /**
  * @typedef { ServerObject } ServerObjectType
+ * @typedef { ServerObjectResource } ServerObjectResourceType
  */

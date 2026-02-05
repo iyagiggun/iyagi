@@ -17,7 +17,7 @@ export const CLIENT_OBJECT_CONTAINER_LABEL = {
  *  id: string
  *  name?: string
  *  texture: import('./texture.js').default
- *  sprite: ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>['sprite']
+ *  sprite: ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>['sprite']
  *  portrait: import('./portrait.js').PortraitType
  * }} ClientObjectParams
  */
