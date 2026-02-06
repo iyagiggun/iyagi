@@ -21,6 +21,6 @@ export const BUILT_IN_CLIENT_MESSAGE_TYPES = {
   SHARD_LOADED: 'shard.loaded',
   // OBJECT_MOVE: 'object.move',
   CONTROLLER_MOVE: 'controller.move',
-  CONTROLLER_INTERACTION: 'controller.interaction',
+  CONTROLLER_INTERACT: 'controller.interact',
   CONTROLLER_ACTION: 'controller.action',
 };

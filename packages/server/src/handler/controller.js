@@ -52,7 +52,7 @@ export const ControllerHandler = {
    * @param {import('../user/index.js').UserType} user
    * @param {*} message
    */
-  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACTION]: (user, message) => {
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACT]: (user, message) => {
     const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.target);
