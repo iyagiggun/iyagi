@@ -2,7 +2,7 @@ import global from './global/index.js';
 import { ObjectConverter } from './object/converter.js';
 import imessenger from './messenger/imessenger.js';
 import sender from './sender/index.js';
-import reciever from './receiver/index.js';
+import handler from './handler/index.js';
 
 global.messenger = imessenger;
 
@@ -16,7 +16,7 @@ const iclient = {
   async init({ websocket }) {
 
     sender.init(websocket);
-    reciever.init(websocket);
+    handler.init(websocket);
 
     await global.init();
 

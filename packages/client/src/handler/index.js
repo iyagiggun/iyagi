@@ -29,7 +29,7 @@ const BASIC_HANDLER_MAP = {
     },
 };
 
-const reciever = {
+const handler = {
   /**
    * @param {WebSocket} ws
    */
@@ -54,4 +54,4 @@ const reciever = {
   },
 };
 
-export default reciever;
+export default handler;
