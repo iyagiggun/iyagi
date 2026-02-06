@@ -1,5 +1,46 @@
-import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByDelta, isIn, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
+
+/**
+ * @param {import('../object/index.js').ServerObjectType} target
+ */
+const getInteractPosition = (target, threshold = 10) => {
+  const area = target.area;
+  const direction = target.direction;
+
+  if ('radius' in area) {
+    const { x, y, radius } = area;
+    switch (direction) {
+      case 'up':
+        return { x, y: y - radius - threshold };
+      case 'down':
+        return { x, y: y + radius + threshold };
+      case 'left':
+        return { x: x - radius - threshold, y };
+      case 'right':
+        return { x: x + radius + threshold, y };
+      default:
+        throw new Error('Invalid direction.');
+    }
+  }
+
+  if ('left' in area && 'right' in area && 'top' in area && 'bottom' in area) {
+    switch (direction) {
+      case 'up':
+        return { x: (area.left + area.right) / 2, y: area.top - threshold };
+      case 'down':
+        return { x: (area.left + area.right) / 2, y: area.bottom + threshold };
+      case 'left':
+        return { x: area.left - threshold, y: (area.top + area.bottom) / 2 };
+      case 'right':
+        return { x: area.right + threshold, y: (area.top + area.bottom) / 2 };
+      default:
+        throw new Error('Invalid direction.');
+    }
+  }
+
+  throw new Error('Unknown area type.');
+};
 
 export const ControllerHandler = {
   /**
@@ -61,59 +102,18 @@ export const ControllerHandler = {
       return;
     }
 
-    const interactionArea = (() => {
-      const hitbox = target.hitbox ?? { ...target, w: 0, h: 0 };
-      const {
-        x, y, w, h,
-      } = hitbox;
-      switch (target.direction) {
-        case 'up':
-          return {
-            x, y: y - 5, w, h: h + 5,
-          };
-        case 'down':
-          return {
-            x, y, w, h: h + 5,
-          };
-        case 'left':
-          return {
-            x: x - 5, y, w: w + 5, h,
-          };
-        case 'right':
-          return {
-            x, y, w: w + 5, h,
-          };
-        default:
-          throw new Error('Invalid direction.');
-      }
-    })();
+    const checkPos = getInteractPosition(target);
 
-    const interactables = objects.filter((object) => {
+    const interectable = objects.find((object) => {
       return object !== target
         && object.xyz.z === target.xyz.z
-        && isOverlap(object.hitbox, interactionArea);
+        && object.interaction$.observed
+        && isIn(checkPos, object);
     });
 
-    if (interactables.length === 0) {
+    if (!interectable) {
       return;
     }
-
-    const interactionAreaCenter = {
-      x: interactionArea.x + interactionArea.w / 2,
-      y: interactionArea.y + interactionArea.h / 2,
-    };
-
-    const nearest = interactables.reduce((most, current) => {
-      const mostDistance = Math.hypot(
-        most.center().x - interactionAreaCenter.x,
-        most.center().y - interactionAreaCenter.y
-      );
-      const currentDistance = Math.hypot(
-        current.center().x - interactionAreaCenter.x,
-        current.center().y - interactionAreaCenter.y
-      );
-      return currentDistance < mostDistance ? current : most;
-    });
 
     const interactDirection = (() => {
       switch (target.direction) {
@@ -130,9 +130,9 @@ export const ControllerHandler = {
       }
     })();
 
-    if (nearest.canDirectTo(interactDirection)) {
+    if (interectable.canDirectTo(interactDirection)) {
       // const rollbackDirection = nearest.direction;
-      const before = nearest.move({
+      const before = interectable.move({
         direction: interactDirection,
       });
       // const after = StageDirector
@@ -142,7 +142,7 @@ export const ControllerHandler = {
       user.send([before]);
     }
 
-    nearest.interaction$.next(user);
+    interectable.interaction$.next(user);
   },
   /**
    * @param {import('../user/index.js').UserType} user

@@ -30,9 +30,6 @@ export class ServerObject {
   /** @type {string | undefined} */
   #name;
 
-  // hitbox 는 한 개가 맞음. 여러개면 object 의 z-index 처리가 매우 어려워짐
-  #absHitbox;
-
   #sprite;
 
   #motion = MOTION_BASE;
@@ -71,7 +68,6 @@ export class ServerObject {
     if (o?.direction) {
       this.#direction = o.direction;
     }
-    this.#absHitbox = this.#calcAbsHitbox();
     this.#portraits = o?.portraits;
 
     /**
@@ -116,18 +112,6 @@ export class ServerObject {
   /**
    * @readonly
    */
-  get hitbox() {
-    return {
-      ...this.#absHitbox,
-      x: this.#x,
-      y: this.#y,
-      z: this.#z,
-    };
-  }
-
-  /**
-   * @readonly
-   */
   get xyz() {
     return { x: this.#x, y: this.#y, z: this.#z };
   }
@@ -165,7 +149,6 @@ export class ServerObject {
       return;
     }
     this.#direction = next;
-    // this.#absHitbox = this.#calcAbsHitbox();
   }
 
   /**
@@ -175,33 +158,6 @@ export class ServerObject {
     const motion = this.#sprite.motions[this.#motion];
     if (!motion) return false;
     return !!motion[direction];
-  }
-
-  #calcAbsHitbox() {
-    const motion = this.#sprite.motions[this.#motion];
-    const directedMotion = motion[this.#direction];
-    const hitbox = directedMotion?.hitbox ?? motion.hitbox ?? this.#sprite.hitbox;
-    if (hitbox) {
-      return hitbox;
-    }
-    if (!directedMotion) {
-      throw new Error('no directed motion.');
-    }
-    const { w, h } = directedMotion.frames[0];
-    return {
-      x: 0,
-      y: 0,
-      w,
-      h,
-    };
-  }
-
-  center() {
-    const { w, h } = this.#absHitbox;
-    return {
-      x: this.#x + w / 2,
-      y: this.#y + h / 2,
-    };
   }
 
   get motion() {
@@ -216,7 +172,6 @@ export class ServerObject {
       throw new Error('no motion.');
     }
     this.#motion = next;
-    this.#absHitbox = this.#calcAbsHitbox();
   }
 
   toClientData() {
