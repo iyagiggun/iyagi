@@ -106,8 +106,8 @@ export const ControllerHandler = {
 
     const interectable = objects.find((object) => {
       return object !== target
-        && object.xyz.z === target.xyz.z
         && object.interaction$.observed
+        && object.xyz.z === target.xyz.z
         && isIn(checkPos, object);
     });
 
