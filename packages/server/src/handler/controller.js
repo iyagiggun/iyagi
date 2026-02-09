@@ -145,14 +145,9 @@ export const ControllerHandler = {
     })();
 
     if (interactable.canDirectTo(interactDirection)) {
-      // const rollbackDirection = nearest.direction;
       const before = interactable.move({
         direction: interactDirection,
       });
-      // const after = StageDirector
-      //   .move(nearest, {
-      //     direction: rollbackDirection,
-      //   });
       user.send([before]);
     }
 

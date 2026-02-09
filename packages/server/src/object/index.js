@@ -203,6 +203,24 @@ export class ServerObject {
   }
 
   /**
+   *
+   * @param {Direction} direction
+   * @returns {import('../const/index.js').ServerMessage}
+   */
+  direct(direction) {
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
+      data: {
+        target: this.id,
+        ...this.xyz,
+        direction,
+        duration: 0,
+        speed: 1,
+      },
+    };
+  }
+
+  /**
    * @param {object} param
    * @param {number} [param.x]
    * @param {number} [param.y]
