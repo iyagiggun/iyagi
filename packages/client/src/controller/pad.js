@@ -17,7 +17,7 @@ export default class Pad {
   #gestureList = [];
 
   /**
-   * @type {import('@iyagi/commons').XY | null}
+   * @type {import('@iyagi/commons/coords').XY | null}
    */
   #last = null;
 
@@ -37,16 +37,14 @@ export default class Pad {
   }) {
     this.#container = container;
 
-    fromEvent(this.#container, 'touchmove')
+    /** @type {import('rxjs').Observable<import('pixi.js').FederatedPointerEvent>} */
+    (fromEvent(this.#container, 'touchmove'))
       .pipe(
         filter(() => this.#pointerId !== -1),
         throttleTime(50)
       )
       .subscribe(
-        /**
-         * @param {import('pixi.js').FederatedPointerEvent} evt
-         */
-        ({ global: { x, y } }) => this.#check({ x, y })
+        ({ global }) => this.#check(global)
       );
   }
 
@@ -58,7 +56,7 @@ export default class Pad {
   }
 
   /**
- * @param {import('@iyagi/commons').XY} cur
+ * @param {import('@iyagi/commons/coords').XY} cur
  */
   #check(cur) {
     if (!this.#last) {

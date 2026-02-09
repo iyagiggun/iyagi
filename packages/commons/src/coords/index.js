@@ -18,6 +18,40 @@
  * @typedef {'up' | 'down' | 'left' | 'right' } Direction
  */
 
+/**
+ * @typedef {object} CircleShape
+ * @property {number} radius
+ */
+
+/**
+ * @typedef {object} RectShape
+ * @property {number} halfW
+ * @property {number} halfH
+ */
+
+/**
+ * @typedef {CircleShape | RectShape} Shape
+ */
+
+/**
+ * @typedef {object} CircleArea
+ * @property {number} x
+ * @property {number} y
+ * @property {number} radius
+ */
+
+/**
+ * @typedef {object} RectArea
+ * @property {number} left
+ * @property {number} right
+ * @property {number} top
+ * @property {number} bottom
+ */
+
+/**
+ * @typedef {CircleArea | RectArea} Area
+ */
+
 export const Z_MAX = 999;
 export const Z_LAYER = Z_MAX + 1;
 
@@ -30,15 +64,39 @@ export function easeInOutSine(t) {
 }
 
 /**
- * @param {XYWH} areaA
- * @param {XYWH} areaB
- * @returns
+ * @param {Area} areaA
+ * @param {Area} areaB
+ * @returns {boolean}
  */
 export function isOverlap(areaA, areaB) {
-  return !(areaA.x + areaA.w <= areaB.x ||
-           areaA.x >= areaB.x + areaB.w ||
-           areaA.y + areaA.h <= areaB.y ||
-           areaA.y >= areaB.y + areaB.h);
+  const isCircle = (/** @type {Area} */ a) => 'radius' in a;
+
+  if (isCircle(areaA) && isCircle(areaB)) {
+    const a = /** @type {CircleArea} */ (areaA);
+    const b = /** @type {CircleArea} */ (areaB);
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const dist = a.radius + b.radius;
+    return dx ** 2 + dy ** 2 <= dist ** 2;
+  }
+
+  if (!isCircle(areaA) && !isCircle(areaB)) {
+    const a = /** @type {RectArea} */ (areaA);
+    const b = /** @type {RectArea} */ (areaB);
+    return !(a.right <= b.left || a.left >= b.right ||
+      a.bottom <= b.top || a.top >= b.bottom);
+  }
+
+  // circle vs rect
+  const circle = /** @type {CircleArea} */ (isCircle(areaA) ? areaA : areaB);
+  const rect = /** @type {RectArea} */ (isCircle(areaA) ? areaB : areaA);
+
+  const closestX = Math.max(rect.left, Math.min(circle.x, rect.right));
+  const closestY = Math.max(rect.top, Math.min(circle.y, rect.bottom));
+
+  const dx = circle.x - closestX;
+  const dy = circle.y - closestY;
+  return dx ** 2 + dy ** 2 <= circle.radius ** 2;
 }
 
 /**
@@ -72,7 +130,7 @@ export function isIn(point, object, threshold = 0.7) {
   } else {
     // Rectangle - threshold 비율 영역 체크
     return Math.abs(point.x - center.x) <= shape.halfW * threshold &&
-           Math.abs(point.y - center.y) <= shape.halfH * threshold;
+      Math.abs(point.y - center.y) <= shape.halfH * threshold;
   }
 }
 

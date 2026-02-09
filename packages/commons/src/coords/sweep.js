@@ -1,50 +1,3 @@
-/**
- * @typedef {object} CircleShape
- * @property {number} radius
- */
-
-/**
- * @typedef {object} RectShape
- * @property {number} halfW
- * @property {number} halfH
- */
-
-/**
- * @typedef {CircleShape | RectShape} Shape
- */
-
-/**
- * @typedef {object} CircleArea
- * @property {number} x
- * @property {number} y
- * @property {number} radius
- */
-
-/**
- * @typedef {object} RectArea
- * @property {number} left
- * @property {number} right
- * @property {number} top
- * @property {number} bottom
- */
-
-/**
- * @typedef {CircleArea | RectArea} Area
- */
-
-/**
- * @param {number} start
- * @param {number} dest
- * @param {number} min
- * @param {number} max
- * @returns 점이 선형이동 할 때 좌표가 [min, max] 구간에 들어가는 t의 범위 [tmin, tmax],
- */
-// const slab = (start, dest, min, max) => {
-//   if (dest === 0) return start < min || start > max ? null : [-Infinity, Infinity];
-//   const t1 = (min - start) / dest;
-//   const t2 = (max - start) / dest;
-//   return [Math.min(t1, t2), Math.max(t1, t2)];
-// };
 
 const EPS = 1e-6;
 
@@ -61,8 +14,8 @@ const normalize = (x, y) => {
 };
 
 /**
- * @param {CircleArea} mover
- * @param {CircleArea} target
+ * @param {import(".").CircleArea} mover
+ * @param {import(".").CircleArea} target
  * @param {number} dx
  * @param {number} dy
  */
@@ -91,6 +44,14 @@ function resolveCircleCircle(mover, target, dx, dy) {
   };
 }
 
+/**
+ *
+ * @param {import(".").CircleArea} mover
+ * @param {import(".").RectArea} rect
+ * @param {number} dx
+ * @param {number} dy
+ * @returns
+ */
 function resolveCircleRect(mover, rect, dx, dy) {
   const nx = mover.x + dx;
   const ny = mover.y + dy;
@@ -121,8 +82,8 @@ function resolveCircleRect(mover, rect, dx, dy) {
 }
 
 /**
- * @param {CircleArea} mover
- * @param {Area[]} obstacles
+ * @param {import(".").CircleArea} mover
+ * @param {import(".").Area[]} obstacles
  * @param {import(".").XY} dest
  */
 export const resolveXY = (mover, obstacles, dest) => {

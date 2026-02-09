@@ -2,7 +2,7 @@
 /**
  * @typedef {{
  *  container: import('pixi.js').Container;
- *  start: import('@iyagi/commons').XY;
+ *  start: import('@iyagi/commons/coords').XY;
  *  pointerId: number;
  * }} JoystickInfo
  */
@@ -25,14 +25,14 @@ export default class Joystick {
 
   #start = { x: 0, y: 0 };
 
-  #delta = { x:0 , y: 0 };
+  #delta = { x: 0, y: 0 };
 
   #rate;
 
   #intervalId = 0;
 
   /**
-   * @type { Subject<import('@iyagi/commons').XY> }
+   * @type { Subject<import('@iyagi/commons/coords').XY> }
    */
   move$ = new Subject();
 
@@ -115,7 +115,7 @@ export default class Joystick {
   /**
    * @param {{
    *  pointerId: number;
-   *  start: import('@iyagi/commons').XY;
+   *  start: import('@iyagi/commons/coords').XY;
    * }} p
    */
   activate({
@@ -154,7 +154,7 @@ export default class Joystick {
       return;
     }
     window.clearInterval(this.#intervalId);
-    if (performance.now() - this.#activateTime < 200 && Math.abs(this.#delta.x) < 5 && Math.abs(this.#delta.y) < 5) {
+    if (performance.now() - this.#activateTime < 500 && Math.abs(this.#delta.x) < 5 && Math.abs(this.#delta.y) < 5) {
       this.tap$.next();
     }
     this.#pointerId = null;

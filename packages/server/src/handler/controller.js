@@ -1,10 +1,12 @@
-import { getDirectionByDelta, isIn, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
+
+
 
 /**
  * @param {import('../object/index.js').ServerObjectType} target
  */
-const getInteractPosition = (target, threshold = 10) => {
+const getInteractArea = (target, radius = 10) => {
   const area = target.area;
   const direction = target.direction;
 
@@ -12,13 +14,13 @@ const getInteractPosition = (target, threshold = 10) => {
     const { x, y, radius } = area;
     switch (direction) {
       case 'up':
-        return { x, y: y - radius - threshold };
+        return { x, y: y - radius - radius, radius };
       case 'down':
-        return { x, y: y + radius + threshold };
+        return { x, y: y + radius + radius, radius };
       case 'left':
-        return { x: x - radius - threshold, y };
+        return { x: x - radius - radius, y, radius };
       case 'right':
-        return { x: x + radius + threshold, y };
+        return { x: x + radius + radius, y, radius };
       default:
         throw new Error('Invalid direction.');
     }
@@ -27,13 +29,13 @@ const getInteractPosition = (target, threshold = 10) => {
   if ('left' in area && 'right' in area && 'top' in area && 'bottom' in area) {
     switch (direction) {
       case 'up':
-        return { x: (area.left + area.right) / 2, y: area.top - threshold };
+        return { x: (area.left + area.right) / 2, y: area.top - radius, radius };
       case 'down':
-        return { x: (area.left + area.right) / 2, y: area.bottom + threshold };
+        return { x: (area.left + area.right) / 2, y: area.bottom + radius, radius };
       case 'left':
-        return { x: area.left - threshold, y: (area.top + area.bottom) / 2 };
+        return { x: area.left - radius, y: (area.top + area.bottom) / 2, radius };
       case 'right':
-        return { x: area.right + threshold, y: (area.top + area.bottom) / 2 };
+        return { x: area.right + radius, y: (area.top + area.bottom) / 2, radius };
       default:
         throw new Error('Invalid direction.');
     }
@@ -102,18 +104,30 @@ export const ControllerHandler = {
       return;
     }
 
-    const checkPos = getInteractPosition(target);
+    const interactArea = getInteractArea(target);
 
-    const interectable = objects.find((object) => {
+    const interactables = objects.filter((object) => {
       return object !== target
         && object.interaction$.observed
         && object.xyz.z === target.xyz.z
-        && isIn(checkPos, object);
+        && isOverlap(interactArea, object.area);
     });
 
-    if (!interectable) {
+    if (interactables.length > 0 === false) {
       return;
     }
+
+    const interactable = interactables.reduce((closest, current) => {
+      const closestDist = Math.hypot(
+        closest.xyz.x - interactArea.x,
+        closest.xyz.y - interactArea.y
+      );
+      const currentDist = Math.hypot(
+        current.xyz.x - interactArea.x,
+        current.xyz.y - interactArea.y
+      );
+      return currentDist < closestDist ? current : closest;
+    });
 
     const interactDirection = (() => {
       switch (target.direction) {
@@ -130,9 +144,9 @@ export const ControllerHandler = {
       }
     })();
 
-    if (interectable.canDirectTo(interactDirection)) {
+    if (interactable.canDirectTo(interactDirection)) {
       // const rollbackDirection = nearest.direction;
-      const before = interectable.move({
+      const before = interactable.move({
         direction: interactDirection,
       });
       // const after = StageDirector
@@ -142,7 +156,7 @@ export const ControllerHandler = {
       user.send([before]);
     }
 
-    interectable.interaction$.next(user);
+    interactable.interaction$.next(user);
   },
   /**
    * @param {import('../user/index.js').UserType} user
@@ -160,3 +174,4 @@ export const ControllerHandler = {
     target.action$.next({ user, input: data.input });
   },
 };
+
