@@ -70,7 +70,7 @@ const point = (xy) => {
 };
 
 /**
- * @param {import('@iyagi/server/const/index.js').ServerMessage['data']} data
+ * @param {import('@iyagi/server/const').ServerMessage['data']} data
  */
 const follow = (data) => {
   target = client_object_manager.find(data.target);

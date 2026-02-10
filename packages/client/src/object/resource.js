@@ -1,4 +1,4 @@
-import { ObjectConverter } from './converter.js';
+import { ClientObjectClass } from './index.js';
 import { Portrait } from './portrait.js';
 import ITexture from './texture.js';
 
@@ -13,7 +13,7 @@ class ObjectResource {
   #texture;
 
   /**
-   * @param {ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>['sprite']} sprite
+   * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>['sprite']} sprite
    */
   constructor(sprite) {
     this.#sprite = sprite;
@@ -38,7 +38,7 @@ class ObjectResource {
     if (cached) {
       return cached;
     }
-    const created = ObjectConverter.convert({
+    const created = new (ClientObjectClass.get())({
       id,
       name: options?.name,
       texture: this.#texture,

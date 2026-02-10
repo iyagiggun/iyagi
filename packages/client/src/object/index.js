@@ -77,7 +77,6 @@ export default class ClientObject {
         color: 0x000000,
         alpha: 0.4,
       });
-      console.error(sprite.offset);
       shadow.x = sprite.shadow.x + this.#offset.x;
       shadow.y = sprite.shadow.y + this.#offset.y;
 
@@ -328,3 +327,17 @@ export default class ClientObject {
     }
   }
 }
+
+let clientClassPointer = ClientObject;
+
+export const ClientObjectClass = {
+  get() {
+    return clientClassPointer;
+  },
+  /**
+   * @param {typeof ClientObject} next
+   */
+  set(next) {
+    clientClassPointer = next;
+  },
+};

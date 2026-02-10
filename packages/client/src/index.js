@@ -1,8 +1,8 @@
 import global from './global/index.js';
-import { ObjectConverter } from './object/converter.js';
 import imessenger from './messenger/imessenger.js';
 import sender from './sender/index.js';
 import handler from './handler/index.js';
+import { ClientObjectClass } from './object/index.js';
 
 global.messenger = imessenger;
 
@@ -51,14 +51,11 @@ const iclient = {
   },
 
   object: {
-    get converter() {
-      return ObjectConverter.convert;
+    get class() {
+      return ClientObjectClass.get();
     },
-    /**
-     * @param {*} next;
-     */
-    set converter(next) {
-      ObjectConverter.set(next);
+    set class(next) {
+      ClientObjectClass.set(next);
     },
   },
 };

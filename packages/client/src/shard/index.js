@@ -24,8 +24,8 @@ const load = async (message) => {
   /**
    * @type {{
    *  shard: {
-   *   resources: ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>[],
-   *   objects: ReturnType<import('@iyagi/server/object/index.js').ServerObject['toClientData']>[]
+   *   resources: ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>[],
+   *   objects: ReturnType<import('@iyagi/server/object').ServerObjectType['toClientData']>[]
    *  }
    * }}
    */
@@ -33,7 +33,7 @@ const load = async (message) => {
 
   await Promise.all(data.shard.resources.map(
     /**
-       * @param {ReturnType<import('@iyagi/server/object/resource.js').ServerObjectResource['toClientData']>} r
+       * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>} r
        */
     (r) => {
       const cached = resource_pool.get(r.key);
@@ -48,7 +48,7 @@ const load = async (message) => {
 
   await Promise.all(data.shard.objects.map(
     /**
-     * @param {ReturnType<import('@iyagi/server/object/index.js').ServerObject['toClientData']>} info
+     * @param {ReturnType<import('@iyagi/server/object').ServerObjectType['toClientData']>} info
      */
     (info) => {
       const resource = resource_pool.get(info.resource);
