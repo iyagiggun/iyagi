@@ -32,7 +32,7 @@ const toContainer = (target) => {
 
 export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   /**
-   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const').ServerMessage} param0
    */
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ data }) => {
     const ticker = global.app.ticker;
@@ -52,7 +52,7 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const').ServerMessage} param0
    */
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ data }) => {
     const ticker = global.app.ticker;
@@ -71,29 +71,31 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
     });
   },
   /**
-   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const').ServerMessage} param0
    */
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ data }) => {
     const ticker = global.app.ticker;
     const container = toContainer(data.target);
 
-    console.error(data);
-    console.error(container);
-
     return new Promise((resolve) => {
+
+      const beforeX = container.x;
+
+      let idx = 0;
       const process = () => {
-        container.x += (Math.random() - 0.5) * 10;
-        container.y += (Math.random() - 0.5) * 10;
+        container.x = beforeX + (idx % 2 === 0 ? 1 : -1);
+        idx++;
       };
       ticker.add(process);
       setTimeout(() => {
         ticker.remove(process);
+        container.x = beforeX;
         resolve();
-      }, data.duration || 1000);
+      }, data.duration || 100);
     });
   },
   /**
-   * @param {import('@iyagi/server/const/index.js').ServerMessage} param0
+   * @param {import('@iyagi/server/const').ServerMessage} param0
    */
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: ({ data }) => {
     const ticker = global.app.ticker;

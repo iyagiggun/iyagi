@@ -315,6 +315,25 @@ export class ServerObject {
       },
     };
   }
+
+  /**
+   * @param {string} motion
+   * @param {object} [options]
+   * @param {number} [options.speed]
+   */
+  perform(motion, options = {}) {
+    this.motion = motion;
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION,
+      data: {
+        target: this.id,
+        motion,
+        options: {
+          speed: options.speed,
+        },
+      },
+    };
+  }
 }
 
 export { ServerObjectResource };
