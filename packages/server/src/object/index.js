@@ -123,23 +123,11 @@ export class ServerObject {
    * @return {import('@iyagi/commons/coords').Area}
    */
   get area() {
-    if ('radius' in this.#shape) {
-      return {
-        x: this.#x,
-        y: this.#y,
-        radius: this.#shape.radius,
-      };
-    }
-    if ('halfW' in this.#shape && 'halfH' in this.#shape) {
-      const { halfW, halfH } = this.#shape;
-      return {
-        left: this.#x - halfW,
-        right: this.#x + halfW,
-        top: this.#y - halfH,
-        bottom: this.#y + halfH,
-      };
-    }
-    throw new Error('invalid shape');
+    return {
+      x: this.#x,
+      y: this.#y,
+      ...this.#shape,
+    };
   }
 
   get direction() {
@@ -275,13 +263,13 @@ export class ServerObject {
     let diffY = 0;
 
     if (typeof x === 'number') {
-      this.#x = x;
-      diffX = x - lastXYZ.x;
+      this.#x = Math.round(x);
+      diffX = this.#x - lastXYZ.x;
     }
 
     if (typeof y === 'number') {
-      this.#y = y;
-      diffY = y - lastXYZ.y;
+      this.#y = Math.round(y);
+      diffY = this.#y - lastXYZ.y;
     }
 
     if (typeof z === 'number') {

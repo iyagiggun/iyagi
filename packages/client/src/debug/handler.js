@@ -21,19 +21,15 @@ export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
         color: 0xff0000,
         alpha: 0.4,
       });
-      graphics.x = x - radius;
-      graphics.y = y - radius;
     } else if ('halfW' in area && 'halfH' in area) {
       const { x, y, halfW, halfH } = area;
       const w = halfW * 2;
       const h = halfH * 2;
-      graphics.rect(0, 0, w, h);
+      graphics.rect(x - halfW, y - halfH, w, h);
       graphics.fill({
         color: 0xff0000,
         alpha: 0.4,
       });
-      graphics.x = x - halfW;
-      graphics.y = y - halfH;
     }
 
     graphics.zIndex = Number.MAX_SAFE_INTEGER;
