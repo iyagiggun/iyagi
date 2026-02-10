@@ -151,15 +151,6 @@ export class ServerObject {
     this.#direction = next;
   }
 
-  /**
-   * @param {Direction} direction
-   */
-  canDirectTo(direction) {
-    const motion = this.#sprite.motions[this.#motion];
-    if (!motion) return false;
-    return !!motion[direction];
-  }
-
   get motion() {
     return this.#motion;
   }
@@ -172,6 +163,52 @@ export class ServerObject {
       throw new Error('no motion.');
     }
     this.#motion = next;
+  }
+
+  /**
+   * @param {number} padding
+   */
+  getFrontPosition(padding = 0) {
+    if ('radius' in this.shape) {
+      const distance = this.shape.radius;
+      switch (this.#direction) {
+        case 'up':
+          return { x: this.#x, y: this.#y - distance - padding };
+        case 'down':
+          return { x: this.#x, y: this.#y + distance + padding };
+        case 'left':
+          return { x: this.#x - distance - padding, y: this.#y };
+        case 'right':
+          return { x: this.#x + distance + padding, y: this.#y };
+        default:
+          throw new Error('Invalid direction.');
+      }
+    }
+    if ('halfW' in this.shape && 'halfH' in this.shape) {
+      const { halfW, halfH } = this.shape;
+      switch (this.#direction) {
+        case 'up':
+          return { x: this.#x, y: this.#y - halfH - padding };
+        case 'down':
+          return { x: this.#x, y: this.#y + halfH + padding };
+        case 'left':
+          return { x: this.#x - halfW - padding, y: this.#y };
+        case 'right':
+          return { x: this.#x + halfW + padding, y: this.#y };
+        default:
+          throw new Error('Invalid direction.');
+      }
+    }
+    throw new Error('invalid shape');
+  }
+
+  /**
+   * @param {Direction} direction
+   */
+  canDirectTo(direction) {
+    const motion = this.#sprite.motions[this.#motion];
+    if (!motion) return false;
+    return !!motion[direction];
   }
 
   toClientData() {
@@ -203,7 +240,6 @@ export class ServerObject {
   }
 
   /**
-   *
    * @param {Direction} direction
    * @returns {import('../const/index.js').ServerMessage}
    */

@@ -1,49 +1,6 @@
 import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
 
-
-
-/**
- * @param {import('../object/index.js').ServerObjectType} target
- */
-const getInteractArea = (target, radius = 10) => {
-  const area = target.area;
-  const direction = target.direction;
-
-  if ('radius' in area) {
-    const { x, y, radius } = area;
-    switch (direction) {
-      case 'up':
-        return { x, y: y - radius - radius, radius };
-      case 'down':
-        return { x, y: y + radius + radius, radius };
-      case 'left':
-        return { x: x - radius - radius, y, radius };
-      case 'right':
-        return { x: x + radius + radius, y, radius };
-      default:
-        throw new Error('Invalid direction.');
-    }
-  }
-
-  if ('left' in area && 'right' in area && 'top' in area && 'bottom' in area) {
-    switch (direction) {
-      case 'up':
-        return { x: (area.left + area.right) / 2, y: area.top - radius, radius };
-      case 'down':
-        return { x: (area.left + area.right) / 2, y: area.bottom + radius, radius };
-      case 'left':
-        return { x: area.left - radius, y: (area.top + area.bottom) / 2, radius };
-      case 'right':
-        return { x: area.right + radius, y: (area.top + area.bottom) / 2, radius };
-      default:
-        throw new Error('Invalid direction.');
-    }
-  }
-
-  throw new Error('Unknown area type.');
-};
-
 export const ControllerHandler = {
   /**
    * @param {import('../user/index.js').UserType} user
@@ -104,7 +61,10 @@ export const ControllerHandler = {
       return;
     }
 
-    const interactArea = getInteractArea(target);
+    const interactArea = {
+      ...target.getFrontPosition(),
+      radius: 10,
+    };
 
     const interactables = objects.filter((object) => {
       return object !== target
