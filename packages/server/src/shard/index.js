@@ -33,7 +33,7 @@ export class Shard {
       this.users.add(user);
       if (this.#tick_interval === null) {
         this.#tick_interval = setInterval(() => {
-          this.objects.forEach((object)=> object.impulse$.next(this));
+          this.objects.forEach((object) => object.impulse$.next(this));
           if (this.users.size === 0 && this.#tick_interval !== null) {
             clearInterval(this.#tick_interval);
             this.#tick_interval = null;
@@ -59,6 +59,9 @@ export class Shard {
    * @param {import('../const/index.js').ServerMessage[]} messages
    */
   sync(messages) {
+    if (messages.length > 0 === false) {
+      return;
+    }
     this.users.forEach((user) => {
       user.send(messages);
     });
