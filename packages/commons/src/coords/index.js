@@ -114,26 +114,25 @@ export function getDirectionByDelta(before, after) {
 
 /**
  * @param {XY} point
- * @param {import('@iyagi/server/object/index.js').ServerObjectType} object
- * @param {number} [threshold=0.7] - shape 크기 대비 비율 (0~1)
+ * @param {Area} area
+ * @param {number} [threshold=1] - 영역 크기 대비 비율 (0~1)
  * @returns {boolean}
  */
-export function isIn(point, object, threshold = 0.7) {
-  const shape = object.shape;
-  const center = object.xyz;
-  if ('radius' in shape) {
-    // Circle - threshold 비율 영역 체크
-    const dx = point.x - center.x;
-    const dy = point.y - center.y;
-    const effectiveRadius = shape.radius * threshold;
+export function isIn(point, area, threshold = 1) {
+  if ('radius' in area) {
+    const dx = point.x - area.x;
+    const dy = point.y - area.y;
+    const effectiveRadius = area.radius * threshold;
     return dx ** 2 + dy ** 2 <= effectiveRadius ** 2;
   } else {
-    // Rectangle - threshold 비율 영역 체크
-    return Math.abs(point.x - center.x) <= shape.halfW * threshold &&
-      Math.abs(point.y - center.y) <= shape.halfH * threshold;
+    const cx = (area.left + area.right) / 2;
+    const cy = (area.top + area.bottom) / 2;
+    const halfW = (area.right - area.left) / 2 * threshold;
+    const halfH = (area.bottom - area.top) / 2 * threshold;
+    return Math.abs(point.x - cx) <= halfW &&
+      Math.abs(point.y - cy) <= halfH;
   }
 }
-
 
 /**
  * @param {object} param0

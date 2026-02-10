@@ -30,6 +30,8 @@ export class ServerObject {
   /** @type {string | undefined} */
   #name;
 
+  #shape;
+
   #sprite;
 
   #motion = MOTION_BASE;
@@ -55,7 +57,7 @@ export class ServerObject {
    */
   constructor(r, o) {
     this.#name = o?.name;
-    this.shape = r.data.shape;
+    this.#shape = r.data.shape;
 
     this.resource = r;
     // TODO:: sprite 는 없어져야 함
@@ -121,15 +123,15 @@ export class ServerObject {
    * @return {import('@iyagi/commons/coords').Area}
    */
   get area() {
-    if ('radius' in this.shape) {
+    if ('radius' in this.#shape) {
       return {
         x: this.#x,
         y: this.#y,
-        radius: this.shape.radius,
+        radius: this.#shape.radius,
       };
     }
-    if ('halfW' in this.shape && 'halfH' in this.shape) {
-      const { halfW, halfH } = this.shape;
+    if ('halfW' in this.#shape && 'halfH' in this.#shape) {
+      const { halfW, halfH } = this.#shape;
       return {
         left: this.#x - halfW,
         right: this.#x + halfW,
@@ -169,8 +171,8 @@ export class ServerObject {
    * @param {number} padding
    */
   getFrontPosition(padding = 0) {
-    if ('radius' in this.shape) {
-      const distance = this.shape.radius;
+    if ('radius' in this.#shape) {
+      const distance = this.#shape.radius;
       switch (this.#direction) {
         case 'up':
           return { x: this.#x, y: this.#y - distance - padding };
@@ -184,8 +186,8 @@ export class ServerObject {
           throw new Error('Invalid direction.');
       }
     }
-    if ('halfW' in this.shape && 'halfH' in this.shape) {
-      const { halfW, halfH } = this.shape;
+    if ('halfW' in this.#shape && 'halfH' in this.#shape) {
+      const { halfW, halfH } = this.#shape;
       switch (this.#direction) {
         case 'up':
           return { x: this.#x, y: this.#y - halfH - padding };

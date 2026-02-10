@@ -34,10 +34,11 @@ export const ControllerHandler = {
       if (o.xyz.z !== target.xyz.z - 1) {
         return false;
       }
-      if (isIn(start, o)) {
+      const area = o.area;
+      if (isIn(start, area)) {
         return false;
       }
-      return isIn(next, o);
+      return isIn(next, area);
     });
 
     pressed.forEach((o) => {
