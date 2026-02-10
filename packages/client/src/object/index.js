@@ -72,13 +72,14 @@ export default class ClientObject {
     if (sprite.shadow) {
       const shadow = new Graphics();
       shadow.label = CLIENT_OBJECT_CONTAINER_LABEL.SHADOW;
-      shadow.ellipse(0, 0, sprite.shadow.w/2, sprite.shadow.h/2);
+      shadow.ellipse(0, 0, sprite.shadow.w / 2, sprite.shadow.h / 2);
       shadow.fill({
         color: 0x000000,
         alpha: 0.4,
       });
-      shadow.x = sprite.shadow.x + sprite.shadow.w/2;
-      shadow.y = sprite.shadow.y + sprite.shadow.h/2;
+      console.error(sprite.offset);
+      shadow.x = sprite.shadow.x + this.#offset.x;
+      shadow.y = sprite.shadow.y + this.#offset.y;
 
       this.container.addChildAt(shadow, 0);
     }

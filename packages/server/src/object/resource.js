@@ -8,7 +8,6 @@
 /**
  * @typedef ActionArea
  * @property {SpriteImage} [image]
- * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
  * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  * @property {import('@iyagi/commons/coords').XYWH[]} frames
  */
@@ -22,7 +21,6 @@
  * @property {ActionArea} [left]
  * @property {ActionArea} [right]
  * @property {boolean=} playing
- * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
  * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  */
 
@@ -31,7 +29,6 @@
  * @property {SpriteImage} image
  * @property {{[key: string]: Motion}} motions
  * @property {{ x?: number, y?: number }} [offset]
- * @property {import('@iyagi/commons/coords').XYWH} [hitbox]
  * @property {import('@iyagi/commons/coords').XYWH} [shadow]
  */
 
