@@ -56,8 +56,8 @@ function resolveCircleRect(mover, rect, dx, dy) {
   const nx = mover.x + dx;
   const ny = mover.y + dy;
 
-  const cx = clamp(nx, rect.left, rect.right);
-  const cy = clamp(ny, rect.top, rect.bottom);
+  const cx = clamp(nx, rect.x - rect.halfW, rect.x + rect.halfW);
+  const cy = clamp(ny, rect.y - rect.halfH, rect.y + rect.halfH);
 
   const vx = nx - cx;
   const vy = ny - cy;

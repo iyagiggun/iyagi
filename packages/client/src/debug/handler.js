@@ -4,24 +4,43 @@ import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
   /**
-   * @param {import('@iyagi/server/const/index.js').ServerMessage} message
+   * @param {import('@iyagi/server/const').ServerMessage} message
    */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT]: ({ data }) =>  new Promise((resolve) => {
-    const { x, y, w, h } = data.area;
+  [BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT]: ({ data }) => new Promise((resolve) => {
+    /**
+     * @type {import('@iyagi/commons/coords').Area}
+     */
+    const area = data.area;
 
-    const area = new Graphics();
-    area.rect(0, 0, w, h);
-    area.fill({
-      color: 0xff0000,
-      alpha: 0.4,
-    });
-    area.x = x;
-    area.y = y;
-    area.zIndex = Number.MAX_SAFE_INTEGER;
+    const graphics = new Graphics();
 
-    shard.container.addChild(area);
+    if ('radius' in area) {
+      const { x, y, radius } = area;
+      graphics.circle(x, y, radius);
+      graphics.fill({
+        color: 0xff0000,
+        alpha: 0.4,
+      });
+      graphics.x = x - radius;
+      graphics.y = y - radius;
+    } else if ('halfW' in area && 'halfH' in area) {
+      const { x, y, halfW, halfH } = area;
+      const w = halfW * 2;
+      const h = halfH * 2;
+      graphics.rect(0, 0, w, h);
+      graphics.fill({
+        color: 0xff0000,
+        alpha: 0.4,
+      });
+      graphics.x = x - halfW;
+      graphics.y = y - halfH;
+    }
+
+    graphics.zIndex = Number.MAX_SAFE_INTEGER;
+
+    shard.container.addChild(graphics);
     window.setTimeout(() => {
-      shard.container.removeChild(area);
+      shard.container.removeChild(graphics);
     }, 1000);
 
     resolve();

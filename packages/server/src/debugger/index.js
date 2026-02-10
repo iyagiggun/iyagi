@@ -2,7 +2,7 @@ import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 export const Debugger = {
   /**
-   * @param {import('@iyagi/commons').Area} area
+   * @param {import('@iyagi/commons/coords').Area} area
    */
   highlight: (area) => {
     return {

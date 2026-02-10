@@ -42,10 +42,10 @@
 
 /**
  * @typedef {object} RectArea
- * @property {number} left
- * @property {number} right
- * @property {number} top
- * @property {number} bottom
+ * @property {number} x
+ * @property {number} y
+ * @property {number} halfW
+ * @property {number} halfH
  */
 
 /**
@@ -83,16 +83,16 @@ export function isOverlap(areaA, areaB) {
   if (!isCircle(areaA) && !isCircle(areaB)) {
     const a = /** @type {RectArea} */ (areaA);
     const b = /** @type {RectArea} */ (areaB);
-    return !(a.right <= b.left || a.left >= b.right ||
-      a.bottom <= b.top || a.top >= b.bottom);
+    return Math.abs(a.x - b.x) <= a.halfW + b.halfW &&
+      Math.abs(a.y - b.y) <= a.halfH + b.halfH;
   }
 
   // circle vs rect
   const circle = /** @type {CircleArea} */ (isCircle(areaA) ? areaA : areaB);
   const rect = /** @type {RectArea} */ (isCircle(areaA) ? areaB : areaA);
 
-  const closestX = Math.max(rect.left, Math.min(circle.x, rect.right));
-  const closestY = Math.max(rect.top, Math.min(circle.y, rect.bottom));
+  const closestX = Math.max(rect.x - rect.halfW, Math.min(circle.x, rect.x + rect.halfW));
+  const closestY = Math.max(rect.y - rect.halfH, Math.min(circle.y, rect.y + rect.halfH));
 
   const dx = circle.x - closestX;
   const dy = circle.y - closestY;
@@ -125,12 +125,8 @@ export function isIn(point, area, threshold = 1) {
     const effectiveRadius = area.radius * threshold;
     return dx ** 2 + dy ** 2 <= effectiveRadius ** 2;
   } else {
-    const cx = (area.left + area.right) / 2;
-    const cy = (area.top + area.bottom) / 2;
-    const halfW = (area.right - area.left) / 2 * threshold;
-    const halfH = (area.bottom - area.top) / 2 * threshold;
-    return Math.abs(point.x - cx) <= halfW &&
-      Math.abs(point.y - cy) <= halfH;
+    return Math.abs(point.x - area.x) <= area.halfW * threshold &&
+      Math.abs(point.y - area.y) <= area.halfH * threshold;
   }
 }
 
