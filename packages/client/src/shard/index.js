@@ -3,7 +3,7 @@ import global from '../global/index.js';
 import { client_object_manager } from '../object/manager.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 import sender from '../sender/index.js';
-import { shard_container } from './commons.js';
+import { shard_container } from '../const/index.js';
 
 const clear = () => {
   shard_container.removeChildren();

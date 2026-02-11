@@ -2,8 +2,8 @@ import { easeInOutSine } from '@iyagi/commons/coords';
 import global from '../global/index.js';
 import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { client_object_manager } from '../object/manager.js';
-import { shard_container } from '../shard/commons.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { shard_container } from '../const/index.js';
 
 /**
  * @param {Object} target

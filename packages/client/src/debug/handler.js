@@ -1,6 +1,6 @@
 import { Graphics } from 'pixi.js';
-import { shard_container } from '../shard/commons.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { shard_container } from '../const/index.js';
 
 export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
   /**

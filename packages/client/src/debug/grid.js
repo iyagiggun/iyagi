@@ -1,5 +1,5 @@
 import { Graphics } from 'pixi.js';
-import { shard_container } from '../shard/commons.js';
+import { shard_container } from '../const/index.js';
 
 export const Grid = {
   /**
