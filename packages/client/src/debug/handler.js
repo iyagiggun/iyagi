@@ -3,10 +3,7 @@ import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { shard_container } from '../const/index.js';
 
 export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT]: ({ data }) => new Promise((resolve) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT]: (data) => new Promise((resolve) => {
     /**
      * @type {import('@iyagi/commons/coords').Area}
      */

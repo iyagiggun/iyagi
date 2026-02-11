@@ -2,6 +2,7 @@ import global from './global/index.js';
 import imessenger from './messenger/imessenger.js';
 import sender from './sender/index.js';
 import handler from './handler/index.js';
+import { objects } from './object/objects.js';
 
 global.messenger = imessenger;
 
@@ -11,11 +12,12 @@ const iclient = {
   /**
    * @param {Object} p
    * @param {WebSocket} p.websocket
+   * @param {import('./handler/index.js').ClientHandlerMap} [p.handlerMap]
    */
-  async init({ websocket }) {
+  async init({ websocket, handlerMap }) {
 
     sender.init(websocket);
-    handler.init(websocket);
+    handler.init(websocket, handlerMap);
 
     await global.init();
 
@@ -47,6 +49,10 @@ const iclient = {
       this.application.stage.removeChild(last.container);
     }
     global.controller = next;
+  },
+
+  get objects() {
+    return objects;
   },
 };
 

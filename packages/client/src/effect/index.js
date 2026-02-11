@@ -31,10 +31,7 @@ const toContainer = (target) => {
 };
 
 export const CLIENT_EFFECT_MESSAGE_HANDLER = {
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} param0
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: (data) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -51,10 +48,7 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
       ticker.add(process);
     });
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} param0
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: (data) => {
     const ticker = global.app.ticker;
     const delta = 0.05;
     const container = toContainer(data.target);
@@ -70,10 +64,7 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
       ticker.add(process);
     });
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} param0
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: (data) => {
     const ticker = global.app.ticker;
     const container = toContainer(data.target);
 
@@ -94,10 +85,7 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
       }, data.duration || 100);
     });
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} param0
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: (data) => {
     const ticker = global.app.ticker;
 
     const object = toObject(data.target);

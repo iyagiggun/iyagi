@@ -12,10 +12,7 @@ const find = (id) => {
 };
 
 export const CLIENT_OBJECT_MESSAGE_HANDLER = {
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE]: (data) => {
     const target = find(data.target);
     const direction = data.direction;
     if (direction) {
@@ -23,17 +20,11 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     }
     return target.move(data);
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK]: (data) => {
     const target = find(data.target);
     return target.talk(data.message);
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: (data) => {
     const target = objects.find(data.id);
     if (target) {
       const parent = target.container.parent;
@@ -52,19 +43,13 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     // }
     return Promise.resolve();
   },
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION]: (data) => {
     const target = find(data.target);
     target.play({ motion: data.motion, ...data.options });
     return Promise.resolve();
   },
 
-  /**
-   * @param {import('@iyagi/server/const').ServerMessage} message
-   */
-  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL]: ({ data }) => {
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL]: (data) => {
     const { controller, app } = global;
     if (!controller) {
       throw new Error('No controller.');

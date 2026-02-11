@@ -15,19 +15,14 @@ const clear = () => {
 const resource_pool = new Map();
 
 /**
- * @param {import('@iyagi/server/const').ServerMessage} message
+ * @param {{
+ *  shard: {
+ *    resources: ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>[],
+ *    objects: ReturnType<import('@iyagi/server/object').ServerObjectType['toClientData']>[],
+ *  }
+ * }} data
  */
-const load = async (message) => {
-
-  /**
-   * @type {{
-   *  shard: {
-   *   resources: ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>[],
-   *   objects: ReturnType<import('@iyagi/server/object').ServerObjectType['toClientData']>[]
-   *  }
-   * }}
-   */
-  const data = message.data;
+const load = async (data) => {
 
   await Promise.all(data.shard.resources.map(
     /**
