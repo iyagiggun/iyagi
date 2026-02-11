@@ -3,10 +3,10 @@ import global from '../global/index.js';
 import { client_object_manager } from '../object/manager.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 import sender from '../sender/index.js';
-import { SHARD_CONTAINER } from './const.js';
+import { shard_container } from './commons.js';
 
 const clear = () => {
-  SHARD_CONTAINER.removeChildren();
+  shard_container.removeChildren();
 };
 
 /**
@@ -60,13 +60,13 @@ const load = async (message) => {
 
       obj.xyz = info;
       obj.direction = info.direction;
-      SHARD_CONTAINER.addChild(obj.container);
+      shard_container.addChild(obj.container);
       client_object_manager.push(obj);
       return obj.load();
     })
   );
 
-  global.app.stage.addChild(SHARD_CONTAINER);
+  global.app.stage.addChild(shard_container);
 
   sender.send({
     type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,

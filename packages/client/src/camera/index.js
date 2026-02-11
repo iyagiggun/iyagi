@@ -1,6 +1,6 @@
 import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
-import { SHARD_CONTAINER } from '../shard/const.js';
+import { shard_container } from '../shard/commons.js';
 import { client_object_manager } from '../object/manager.js';
 
 /** @type {import('../object/index.js').default | null} */
@@ -21,7 +21,7 @@ const getContainerPos = ({ x, y }) => {
  * @param {import('@iyagi/commons/coords').XY & { speed?: 1 | 2 | 3 }} info
  */
 const move = (info) => {
-  const container = SHARD_CONTAINER;
+  const container = shard_container;
   const { x: destX, y: destY } = getContainerPos(info);
   if (!info.speed) {
     container.x = destX;
@@ -64,8 +64,8 @@ const move = (info) => {
  */
 const point = (xy) => {
   const { x, y } = getContainerPos(xy);
-  SHARD_CONTAINER.x = x;
-  SHARD_CONTAINER.y = y;
+  shard_container.x = x;
+  shard_container.y = y;
   return Promise.resolve();
 };
 

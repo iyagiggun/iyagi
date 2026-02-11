@@ -1,5 +1,5 @@
 import { Graphics } from 'pixi.js';
-import { SHARD_CONTAINER } from '../shard/const.js';
+import { shard_container } from '../shard/commons.js';
 
 export const Grid = {
   /**
@@ -50,6 +50,6 @@ export const Grid = {
       width: 1,
     });
 
-    SHARD_CONTAINER.addChild(g);
+    shard_container.addChild(g);
   },
 };
