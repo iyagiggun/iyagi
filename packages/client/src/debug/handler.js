@@ -1,5 +1,5 @@
 import { Graphics } from 'pixi.js';
-import { shard } from '../shard/index.js';
+import { SHARD_CONTAINER } from '../shard/const.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
@@ -34,9 +34,9 @@ export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
 
     graphics.zIndex = Number.MAX_SAFE_INTEGER;
 
-    shard.container.addChild(graphics);
+    SHARD_CONTAINER.addChild(graphics);
     window.setTimeout(() => {
-      shard.container.removeChild(graphics);
+      SHARD_CONTAINER.removeChild(graphics);
     }, 1000);
 
     resolve();

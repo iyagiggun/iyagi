@@ -1,14 +1,12 @@
-import { Container } from 'pixi.js';
 import ObjectResource from '../object/resource.js';
 import global from '../global/index.js';
 import { client_object_manager } from '../object/manager.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 import sender from '../sender/index.js';
-
-const container = new Container();
+import { SHARD_CONTAINER } from './const.js';
 
 const clear = () => {
-  container.removeChildren();
+  SHARD_CONTAINER.removeChildren();
 };
 
 /**
@@ -62,13 +60,13 @@ const load = async (message) => {
 
       obj.xyz = info;
       obj.direction = info.direction;
-      container.addChild(obj.container);
+      SHARD_CONTAINER.addChild(obj.container);
       client_object_manager.push(obj);
       return obj.load();
     })
   );
 
-  global.app.stage.addChild(container);
+  global.app.stage.addChild(SHARD_CONTAINER);
 
   sender.send({
     type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
@@ -76,7 +74,6 @@ const load = async (message) => {
 };
 
 export const shard = {
-  container,
   load,
   clear,
 };

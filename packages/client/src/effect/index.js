@@ -2,7 +2,7 @@ import { easeInOutSine } from '@iyagi/commons/coords';
 import global from '../global/index.js';
 import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { client_object_manager } from '../object/manager.js';
-import { shard } from '../shard/index.js';
+import { SHARD_CONTAINER } from '../shard/const.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 
 /**
@@ -22,7 +22,7 @@ const toObject = (target) => {
 const toContainer = (target) => {
   switch (target.type) {
     case 'SHARD':
-      return shard.container;
+      return SHARD_CONTAINER;
     case 'OBJECT':
       return toObject(target).container;
     default:
