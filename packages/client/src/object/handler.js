@@ -1,6 +1,6 @@
 import global from '../global/index.js';
 import { Rectangle } from 'pixi.js';
-import { client_object_manager } from './manager.js';
+import { objects } from './objects.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import camera from '../camera/index.js';
 
@@ -8,7 +8,7 @@ import camera from '../camera/index.js';
  * @param {string} id
  */
 const find = (id) => {
-  return client_object_manager.find(id);
+  return objects.find(id);
 };
 
 export const CLIENT_OBJECT_MESSAGE_HANDLER = {
@@ -34,10 +34,10 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
    * @param {import('@iyagi/server/const').ServerMessage} message
    */
   [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: ({ data }) => {
-    const target = client_object_manager.find(data.id);
+    const target = objects.find(data.id);
     if (target) {
       const parent = target.container.parent;
-      if (parent){
+      if (parent) {
         parent.removeChild(target.container);
       }
     }

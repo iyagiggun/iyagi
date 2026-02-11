@@ -1,7 +1,7 @@
 import { easeInOutSine } from '@iyagi/commons/coords';
 import global from '../global/index.js';
 import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
-import { client_object_manager } from '../object/manager.js';
+import { objects } from '../object/objects.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { shard_container } from '../const/index.js';
 
@@ -11,7 +11,7 @@ import { shard_container } from '../const/index.js';
  * @param {string} target.id
  */
 const toObject = (target) => {
-  return client_object_manager.find(target.id);
+  return objects.find(target.id);
 };
 
 /**

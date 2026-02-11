@@ -1,7 +1,6 @@
 import global from '../global/index.js';
-import { FRAMES_PER_SECOND } from '../const/index.js';
-import { shard_container } from '../shard/commons.js';
-import { client_object_manager } from '../object/manager.js';
+import { FRAMES_PER_SECOND, shard_container } from '../const/index.js';
+import { objects } from '../object/objects.js';
 
 /** @type {import('../object/index.js').default | null} */
 let target = null;
@@ -73,7 +72,7 @@ const point = (xy) => {
  * @param {import('@iyagi/server/const').ServerMessage['data']} data
  */
 const follow = (data) => {
-  target = client_object_manager.find(data.target);
+  target = objects.find(data.target);
   return point(target.xyz);
 };
 

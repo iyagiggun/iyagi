@@ -1,6 +1,6 @@
 import ObjectResource from '../object/resource.js';
 import global from '../global/index.js';
-import { client_object_manager } from '../object/manager.js';
+import { objects } from '../object/objects.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 import sender from '../sender/index.js';
 import { shard_container } from '../const/index.js';
@@ -61,7 +61,7 @@ const load = async (message) => {
       obj.xyz = info;
       obj.direction = info.direction;
       shard_container.addChild(obj.container);
-      client_object_manager.push(obj);
+      objects.push(obj);
       return obj.load();
     })
   );
