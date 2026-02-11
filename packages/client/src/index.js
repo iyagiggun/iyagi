@@ -2,7 +2,6 @@ import global from './global/index.js';
 import imessenger from './messenger/imessenger.js';
 import sender from './sender/index.js';
 import handler from './handler/index.js';
-import { ClientObjectClass } from './object/index.js';
 
 global.messenger = imessenger;
 
@@ -48,15 +47,6 @@ const iclient = {
       this.application.stage.removeChild(last.container);
     }
     global.controller = next;
-  },
-
-  object: {
-    get class() {
-      return ClientObjectClass.get();
-    },
-    set class(next) {
-      ClientObjectClass.set(next);
-    },
   },
 };
 

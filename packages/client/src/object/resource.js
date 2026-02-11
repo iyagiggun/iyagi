@@ -1,4 +1,4 @@
-import { ClientObjectClass } from './index.js';
+import ClientObject from './index.js';
 import { Portrait } from './portrait.js';
 import ITexture from './texture.js';
 
@@ -38,7 +38,7 @@ class ObjectResource {
     if (cached) {
       return cached;
     }
-    const created = new (ClientObjectClass.get())({
+    const created = new ClientObject({
       id,
       name: options?.name,
       texture: this.#texture,

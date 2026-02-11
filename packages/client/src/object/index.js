@@ -327,17 +327,3 @@ export default class ClientObject {
     }
   }
 }
-
-let clientClassPointer = ClientObject;
-
-export const ClientObjectClass = {
-  get() {
-    return clientClassPointer;
-  },
-  /**
-   * @param {typeof ClientObject} next
-   */
-  set(next) {
-    clientClassPointer = next;
-  },
-};
