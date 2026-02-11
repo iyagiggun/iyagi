@@ -1,6 +1,10 @@
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { getDirectionByDelta } from '@iyagi/commons/coords';
 import { Subject } from 'rxjs';
 
 export class Shard {
+  #move$ = new Subject();
+
   #key;
   /** @type {NodeJS.Timeout | null} */
   #tick_interval = null;
@@ -53,6 +57,83 @@ export class Shard {
 
   get id() {
     return 'SHARD';
+  }
+
+  /**
+   * @readonly
+   */
+  get move$() {
+    return this.#move$.asObservable();
+  }
+
+  /**
+   * @param {import('../object/index.js').ServerObject} target
+   * @param {{
+   *  x?: number,
+   *  y?: number,
+   *  z?: number,
+   *  direction?: string,
+   *  instant?: boolean,
+   *  cutscene?: boolean,
+   *  speed?: number,
+   * }} data
+   * @return {import('../const/index.js').ServerMessage}
+   */
+  move(target, {
+    x,
+    y,
+    z,
+    direction: _direction,
+    instant,
+    cutscene,
+    speed: _speed,
+  }) {
+    const lastXYZ = target.xyz;
+    let diffX = 0;
+    let diffY = 0;
+
+    if (typeof x === 'number') {
+      target.x = Math.round(x);
+      diffX = target.x - lastXYZ.x;
+    }
+
+    if (typeof y === 'number') {
+      target.y = Math.round(y);
+      diffY = target.y - lastXYZ.y;
+    }
+
+    if (typeof z === 'number') {
+      target.z = z;
+    }
+
+    const currentXYZ = target.xyz;
+
+    const speed = _speed ?? 1;
+    const now = performance.now();
+    const distance = Math.hypot(diffX, diffY);
+    const duration = instant ? 0 : (1000 * distance) / (target.getMovementSpeed() * speed);
+    const endTime = now + duration;
+    const extra = cutscene || duration === 0 ? { duration } : { endTime };
+
+    const directionByDelta = getDirectionByDelta(lastXYZ, currentXYZ);
+    const direction = _direction ?? (instant || !target.canDirectTo(directionByDelta) ? target.direction : directionByDelta);
+
+    this.#move$.next({
+      target,
+      before: lastXYZ,
+      after: currentXYZ,
+    });
+
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
+      data: {
+        target: target.id,
+        ...currentXYZ,
+        direction,
+        ...extra,
+        speed,
+      },
+    };
   }
 
   /**

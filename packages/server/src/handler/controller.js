@@ -46,7 +46,7 @@ export const ControllerHandler = {
     });
 
     shard.sync([
-      target.move({ ...next, direction: target.direction }),
+      shard.move(target, { ...next, direction: target.direction }),
     ]);
   },
   /**
@@ -106,7 +106,7 @@ export const ControllerHandler = {
     })();
 
     if (interactable.canDirectTo(interactDirection)) {
-      const before = interactable.move({
+      const before = user.shard.move(interactable, {
         direction: interactDirection,
       });
       user.send([before]);

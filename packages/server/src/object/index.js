@@ -2,7 +2,7 @@ import { Subject } from 'rxjs';
 import { ServerObjectResource } from './resource.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { NAI } from './NAI/index.js';
-import { getDirectionByDelta } from '@iyagi/commons/coords';
+import { FRAMES_PER_SECOND } from '../const/index.js';
 
 /**
  * @typedef {import("@iyagi/commons/coords").Direction} Direction
@@ -11,7 +11,6 @@ import { getDirectionByDelta } from '@iyagi/commons/coords';
 
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
-const DEFAULT_MOVE_SPEED = 64;
 const MOVE_TIME_UNIT = 1000; // 1sec
 
 /**
@@ -43,13 +42,13 @@ export class ServerObject {
 
   #id;
 
-  #x = 0;
+  x = 0;
 
-  #y = 0;
+  y = 0;
 
-  #z = 1;
+  z = 1;
 
-  #moveSpeed = DEFAULT_MOVE_SPEED; // pixels per second
+  #moveSpeed = FRAMES_PER_SECOND; // pixels per second
 
   /**
    * @param {ServerObjectResource} r
@@ -112,10 +111,25 @@ export class ServerObject {
   }
 
   /**
-   * @readonly
+   * @returns {import('@iyagi/commons/coords').XYZ}
    */
   get xyz() {
-    return { x: this.#x, y: this.#y, z: this.#z };
+    return { x: this.x, y: this.y, z: this.z };
+  }
+
+  /**
+   * @param {import('@iyagi/commons/coords').OptionalXYZ} p
+   */
+  set xyz({ x, y, z }) {
+    if (typeof x === 'number') {
+      this.x = x;
+    }
+    if (typeof y === 'number') {
+      this.y = y;
+    }
+    if (typeof z === 'number') {
+      this.z = z;
+    }
   }
 
   /**
@@ -124,8 +138,8 @@ export class ServerObject {
    */
   get area() {
     return {
-      x: this.#x,
-      y: this.#y,
+      x: this.x,
+      y: this.y,
       ...this.#shape,
     };
   }
@@ -163,13 +177,13 @@ export class ServerObject {
       const distance = this.#shape.radius;
       switch (this.#direction) {
         case 'up':
-          return { x: this.#x, y: this.#y - distance - padding };
+          return { x: this.x, y: this.y - distance - padding };
         case 'down':
-          return { x: this.#x, y: this.#y + distance + padding };
+          return { x: this.x, y: this.y + distance + padding };
         case 'left':
-          return { x: this.#x - distance - padding, y: this.#y };
+          return { x: this.x - distance - padding, y: this.y };
         case 'right':
-          return { x: this.#x + distance + padding, y: this.#y };
+          return { x: this.x + distance + padding, y: this.y };
         default:
           throw new Error('Invalid direction.');
       }
@@ -178,13 +192,13 @@ export class ServerObject {
       const { halfW, halfH } = this.#shape;
       switch (this.#direction) {
         case 'up':
-          return { x: this.#x, y: this.#y - halfH - padding };
+          return { x: this.x, y: this.y - halfH - padding };
         case 'down':
-          return { x: this.#x, y: this.#y + halfH + padding };
+          return { x: this.x, y: this.y + halfH + padding };
         case 'left':
-          return { x: this.#x - halfW - padding, y: this.#y };
+          return { x: this.x - halfW - padding, y: this.y };
         case 'right':
-          return { x: this.#x + halfW + padding, y: this.#y };
+          return { x: this.x + halfW + padding, y: this.y };
         default:
           throw new Error('Invalid direction.');
       }
@@ -224,8 +238,8 @@ export class ServerObject {
     const normalizedDx = length > 0 ? x / length : 0;
     const normalizedDy = length > 0 ? y / length : 0;
     return {
-      x: this.#x + normalizedDx * distance,
-      y: this.#y + normalizedDy * distance,
+      x: this.x + normalizedDx * distance,
+      y: this.y + normalizedDy * distance,
     };
   }
 
@@ -246,60 +260,8 @@ export class ServerObject {
     };
   }
 
-  /**
-   * @param {object} param
-   * @param {number} [param.x]
-   * @param {number} [param.y]
-   * @param {number} [param.z]
-   * @param {import('@iyagi/commons/coords').Direction} [param.direction]
-   * @param {boolean} [param.instant]
-   * @param {boolean} [param.cutscene]
-   * @param {number} [param.speed]
-   * @returns {import('../const/index.js').ServerMessage}
-   */
-  move({ x, y, z, direction, instant, cutscene, speed: _speed }) {
-    const lastXYZ = this.xyz;
-    let diffX = 0;
-    let diffY = 0;
-
-    if (typeof x === 'number') {
-      this.#x = Math.round(x);
-      diffX = this.#x - lastXYZ.x;
-    }
-
-    if (typeof y === 'number') {
-      this.#y = Math.round(y);
-      diffY = this.#y - lastXYZ.y;
-    }
-
-    if (typeof z === 'number') {
-      this.#z = z;
-    }
-
-    const speed = _speed ?? 1;
-
-    const moveDirection = getDirectionByDelta(lastXYZ, this.xyz);
-
-    const now = performance.now();
-    const distance = Math.hypot(diffX, diffY);
-    const duration = instant ? 0 : (1000 * distance) / (this.#moveSpeed * speed);
-    const endTime = now + duration;
-    const extra = cutscene || duration === 0 ? { duration } : { endTime };
-
-    this.direction = direction || (instant || !this.canDirectTo(moveDirection) ? this.direction : moveDirection);
-    /**
-     * @type {import('../const/index.js').ServerMessage}
-     */
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE,
-      data: {
-        target: this.id,
-        ...this.xyz,
-        direction: this.direction,
-        ...extra,
-        speed,
-      },
-    };
+  getMovementSpeed() {
+    return FRAMES_PER_SECOND;
   }
 
   /**

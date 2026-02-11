@@ -9,6 +9,12 @@
  * }} XYZ
  *
  * @typedef {{
+ *  x?: number;
+ *  y?: number;
+ *  z?: number;
+ * }} OptionalXYZ
+ *
+ * @typedef {{
  *  w: number;
  *  h: number;
  * }} WH
