@@ -98,7 +98,7 @@ export const ControllerHandler = {
       user.send([before]);
     }
 
-    interactable.interaction$.next(user);
+    interactable.interaction$.next({ user });
   },
   /**
    * @param {import('../user/index.js').UserType} user

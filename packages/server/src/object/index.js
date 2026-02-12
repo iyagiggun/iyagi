@@ -72,7 +72,7 @@ export class ServerObject {
     this.#portraits = o?.portraits;
 
     /**
-     * @type {Subject<import('../user/index.js').UserType>}
+     * @type {Subject<{ user: import('../user/index.js').UserType }>}
      */
     this.interaction$ = new Subject();
 
