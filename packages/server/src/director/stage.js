@@ -63,7 +63,7 @@ export const StageDirector = {
    * @param {string | import('../object/index.js').ServerObject} target
    */
   remove(target) {
-    const id = typeof target === 'string' ? target :  target.id;
+    const id = typeof target === 'string' ? target : target.id;
     // const idx = this.#objects.findIndex((obj) => obj.id === id);
     // if (idx > -1) {
     //   this.#objects.splice(idx, 1);

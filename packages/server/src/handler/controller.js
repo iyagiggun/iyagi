@@ -1,4 +1,4 @@
-import { getDirectionByDelta, isIn, getOverlapRatio, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByDelta, getOverlapRatio, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
 
 export const ControllerHandler = {
@@ -30,21 +30,6 @@ export const ControllerHandler = {
     target.direction = data.direction ?? getDirectionByDelta(start, dest);
     const next = resolveXY(area, obstacles, dest);
 
-    const pressed = objects.filter((o) => {
-      if (o.xyz.z !== target.xyz.z - 1) {
-        return false;
-      }
-      const area = o.area;
-      if (isIn(start, area)) {
-        return false;
-      }
-      return isIn(next, area);
-    });
-
-    pressed.forEach((o) => {
-      o.pressed$.next(user);
-    });
-
     shard.sync([
       shard.move(target, { ...next, direction: target.direction }),
     ]);
@@ -64,6 +49,7 @@ export const ControllerHandler = {
 
     const interactArea = {
       ...target.getFrontXY(),
+      z: target.z,
       radius: 10,
     };
 

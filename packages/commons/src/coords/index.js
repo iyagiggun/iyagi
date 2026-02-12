@@ -40,21 +40,8 @@
  */
 
 /**
- * @typedef {object} CircleArea
- * @property {number} x
- * @property {number} y
- * @property {number} radius
- */
-
-/**
- * @typedef {object} RectArea
- * @property {number} x
- * @property {number} y
- * @property {number} halfW
- * @property {number} halfH
- */
-
-/**
+ * @typedef {XYZ & CircleShape} CircleArea
+ * @typedef {XYZ & RectShape} RectArea
  * @typedef {CircleArea | RectArea} Area
  */
 
@@ -75,6 +62,8 @@ export function easeInOutSine(t) {
  * @returns {number} 0 (no overlap) ~ 1 (fully overlapping)
  */
 export function getOverlapRatio(areaA, areaB) {
+  if (areaA.z !== areaB.z) return 0;
+
   const isCircle = (/** @type {Area} */ a) => 'radius' in a;
 
   if (isCircle(areaA) && isCircle(areaB)) {

@@ -77,11 +77,6 @@ export class ServerObject {
     this.interaction$ = new Subject();
 
     /**
-     * @type {Subject<import('../user/index.js').UserType>}
-     */
-    this.pressed$ = new Subject();
-
-    /**
      * @type {Subject<{ user: import('../user/index.js').UserType, input: string }>}
      */
     this.action$ = new Subject();
@@ -138,8 +133,7 @@ export class ServerObject {
    */
   get area() {
     return {
-      x: this.x,
-      y: this.y,
+      ...this.xyz,
       ...this.#shape,
     };
   }
