@@ -43,6 +43,10 @@
     "./handler": {
       "import": "./src/handler/index.js",
       "require": "./src/handler/index.js"
+    },
+    "./field": {
+      "import": "./src/field/index.js",
+      "require": "./src/field/index.js"
     }
   },
   "type": "module",

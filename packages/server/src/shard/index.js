@@ -1,13 +1,24 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { getDirectionByDelta } from '@iyagi/commons/coords';
 import { Subject } from 'rxjs';
+import { Fields } from '../field/fields.js';
+/**
+ * @typedef {{
+ *  target: import('../object/index.js').ServerObject,
+ *  before: import('@iyagi/commons/coords').XYZ,
+ *  after: import('@iyagi/commons/coords').XYZ,
+ * }} MovePayload
+ */
 
 export class Shard {
+  /** @type {Subject<MovePayload>} */
   #move$ = new Subject();
 
   #key;
+
   /** @type {NodeJS.Timeout | null} */
   #tick_interval = null;
+
   /** @type {Set<import('../user/index.js').UserType>} */
   users = new Set();
 
@@ -22,6 +33,7 @@ export class Shard {
   }) {
     this.#key = key;
     this.objects = objects;
+    this.fields = new Fields(objects);
 
     /**
      * @type {Subject<import('../user/index.js').UserType>}
@@ -48,6 +60,10 @@ export class Shard {
 
     this.leave$.subscribe((user) => {
       this.users.delete(user);
+    });
+
+    this.#move$.subscribe(({ target }) => {
+      this.fields.check(target);
     });
   }
 

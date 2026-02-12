@@ -63,7 +63,7 @@ export const ControllerHandler = {
     }
 
     const interactArea = {
-      ...target.getFrontPosition(),
+      ...target.getFrontXY(),
       radius: 10,
     };
 

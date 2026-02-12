@@ -172,7 +172,7 @@ export class ServerObject {
   /**
    * @param {number} padding
    */
-  getFrontPosition(padding = 0) {
+  getFrontXY(padding = 0) {
     if ('radius' in this.#shape) {
       const distance = this.#shape.radius;
       switch (this.#direction) {
