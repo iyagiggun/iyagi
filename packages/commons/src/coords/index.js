@@ -72,9 +72,9 @@ export function easeInOutSine(t) {
 /**
  * @param {Area} areaA
  * @param {Area} areaB
- * @returns {boolean}
+ * @returns {number} 0 (no overlap) ~ 1 (fully overlapping)
  */
-export function isOverlap(areaA, areaB) {
+export function getOverlapRatio(areaA, areaB) {
   const isCircle = (/** @type {Area} */ a) => 'radius' in a;
 
   if (isCircle(areaA) && isCircle(areaB)) {
@@ -82,15 +82,21 @@ export function isOverlap(areaA, areaB) {
     const b = /** @type {CircleArea} */ (areaB);
     const dx = a.x - b.x;
     const dy = a.y - b.y;
-    const dist = a.radius + b.radius;
-    return dx ** 2 + dy ** 2 <= dist ** 2;
+    const distSq = dx ** 2 + dy ** 2;
+    const maxDistSq = (a.radius + b.radius) ** 2;
+    if (distSq > maxDistSq) return 0;
+    return 1 - distSq / maxDistSq;
   }
 
   if (!isCircle(areaA) && !isCircle(areaB)) {
     const a = /** @type {RectArea} */ (areaA);
     const b = /** @type {RectArea} */ (areaB);
-    return Math.abs(a.x - b.x) <= a.halfW + b.halfW &&
-      Math.abs(a.y - b.y) <= a.halfH + b.halfH;
+    const sumW = a.halfW + b.halfW;
+    const sumH = a.halfH + b.halfH;
+    const overlapX = sumW - Math.abs(a.x - b.x);
+    const overlapY = sumH - Math.abs(a.y - b.y);
+    if (overlapX <= 0 || overlapY <= 0) return 0;
+    return Math.min(overlapX / sumW, overlapY / sumH);
   }
 
   // circle vs rect
@@ -102,7 +108,10 @@ export function isOverlap(areaA, areaB) {
 
   const dx = circle.x - closestX;
   const dy = circle.y - closestY;
-  return dx ** 2 + dy ** 2 <= circle.radius ** 2;
+  const distSq = dx ** 2 + dy ** 2;
+  const radiusSq = circle.radius ** 2;
+  if (distSq > radiusSq) return 0;
+  return 1 - distSq / radiusSq;
 }
 
 /**

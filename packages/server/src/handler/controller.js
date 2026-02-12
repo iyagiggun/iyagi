@@ -1,4 +1,4 @@
-import { getDirectionByDelta, isIn, isOverlap, resolveXY } from '@iyagi/commons/coords';
+import { getDirectionByDelta, isIn, getOverlapRatio, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
 
 export const ControllerHandler = {
@@ -71,7 +71,7 @@ export const ControllerHandler = {
       return object !== target
         && object.interaction$.observed
         && object.xyz.z === target.xyz.z
-        && isOverlap(interactArea, object.area);
+        && getOverlapRatio(interactArea, object.area);
     });
 
     if (interactables.length > 0 === false) {
