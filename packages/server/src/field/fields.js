@@ -22,7 +22,7 @@ export class Fields {
   /**
    * @param {import("./index.js").FieldType} field
    */
-  remove(field) {
+  delete(field) {
     field.destroy();
     this.#fields.delete(field);
   }
