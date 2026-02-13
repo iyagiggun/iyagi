@@ -1,17 +1,30 @@
 import { getOverlapRatio } from '@iyagi/commons/coords';
 import { Subject } from 'rxjs';
 
+/**
+ * @typedef {{
+ *  target: import('../object/index.js').ServerObjectType;
+ *  ratio: number;
+ * }} InPayload
+ */
+
+/**
+ * @typedef {{
+ *  target: import('../object/index.js').ServerObjectType;
+ * }} OutPayload
+ */
+
 export class Field {
   /** @type {import("@iyagi/commons/coords").Area} */
   #area;
 
   /**
-   * @type {import("rxjs").Subject<import("../object/index.js").ServerObjectType>}
+   * @type {Subject<InPayload>}
    */
   #in$ = new Subject();
 
   /**
-   * @type {import("rxjs").Subject<import("../object/index.js").ServerObjectType>}
+   * @type {Subject<OutPayload>}
    **/
   #out$ = new Subject();
 
@@ -57,7 +70,10 @@ export class Field {
     const ratio = getOverlapRatio(object.area, this.#area);
     if (ratio > 0) {
       this.#incomming.add(object);
-      this.#in$.next(object);
+      this.#in$.next({
+        target: object,
+        ratio,
+      });
     }
   }
 
@@ -70,7 +86,7 @@ export class Field {
     const ratio = getOverlapRatio(object.area, this.#area);
     if (ratio === 0) {
       this.#incomming.delete(object);
-      this.#out$.next(object);
+      this.#out$.next({ target: object });
     }
   }
 

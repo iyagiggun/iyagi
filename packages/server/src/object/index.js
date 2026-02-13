@@ -8,7 +8,6 @@ import { FRAMES_PER_SECOND } from '../const/index.js';
  * @typedef {import("@iyagi/commons/coords").Direction} Direction
  */
 
-
 const MOTION_BASE = 'base';
 const DIRECTION_DEFAULT = 'down';
 const MOVE_TIME_UNIT = 1000; // 1sec
