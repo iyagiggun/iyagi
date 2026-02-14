@@ -4,7 +4,7 @@ import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { objects } from '../object/objects.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { shard_container } from '../const/index.js';
-import { fadeIn, fadeOut, shake } from './index.js';
+import { fadeIn, fadeOut } from './shake.js';
 
 /**
  * @param {Object} target
@@ -39,10 +39,6 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: (data) => {
     const container = toContainer(data.target);
     return fadeOut(container);
-  },
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE]: (data) => {
-    const container = toContainer(data.target);
-    return shake(container);
   },
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: (data) => {
     const ticker = global.app.ticker;

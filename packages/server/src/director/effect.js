@@ -17,7 +17,7 @@ const toClientEffectTarget = (target) => {
   }
   if (target instanceof ServerObject) {
     return {
-      type:'OBJECT',
+      type: 'OBJECT',
       id: target.id,
     };
   }
@@ -51,21 +51,6 @@ export const EffectDirector = {
         target: toClientEffectTarget(target),
         ...options,
       },
-    };
-  },
-  /**
-   * @param {Shard | ServerObject} target
-   * @param {*} [options]
-   * @returns {import('../const/index.js').ServerMessage}
-   */
-  shake(target, options) {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_SHAKE,
-      data: {
-        target: toClientEffectTarget(target),
-        ...options,
-      },
-
     };
   },
   /**
