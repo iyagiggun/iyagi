@@ -1,7 +1,7 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { CLIENT_CAMERA_MESSAGE_HANDLER } from '../camera/handler.js';
 import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debug/handler.js';
-import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/index.js';
+import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/handler.js';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/handler.js';
 import { shard } from '../shard/index.js';
 

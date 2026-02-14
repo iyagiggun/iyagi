@@ -27,13 +27,17 @@
     "./debug": {
       "import": "./src/debug/index.js",
       "require": "./src/debug/index.js"
+    },
+    "./effect": {
+      "import": "./src/effect/index.js",
+      "require": "./src/effect/index.js"
     }
   },
   "type": "module",
   "dependencies": {
     "@iyagi/commons": "file:../commons",
     "@iyagi/server": "file:../server",
-    "pixi.js": "^8.15.0",
+    "pixi.js": "^8.16.0",
     "rxjs": "^7.8.2"
   },
   "devDependencies": {

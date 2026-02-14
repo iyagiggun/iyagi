@@ -11,7 +11,7 @@ import { Application } from 'pixi.js';
 /** @type { Application= } */
 let app;
 
-/** @type {Messenger} */
+/** @type {import('../messenger/index.js').Messenger} */
 let messenger;
 
 const ERR_NOT_INITED = 'client has not been initialized yet.';
@@ -32,7 +32,7 @@ export default {
   },
 
   /**
-   * @param {Messenger} next
+   * @param {import('../messenger/index.js').Messenger} next
    */
   set messenger(next) {
     messenger = next;
