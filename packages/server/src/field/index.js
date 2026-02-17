@@ -22,11 +22,13 @@ export class Field {
    * @type {Subject<InPayload>}
    */
   #in$ = new Subject();
+  in$ = this.#in$.asObservable();
 
   /**
    * @type {Subject<OutPayload>}
    **/
   #out$ = new Subject();
+  out$ = this.#out$.asObservable();
 
   /**
    * @type {Set<import("../object/index.js").ServerObjectType>}
@@ -45,20 +47,6 @@ export class Field {
    */
   get area() {
     return this.#area;
-  }
-
-  /**
-   * @readonly
-   */
-  get in$() {
-    return this.#in$.asObservable();
-  }
-
-  /**
-   * @readonly
-   */
-  get out$() {
-    return this.#out$.asObservable();
   }
 
   /**

@@ -11,8 +11,6 @@ import { Fields } from '../field/fields.js';
  */
 
 export class Shard {
-  /** @type {Subject<MovePayload>} */
-  #move$ = new Subject();
 
   #key;
 
@@ -21,6 +19,18 @@ export class Shard {
 
   /** @type {Set<import('../user/index.js').UserType>} */
   users = new Set();
+
+  /** @type {Subject<{ user: import('../user/index.js').UserType }>} */
+  #join$ = new Subject();
+  join$ = this.#join$.asObservable();
+
+  /** @type {Subject<{ user: import('../user/index.js').UserType }>} */
+  #leave$ = new Subject();
+  leave$ = this.#leave$.asObservable();
+
+  /** @type {Subject<MovePayload>} */
+  #move$ = new Subject();
+  move$ = this.#move$.asObservable();
 
   /**
    * @param {Object} p
@@ -40,11 +50,6 @@ export class Shard {
      */
     this.loaded$ = new Subject();
 
-    /**
-     * @type {Subject<import('../user/index.js').UserType>}
-     */
-    this.leave$ = new Subject();
-
     this.loaded$.subscribe((user) => {
       this.users.add(user);
       if (this.#tick_interval === null) {
@@ -56,10 +61,6 @@ export class Shard {
           }
         }, 50);
       }
-    });
-
-    this.leave$.subscribe((user) => {
-      this.users.delete(user);
     });
 
     this.#move$.subscribe(({ target }) => {
@@ -76,10 +77,19 @@ export class Shard {
   }
 
   /**
-   * @readonly
+   * @param {import('../user/index.js').UserType} user
+   * @return {import('../const/index.js').ServerMessage}
    */
-  get move$() {
-    return this.#move$.asObservable();
+  leave(user) {
+    this.users.delete(user);
+    this.#leave$.next({ user });
+
+    return {
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LEAVE,
+      data: {
+        user: user.key,
+      },
+    };
   }
 
   /**
@@ -164,6 +174,8 @@ export class Shard {
     });
   }
 }
+
+export * from './forge.js';
 
 /**
  * @typedef {Shard} ShardType

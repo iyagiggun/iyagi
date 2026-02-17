@@ -1,16 +1,16 @@
 
-import { ControllerHandler } from './controller.js';
+import { CONTROLLER_HANDLER } from './controller.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 
 /**
  * @typedef {{
- *  user: import('../user/index.js').User;
+ *  user: import('../user/index.js').UserType;
  *  message: import('@iyagi/client/const').ClientMessage;
  * }} ClientPayload
  */
 
 const map = new Map([
-  ...Object.entries(ControllerHandler),
+  ...Object.entries(CONTROLLER_HANDLER),
   [BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED, (user) => {
     user.shard.loaded$.next(user);
   }],

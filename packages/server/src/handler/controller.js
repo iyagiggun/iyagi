@@ -1,7 +1,7 @@
 import { getDirectionByDelta, getOverlapRatio, resolveXY } from '@iyagi/commons/coords';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '../../../commons/src/message.js';
 
-export const ControllerHandler = {
+export const CONTROLLER_HANDLER = {
   /**
    * @param {import('../user/index.js').UserType} user
    * @param {*} message

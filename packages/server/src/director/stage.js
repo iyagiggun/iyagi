@@ -1,5 +1,4 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { ShardForge } from '../shard/forge.js';
 
 export const StageDirector = {
 
@@ -14,29 +13,6 @@ export const StageDirector = {
         delay,
       },
     };
-  },
-
-  /**
-   * Side effects occur
-   * @param {object} param
-   * @param {import('../user/index.js').UserType} param.user
-   * @param {string} param.shard
-   */
-  enter({ user, shard: shardKey }) {
-    user.shard.leave$.next(user);
-    const shard = ShardForge.seek(shardKey);
-    user.shard = shard;
-    return ({
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
-      data: {
-        now: performance.now(),
-        shard: {
-          key: shardKey,
-          resources: [...new Set(shard.objects.map((o) => o.resource))].map((r) => r.toClientData()),
-          objects: shard.objects.map((o) => o.toClientData()),
-        },
-      },
-    });
   },
 
   /**

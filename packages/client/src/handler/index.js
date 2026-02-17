@@ -3,7 +3,7 @@ import { CLIENT_CAMERA_MESSAGE_HANDLER } from '../camera/handler.js';
 import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debug/handler.js';
 import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/handler.js';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/handler.js';
-import { shard } from '../shard/index.js';
+import { CLIENT_SHARD_MESSAGE_HANDLER } from '../shard/handler.js';
 
 /**
  * @typedef { { [key: string]: Function } } ClientHandlerMap
@@ -14,11 +14,7 @@ import { shard } from '../shard/index.js';
  * @type {ClientHandlerMap}
  */
 const BASIC_HANDLER_MAP = {
-  [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]:
-    (data) => {
-      shard.clear();
-      return shard.load(data);
-    },
+  ...CLIENT_SHARD_MESSAGE_HANDLER,
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
   ...CLIENT_EFFECT_MESSAGE_HANDLER,
   ...CLIENT_DEBUGGER_MESSAGE_HANDLER,
