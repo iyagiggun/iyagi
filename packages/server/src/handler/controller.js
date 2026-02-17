@@ -7,6 +7,10 @@ export const CONTROLLER_HANDLER = {
    * @param {*} message
    */
   [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_MOVE]: (user, message) => {
+    if (user.controllable === false) {
+      return;
+    }
+
     const shard = user.shard;
     const objects = shard.objects;
     const data = message.data;
@@ -39,6 +43,10 @@ export const CONTROLLER_HANDLER = {
    * @param {*} message
    */
   [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACT]: (user, message) => {
+    if (user.controllable === false) {
+      return;
+    }
+
     const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.target);
@@ -105,6 +113,10 @@ export const CONTROLLER_HANDLER = {
    * @param {*} message
    */
   [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_ACTION]: (user, message) => {
+    if (user.controllable === false) {
+      return;
+    }
+
     const objects = user.shard.objects;
     const data = message.data;
     const target = objects.find((o) => o.id === data.id);

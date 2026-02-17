@@ -20,7 +20,7 @@ const instanceIdxMap = new Map();
 /**
  * @typedef {Object} ServerObjectOptions
  * @property {string} [name]
- * @property {Direction} [direction]
+ * @property {string} [key]
  * @property {string | Object<string, string>} [portraits]
  */
 
@@ -61,13 +61,14 @@ export class ServerObject {
     // TODO:: sprite 는 없어져야 함
     this.#sprite = r.data.sprite;
 
-    const idx = instanceIdxMap.get(r.key) ?? 0;
-    this.#id = `object:${r.key}:${idx}`;
-    instanceIdxMap.set(r.key, idx + 1); // set next index
-
-    if (o?.direction) {
-      this.#direction = o.direction;
+    if (o?.key) {
+      this.#id = o.key;
+    } else {
+      const idx = instanceIdxMap.get(r.key) ?? 0;
+      this.#id = `object:${r.key}:${idx}`;
+      instanceIdxMap.set(r.key, idx + 1); // set next index
     }
+
     this.#portraits = o?.portraits;
 
     /**

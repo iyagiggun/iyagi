@@ -33,6 +33,7 @@ export class User {
     this.state = state;
     this.name = name;
     this.avatar = avatar;
+    this.controllable = false;
   }
 
   /**
@@ -44,6 +45,7 @@ export class User {
 
   #leave() {
     this.shard.users.delete(this);
+    this.controllable = false;
     this.shard.users.forEach((u) => {
       u.send([{
         type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LEAVE,
