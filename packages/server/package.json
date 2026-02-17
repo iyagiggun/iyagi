@@ -4,10 +4,6 @@
   "description": "Server-side game engine for Iyagi",
   "main": "src/index.js",
   "exports": {
-    ".": {
-      "import": "./src/index.js",
-      "require": "./src/index.js"
-    },
     "./const": {
       "import": "./src/const/index.js",
       "require": "./src/const/index.js"

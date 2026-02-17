@@ -26,8 +26,8 @@ const load = async (data) => {
 
   await Promise.all(data.shard.resources.map(
     /**
-       * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>} r
-       */
+    * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>} r
+     */
     (r) => {
       const cached = resource_pool.get(r.key);
       if (cached) {
