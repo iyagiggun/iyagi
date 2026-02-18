@@ -13,7 +13,6 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]: async (data) => {
     if (_current) {
       await shard.clear.before(shard.container);
-      shard.container.alpha = 0;
       shard.container.removeChildren();
       await shard.clear.after(shard.container);
     }
@@ -52,13 +51,13 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
       })
     );
 
-    await shard.load.after(shard.container);
-
-    shard.container.alpha = 1;
-
     sender.send({
       type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
     });
+
+    await shard.load.after(shard.container);
+
+    shard.container.alpha = 1;
   },
 
   [BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:

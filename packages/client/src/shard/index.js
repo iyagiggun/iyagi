@@ -3,7 +3,6 @@ import { camera } from './camera.js';
 import { objects } from './objects.js';
 
 export const container = new Container();
-container.alpha = 0;
 
 export const shard = {
   container,
