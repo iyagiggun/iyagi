@@ -30,34 +30,6 @@ export const EffectDirector = {
    * @param {*} [options]
    * @returns {import('../const/index.js').ServerMessage}
    */
-  fadeIn(target, options) {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN,
-      data: {
-        target: toClientEffectTarget(target),
-        ...options,
-      },
-    };
-  },
-  /**
-   * @param {Shard | ServerObject} target
-   * @param {*} [options]
-   * @returns {import('../const/index.js').ServerMessage}
-   */
-  fadeOut(target, options) {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT,
-      data: {
-        target: toClientEffectTarget(target),
-        ...options,
-      },
-    };
-  },
-  /**
-   * @param {Shard | ServerObject} target
-   * @param {*} [options]
-   * @returns {import('../const/index.js').ServerMessage}
-   */
   jump(target, options) {
     return {
       type: BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP,

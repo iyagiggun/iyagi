@@ -1,10 +1,8 @@
+import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { easeInOutSine } from '@iyagi/commons/coords';
 import global from '../global/index.js';
 import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { objects } from '../object/objects.js';
-import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { shard_container } from '../const/index.js';
-import { fadeIn, fadeOut } from './shake.js';
 
 /**
  * @param {Object} target
@@ -15,31 +13,7 @@ const toObject = (target) => {
   return objects.find(target.id);
 };
 
-/**
- * @param {Object} target
- * @param {string} target.type
- * @param {string} target.id
- */
-const toContainer = (target) => {
-  switch (target.type) {
-    case 'SHARD':
-      return shard_container;
-    case 'OBJECT':
-      return toObject(target).container;
-    default:
-      throw new Error(`Unknown target type: ${target.type}`);
-  }
-};
-
 export const CLIENT_EFFECT_MESSAGE_HANDLER = {
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_IN]: (data) => {
-    const container = toContainer(data.target);
-    return fadeIn(container);
-  },
-  [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_FADE_OUT]: (data) => {
-    const container = toContainer(data.target);
-    return fadeOut(container);
-  },
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: (data) => {
     const ticker = global.app.ticker;
 

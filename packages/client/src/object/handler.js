@@ -1,19 +1,12 @@
-import global from '../global/index.js';
-import { Rectangle } from 'pixi.js';
-import { objects } from './objects.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
+import { Rectangle } from 'pixi.js';
 import camera from '../camera/index.js';
-
-/**
- * @param {string} id
- */
-const find = (id) => {
-  return objects.find(id);
-};
+import global from '../global/index.js';
+import { shard } from '../shard/index.js';
 
 export const CLIENT_OBJECT_MESSAGE_HANDLER = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_MOVE]: (data) => {
-    const target = find(data.target);
+    const target = shard.objects.find(data.target);
     const direction = data.direction;
     if (direction) {
       target.direction = direction;
@@ -21,11 +14,11 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     return target.move(data);
   },
   [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_TALK]: (data) => {
-    const target = find(data.target);
+    const target = shard.objects.find(data.target);
     return target.talk(data.message);
   },
   [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_REMOVE]: (data) => {
-    const target = objects.find(data.id);
+    const target = shard.objects.find(data.id);
     if (target) {
       const parent = target.container.parent;
       if (parent) {
@@ -44,7 +37,7 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     return Promise.resolve();
   },
   [BUILT_IN_SERVER_MESSAGE_TYPES.OBJECT_ACTION]: (data) => {
-    const target = find(data.target);
+    const target = shard.objects.find(data.target);
     target.play({ motion: data.motion, ...data.options });
     return Promise.resolve();
   },
@@ -56,7 +49,7 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     }
     const { width, height } = app.screen;
 
-    const target = find(data.target);
+    const target = shard.objects.find(data.target);
     controller.target = target;
     camera.target = target;
 

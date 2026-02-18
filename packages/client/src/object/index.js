@@ -5,6 +5,7 @@ import { FRAMES_PER_SECOND } from '../const/index.js';
 import { Z_LAYER } from '@iyagi/commons/coords';
 import { Time } from '../time/index.js';
 import camera from '../camera/index.js';
+import { Subject } from 'rxjs';
 
 const DEFAULT_COMPLETE = () => undefined;
 
@@ -23,6 +24,8 @@ export const CLIENT_OBJECT_CONTAINER_LABEL = {
  */
 
 export default class ClientObject {
+
+  #loaded = false;
 
   /** @type {import('@iyagi/commons/coords').Direction} */
   #direction;
@@ -48,6 +51,12 @@ export default class ClientObject {
   #cache = new Map();
 
   #complete = DEFAULT_COMPLETE;
+
+  #move$ = new Subject();
+  move$ = this.#move$.asObservable();
+
+  /** @type {Map<string, ClientObject>} */
+  static pool = new Map();
 
   /**
    * @param {ClientObjectParams} param
@@ -84,8 +93,13 @@ export default class ClientObject {
     }
   }
 
-  load() {
-    return this.#portrait.load();
+  async load() {
+    if (this.#loaded) {
+      return;
+    }
+    await this.#portrait.load();
+    this.#loaded = true;
+    ClientObject.pool.set(this.id, this);
   }
 
   /**
@@ -327,3 +341,7 @@ export default class ClientObject {
     }
   }
 }
+
+/**
+ * @typedef {ClientObject} ClientObjectType
+ */

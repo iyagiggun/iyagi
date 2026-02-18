@@ -8,6 +8,10 @@
       "import": "./src/index.js",
       "require": "./src/index.js"
     },
+    "./shard": {
+      "import": "./src/shard/index.js",
+      "require": "./src/shard/index.js"
+    },
     "./object": {
       "import": "./src/object/index.js",
       "require": "./src/object/index.js"

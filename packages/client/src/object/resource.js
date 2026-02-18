@@ -2,27 +2,37 @@ import ClientObject from './index.js';
 import { Portrait } from './portrait.js';
 import ITexture from './texture.js';
 
-/**
- * @type {Map<string, import('./index.js').default>}
- */
-const pool = new Map();
-
 class ObjectResource {
+  #key;
+
   #sprite;
 
   #texture;
 
+  #loaded = false;
+
   /**
+   * @type {Map<string, ObjectResource>}
+   */
+  static pool = new Map();
+
+  /**
+   * @param {string} key
    * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>['sprite']} sprite
    */
-  constructor(sprite) {
+  constructor(key, sprite) {
+    this.#key = key;
     this.#sprite = sprite;
     this.#texture = new ITexture(sprite);
   }
 
   async load() {
+    if (this.#loaded) {
+      return;
+    }
     await this.#texture.load();
-    return this;
+    this.#loaded = true;
+    ObjectResource.pool.set(this.#key, this);
   }
 
   /**
@@ -34,11 +44,7 @@ class ObjectResource {
    * @returns
    */
   spawn(id, options) {
-    const cached = pool.get(id);
-    if (cached) {
-      return cached;
-    }
-    const created = new ClientObject({
+    return ClientObject.pool.get(id) ?? new ClientObject({
       id,
       name: options?.name,
       texture: this.#texture,
@@ -46,8 +52,6 @@ class ObjectResource {
       // todo: json
       portrait: new Portrait(options?.portraits),
     });
-    pool.set(id, created);
-    return created;
   }
 }
 

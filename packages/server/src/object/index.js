@@ -20,7 +20,7 @@ const instanceIdxMap = new Map();
 /**
  * @typedef {Object} ServerObjectOptions
  * @property {string} [name]
- * @property {string} [key]
+ * @property {string} [id]
  * @property {string | Object<string, string>} [portraits]
  */
 
@@ -61,8 +61,8 @@ export class ServerObject {
     // TODO:: sprite 는 없어져야 함
     this.#sprite = r.data.sprite;
 
-    if (o?.key) {
-      this.#id = o.key;
+    if (o?.id) {
+      this.#id = o.id;
     } else {
       const idx = instanceIdxMap.get(r.key) ?? 0;
       this.#id = `object:${r.key}:${idx}`;
@@ -298,4 +298,5 @@ export { NAI };
 /**
  * @typedef { ServerObject } ServerObjectType
  * @typedef { ServerObjectResource } ServerObjectResourceType
- */
+ * @typedef { import('./resource.js').ObjectResourceData } ServerObjectResourceData
+  */

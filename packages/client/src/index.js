@@ -1,8 +1,8 @@
+import { shard_container } from './const/index.js';
 import global from './global/index.js';
+import handler from './handler/index.js';
 import imessenger from './messenger/imessenger.js';
 import sender from './sender/index.js';
-import handler from './handler/index.js';
-import { objects } from './object/objects.js';
 
 global.messenger = imessenger;
 
@@ -20,6 +20,8 @@ const iclient = {
     handler.init(websocket, handlerMap);
 
     await global.init();
+
+    global.app.stage.addChild(shard_container);
 
     // Pixi.js 애플리케이션 자동 리사이즈 처리 (옵션)
     // window.addEventListener('resize', () => {
@@ -49,10 +51,6 @@ const iclient = {
       this.application.stage.removeChild(last.container);
     }
     global.controller = next;
-  },
-
-  get objects() {
-    return objects;
   },
 };
 

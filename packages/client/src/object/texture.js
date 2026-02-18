@@ -10,7 +10,7 @@ export const getMDKey = (motion, direction) => `${motion}:${direction}`;
 let frameNo = 0;
 
 /**
- * @param {import('@iyagi/server/object/resource.js').SpriteImage} image
+ * @param {import('@iyagi/server/object').ServerObjectResourceData['sprite']['image']} image
  * @param {Object} options
  * @param {import('@iyagi/commons/coords').XYWH[]} [options.frames]
  * @param {boolean} [options.scale]
@@ -51,7 +51,7 @@ export default class ITexture {
   #loaded = false;
 
   /**
-   * @param {import('@iyagi/server/object/resource.js').ObjectResourceData['sprite']} info
+   * @param {import('@iyagi/server/object').ServerObjectResourceData['sprite']} info
    */
   constructor(info) {
     this.#info = info;
@@ -59,7 +59,7 @@ export default class ITexture {
 
   async load() {
     if (this.#loaded) {
-      return this;
+      return;
     }
 
     const motions = this.#info.motions;
@@ -85,7 +85,7 @@ export default class ITexture {
     await Promise.all(promises);
     this.#loaded = true;
 
-    return this;
+    return;
   }
 
   /**
