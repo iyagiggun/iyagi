@@ -1,6 +1,6 @@
-import { Graphics } from 'pixi.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { shard_container } from '../const/index.js';
+import { Graphics } from 'pixi.js';
+import { shard } from '../shard/index.js';
 
 export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.DEBUGGER_HIGHLIGHT]: (data) => new Promise((resolve) => {
@@ -31,9 +31,9 @@ export const CLIENT_DEBUGGER_MESSAGE_HANDLER = {
 
     graphics.zIndex = Number.MAX_SAFE_INTEGER;
 
-    shard_container.addChild(graphics);
+    shard.container.addChild(graphics);
     window.setTimeout(() => {
-      shard_container.removeChild(graphics);
+      shard.container.removeChild(graphics);
     }, 1000);
 
     resolve();

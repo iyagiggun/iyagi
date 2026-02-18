@@ -1,7 +1,6 @@
 import { BUILT_IN_CLIENT_MESSAGE_TYPES, BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { shard } from './index.js';
 import ObjectResource from '../object/resource.js';
-import { shard_container } from '../const/index.js';
 import sender from '../sender/index.js';
 
 /**
@@ -10,16 +9,17 @@ import sender from '../sender/index.js';
 let _current = null;
 
 export const CLIENT_SHARD_MESSAGE_HANDLER = {
+
   [BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD]: async (data) => {
     if (_current) {
-      await shard.clear.before(shard_container);
-      shard_container.alpha = 0;
-      shard_container.removeChildren();
-      await shard.clear.after(shard_container);
+      await shard.clear.before(shard.container);
+      shard.container.alpha = 0;
+      shard.container.removeChildren();
+      await shard.clear.after(shard.container);
     }
     _current = data.shard.key;
 
-    await shard.load.before(shard_container);
+    await shard.load.before(shard.container);
 
     await Promise.all(data.shard.resources.map(
       /**
@@ -52,12 +52,21 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
       })
     );
 
-    await shard.load.after(shard_container);
+    await shard.load.after(shard.container);
 
-    shard_container.alpha = 1;
+    shard.container.alpha = 1;
 
     sender.send({
       type: BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED,
     });
   },
+
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:
+    (data) => shard.camera.move(data),
+
+  [BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOLLOW]:
+    (data) => {
+      const target = shard.objects.find(data.target);
+      return shard.camera.follow(target);
+    },
 };

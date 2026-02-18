@@ -1,6 +1,5 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { Rectangle } from 'pixi.js';
-import camera from '../camera/index.js';
 import global from '../global/index.js';
 import { shard } from '../shard/index.js';
 
@@ -51,7 +50,7 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
 
     const target = shard.objects.find(data.target);
     controller.target = target;
-    camera.target = target;
+    shard.camera.follow(target);
 
     const cc = controller.container;
     cc.hitArea = new Rectangle(0, 0, width, height);

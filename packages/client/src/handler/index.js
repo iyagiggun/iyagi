@@ -1,5 +1,4 @@
 import { BUILT_IN_CLIENT_MESSAGE_TYPES, BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { CLIENT_CAMERA_MESSAGE_HANDLER } from '../camera/handler.js';
 import { CLIENT_DEBUGGER_MESSAGE_HANDLER } from '../debug/handler.js';
 import { CLIENT_EFFECT_MESSAGE_HANDLER } from '../effect/handler.js';
 import { CLIENT_OBJECT_MESSAGE_HANDLER } from '../object/handler.js';
@@ -19,7 +18,6 @@ const BASIC_HANDLER_MAP = {
   ...CLIENT_OBJECT_MESSAGE_HANDLER,
   ...CLIENT_EFFECT_MESSAGE_HANDLER,
   ...CLIENT_DEBUGGER_MESSAGE_HANDLER,
-  ...CLIENT_CAMERA_MESSAGE_HANDLER,
   [BUILT_IN_SERVER_MESSAGE_TYPES.WAIT]:
     (data) => {
       return new Promise((resolve) => {

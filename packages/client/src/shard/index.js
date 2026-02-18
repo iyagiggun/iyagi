@@ -1,13 +1,14 @@
-import { shard_container } from '../const/index.js';
+import { Container } from 'pixi.js';
 import { camera } from './camera.js';
 import { objects } from './objects.js';
 
-const _objects = objects(shard_container);
-const _camera = camera(shard_container, _objects);
+export const container = new Container();
+container.alpha = 0;
 
 export const shard = {
-  objects: _objects,
-  camera: _camera,
+  container,
+  objects: objects(container),
+  camera: camera(container),
   load: {
     /**
      * Override as needed.

@@ -14,9 +14,8 @@ const getContainerPos = ({ x, y }) => {
 
 /**
  * @param {import('pixi.js').Container} container
- * @param {import('./objects.js').ShardObjectsType} objects
  */
-export const camera = (container, objects) => {
+export const camera = (container) => {
 
   /** @type {function | null} */
   let release = null;
@@ -68,12 +67,10 @@ export const camera = (container, objects) => {
   };
 
   /**
-   * @param {string} _target
+   * @param {import('../object/index.js').ClientObjectType} target
    */
-  const follow = async (_target) => {
+  const follow = async (target) => {
     release?.();
-
-    const target = objects.find(_target);
     await move(target.xyz);
     const subs = target.move$.subscribe((xy) => {
       const { x, y } = getContainerPos(xy);
