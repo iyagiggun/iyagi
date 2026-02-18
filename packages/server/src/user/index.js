@@ -7,11 +7,21 @@ import { ShardForge } from '../shard/forge.js';
  */
 
 /**
+ * @typedef {{ send: (data: string) => void }} Socket
+ */
+
+/**
  * @template [T=unknown]
  */
 export class User {
 
   #key;
+
+  /** @type {function | undefined} */
+  #callback = undefined;
+
+  /** @type {Socket | null} */
+  socket = null;
 
   /**
    * @param {object} param
@@ -41,6 +51,13 @@ export class User {
    */
   get key() {
     return this.#key;
+  }
+
+  /**
+   * @param {Socket} socket
+   */
+  activate(socket) {
+    this.socket = socket;
   }
 
   #leave() {
@@ -94,11 +111,30 @@ export class User {
   }
 
   /**
-     * @param {import("../const/index.js").ServerMessage[]} _message
-     */
-  // eslint-disable-next-line no-unused-vars
-  send(_message) {
-    throw new Error('Not implemented');
+   * @param {import("../const/index.js").ServerMessage[]} messages
+   * @param {Object} [options]
+   * @param {function} [options.callback]
+   */
+  send(messages, options = {}) {
+    if (this.socket === null) {
+      throw new Error('user is not activated');
+    }
+
+    const callback = options.callback ? true : undefined;
+    if (callback) {
+      this.#callback = options.callback;
+    }
+
+    const payload = {
+      messages,
+      callback,
+    };
+    this.socket.send(JSON.stringify(payload));
+  }
+
+  callback() {
+    this.#callback?.();
+    this.#callback = undefined;
   }
 }
 

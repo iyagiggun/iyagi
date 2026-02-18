@@ -14,6 +14,9 @@ const map = new Map([
   [BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED, (user) => {
     user.shard.loaded$.next(user);
   }],
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CALLBACK, (user) => {
+    user.callback();
+  }],
 ]);
 
 export const ServerHandler = {

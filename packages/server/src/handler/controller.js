@@ -11,13 +11,11 @@ export const CONTROLLER_HANDLER = {
       return;
     }
 
-    const shard = user.shard;
-    const objects = shard.objects;
     const data = message.data;
-    const target = shard.objects.find((o) => o.id === data.id);
-    if (!target) {
-      throw new Error(`Fail to move. No target (${message.data.id}).`);
-    }
+
+    const shard = user.shard;
+    const target = user.avatar;
+
     const area = target.area;
     if (('radius' in area) === false) {
       throw new Error('controller.move only supports circle area.');
@@ -27,7 +25,7 @@ export const CONTROLLER_HANDLER = {
     const dest = target.calcNextPos({ xy: data.xy, duration: 50 });
     const z = data.z ?? target.xyz.z;
 
-    const obstacles = objects
+    const obstacles = shard.objects
       .filter((o) => o !== target && o.xyz.z === z)
       .map((o) => o.area);
 
