@@ -38,20 +38,13 @@ export const CONTROLLER_HANDLER = {
   },
   /**
    * @param {import('../user/index.js').UserType} user
-   * @param {*} message
    */
-  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACT]: (user, message) => {
+  [BUILT_IN_CLIENT_MESSAGE_TYPES.CONTROLLER_INTERACT]: (user) => {
     if (user.controllable === false) {
       return;
     }
 
-    const objects = user.shard.objects;
-    const data = message.data;
-    const target = objects.find((o) => o.id === data.target);
-
-    if (!target) {
-      return;
-    }
+    const target = user.avatar;
 
     const interactArea = {
       ...target.getFrontXY(),
@@ -59,7 +52,7 @@ export const CONTROLLER_HANDLER = {
       radius: 10,
     };
 
-    const interactables = objects.filter((object) => {
+    const interactables = user.shard.objects.filter((object) => {
       return object !== target
         && object.interaction$.observed
         && object.xyz.z === target.xyz.z
@@ -115,13 +108,8 @@ export const CONTROLLER_HANDLER = {
       return;
     }
 
-    const objects = user.shard.objects;
     const data = message.data;
-    const target = objects.find((o) => o.id === data.id);
-
-    if (!target) {
-      return;
-    }
+    const target = user.avatar;
 
     target.action$.next({ user, input: data.input });
   },
