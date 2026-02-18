@@ -4,7 +4,6 @@ import global from '../global/index.js';
 import { FRAMES_PER_SECOND } from '../const/index.js';
 import { Z_LAYER } from '@iyagi/commons/coords';
 import { Time } from '../time/index.js';
-import camera from '../camera/index.js';
 import { Subject } from 'rxjs';
 
 const DEFAULT_COMPLETE = () => undefined;
@@ -52,6 +51,7 @@ export default class ClientObject {
 
   #complete = DEFAULT_COMPLETE;
 
+  /** @type {Subject<import('@iyagi/commons/coords').XYZ>} */
   #move$ = new Subject();
   move$ = this.#move$.asObservable();
 
@@ -249,13 +249,9 @@ export default class ClientObject {
           const nextX = startX + Math.cos(angle) * progress * distance;
           const nextY = startY + Math.sin(angle) * progress * distance;
           this.xy = { x: nextX, y: nextY };
-          if (camera.target === this) {
-            camera.point({ x: nextX, y: nextY });
-          }
+          this.#move$.next(this.xyz);
         } else {
           this.xyz = { x, y, z };
-        }
-        if (arrived) {
           this.#complete();
         }
       };

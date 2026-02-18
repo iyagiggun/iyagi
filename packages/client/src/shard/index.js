@@ -1,31 +1,13 @@
 import { shard_container } from '../const/index.js';
+import { camera } from './camera.js';
+import { objects } from './objects.js';
 
-/**
- * @type {import('../object/index.js').ClientObjectType[]}
- */
-const _objects = [];
+const _objects = objects(shard_container);
+const _camera = camera(shard_container, _objects);
 
 export const shard = {
-  objects: {
-    /**
-     * @param {import('../object/index.js').ClientObjectType} obj
-     */
-    async add(obj) {
-      await obj.load();
-      _objects.push(obj);
-      shard_container.addChild(obj.container);
-    },
-    /**
-     * @param {string} id
-     */
-    find(id) {
-      const obj = _objects.find((o) => o.id === id);
-      if (!obj) {
-        throw new Error(`Object not found: ${id}`);
-      }
-      return obj;
-    },
-  },
+  objects: _objects,
+  camera: _camera,
   load: {
     /**
      * Override as needed.
