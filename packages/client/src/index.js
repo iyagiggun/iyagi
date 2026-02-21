@@ -6,8 +6,6 @@ import { shard } from './shard/index.js';
 
 global.messenger = imessenger;
 
-/** @typedef {import('./global/index.js').Controller} Controller */
-
 const iclient = {
   /**
    * @param {Object} p
@@ -38,19 +36,6 @@ const iclient = {
 
   get application() {
     return global.app;
-  },
-
-  get controller() {
-    return global.controller;
-  },
-
-  /** @param { Controller | null } next */
-  set controller(next) {
-    const last = global.controller;
-    if (last && this.application.stage.children.includes(last.container)) {
-      this.application.stage.removeChild(last.container);
-    }
-    global.controller = next;
   },
 };
 

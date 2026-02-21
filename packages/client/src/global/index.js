@@ -1,13 +1,5 @@
 import { Application } from 'pixi.js';
 
-/**
- * @typedef {{
-*  container: import('pixi.js').Container;
-*  target: import('../object/index.js').default | null;
-*  release: () => void;
-* }} Controller
-*/
-
 /** @type { Application= } */
 let app;
 
@@ -37,11 +29,6 @@ export default {
   set messenger(next) {
     messenger = next;
   },
-
-  /**
-   * @type {Controller | null}
-   */
-  controller: null,
 
   async init() {
     app = new Application();

@@ -32,7 +32,7 @@ export class Shard {
   #move$ = new Subject();
   move$ = this.#move$.asObservable();
 
-  /** @type {Subject<{ user: import('../user/index.js').UserType, object: import('../object/index.js').ServerObjectType }>} */
+  /** @type {Subject<{ user: import('../user/index.js').UserType, target: import('../object/index.js').ServerObjectType }>} */
   #interaction$ = new Subject();
   interaction$ = this.#interaction$.asObservable();
 
@@ -141,7 +141,7 @@ export class Shard {
       user.send([before]);
     }
 
-    this.#interaction$.next({ user, object: target });
+    this.#interaction$.next({ user, target });
   }
 
   /**
