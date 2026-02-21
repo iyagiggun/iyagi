@@ -1,6 +1,8 @@
 import { Container, Graphics, Text, TextStyle } from 'pixi.js';
 import global from '../global/index.js';
 
+let isTalking = false;
+
 const NAME_STYLE = new TextStyle({
   fontSize: 24,
   fontStyle: 'italic',
@@ -27,8 +29,10 @@ const getMessageStyle = (width) => new TextStyle({
 
 /**
  * @param {import('./index.js').MessageShowParams} p
+ * @returns {Promise<void>}
  */
 const show = ({ name: _name, message, portrait }) => {
+  isTalking = true;
 
   const application = global.app;
   const appWidth = application.screen.width;
@@ -67,7 +71,7 @@ const show = ({ name: _name, message, portrait }) => {
 
   const showPartedMessage = () => {
     const msg = textList[listIdx];
-    while(msgEndIdx <= msg.length && !isMsgOverflowed) {
+    while (msgEndIdx <= msg.length && !isMsgOverflowed) {
       msgEndIdx += 1;
       token.text = msg.substring(msgStartIdx, msgEndIdx);
       if (bg.height > heightThreshold) {
@@ -101,7 +105,8 @@ const show = ({ name: _name, message, portrait }) => {
         if (portrait) {
           container.removeChild(portrait);
         }
-        resolve(undefined);
+        isTalking = false;
+        resolve();
       } else {
         showPartedMessage();
       }
@@ -112,6 +117,12 @@ const show = ({ name: _name, message, portrait }) => {
 
 const imessenger = {
   show,
+  /**
+   * @readonly
+   */
+  get isTalking() {
+    return isTalking;
+  },
 };
 
 export default imessenger;

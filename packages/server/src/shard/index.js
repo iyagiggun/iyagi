@@ -98,7 +98,7 @@ export class Shard {
 
     const interactables = shard.objects.filter((object) => {
       return object !== avatar
-        && object.interaction$.observed
+        && object.interactable
         && object.xyz.z === avatar.xyz.z
         && getOverlapRatio(interactArea, object.area);
     });

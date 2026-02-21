@@ -9,4 +9,5 @@
 /**
  * @typedef {Object} Messenger
  * @property {function(MessageShowParams): Promise<void>} show
+ * @property {boolean} isTalking
  */

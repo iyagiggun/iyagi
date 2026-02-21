@@ -47,6 +47,8 @@ export class ServerObject {
 
   z = 1;
 
+  interactable = false;
+
   #moveSpeed = FRAMES_PER_SECOND; // pixels per second
 
   /**
@@ -70,11 +72,6 @@ export class ServerObject {
     }
 
     this.#portraits = o?.portraits;
-
-    /**
-     * @type {Subject<{ user: import('../user/index.js').UserType }>}
-     */
-    this.interaction$ = new Subject();
 
     /**
      * @type {Subject<{ user: import('../user/index.js').UserType, input: string }>}

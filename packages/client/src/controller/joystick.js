@@ -1,4 +1,5 @@
 import { Subject } from 'rxjs';
+import global from '../global/index.js';
 
 const DEFAULT_RATE = 50;
 
@@ -52,7 +53,7 @@ const checkMoveThreshold = () => {
  */
 const touchStart = (evt) => {
   evt.preventDefault();
-  if (touchId !== null) {
+  if (touchId !== null || global.messenger.isTalking) {
     return;
   }
   const touch = Array.from(evt.touches).find((t) => isIn(t.clientX));
