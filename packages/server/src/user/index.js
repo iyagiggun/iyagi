@@ -63,14 +63,12 @@ export class User {
   #leave() {
     this.shard.users.delete(this);
     this.controllable = false;
-    this.shard.users.forEach((u) => {
-      u.send([{
-        type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LEAVE,
-        data: {
-          user: this.key,
-        },
-      }]);
-    });
+    this.shard.sync([{
+      type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LEAVE,
+      data: {
+        user: this.key,
+      },
+    }]);
   }
 
   /**
@@ -88,7 +86,7 @@ export class User {
     }]);
     this.shard = shard;
     shard.users.add(this);
-    const avatars = [...shard.users].map((u) => u.avatar);
+    const avatars = shard.users.list().map((u) => u.avatar);
     this.send([{
       type: BUILT_IN_SERVER_MESSAGE_TYPES.SHARD_LOAD,
       data: {

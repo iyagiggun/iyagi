@@ -2,6 +2,7 @@ import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { getDirectionByDelta, getOverlapRatio } from '@iyagi/commons/coords';
 import { Subject } from 'rxjs';
 import { Fields } from '../field/fields.js';
+import { ShardUsers } from './users.js';
 /**
  * @typedef {{
  *  target: import('../object/index.js').ServerObject,
@@ -17,8 +18,7 @@ export class Shard {
   /** @type {NodeJS.Timeout | null} */
   #tick_interval = null;
 
-  /** @type {Set<import('../user/index.js').UserType>} */
-  users = new Set();
+  users = new ShardUsers();
 
   /** @type {Subject<{ user: import('../user/index.js').UserType }>} */
   #join$ = new Subject();
@@ -237,7 +237,7 @@ export class Shard {
     if (messages.length > 0 === false) {
       return;
     }
-    this.users.forEach((user) => {
+    this.users.list().forEach((user) => {
       user.send(messages);
     });
   }
