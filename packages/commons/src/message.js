@@ -1,7 +1,5 @@
 export const BUILT_IN_SERVER_MESSAGE_TYPES = {
   WAIT: 'wait',
-  CONTROL: 'control',
-  CONTROL_RELEASE: 'control.release',
   SHARD_JOIN: 'shard.join',
   SHARD_LEAVE: 'shard.leave',
   SHARD_LOAD: 'shard.load',
@@ -19,8 +17,8 @@ export const BUILT_IN_CLIENT_MESSAGE_TYPES = {
   CALLBACK: 'callback',
   // SHARD_LOAD: 'shard.load',
   SHARD_LOADED: 'shard.loaded',
+  SHARD_INTERACT: 'shard.interact',
   // OBJECT_MOVE: 'object.move',
   CONTROLLER_MOVE: 'controller.move',
-  CONTROLLER_INTERACT: 'controller.interact',
   CONTROLLER_ACTION: 'controller.action',
 };

@@ -1,5 +1,5 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { getDirectionByDelta } from '@iyagi/commons/coords';
+import { getDirectionByDelta, getOverlapRatio } from '@iyagi/commons/coords';
 import { Subject } from 'rxjs';
 import { Fields } from '../field/fields.js';
 /**
@@ -32,18 +32,25 @@ export class Shard {
   #move$ = new Subject();
   move$ = this.#move$.asObservable();
 
+  /** @type {Subject<{ user: import('../user/index.js').UserType, object: import('../object/index.js').ServerObjectType }>} */
+  #interaction$ = new Subject();
+  interaction$ = this.#interaction$.asObservable();
+
   /**
    * @param {Object} p
    * @param {string} p.key
    * @param {import('../object/index.js').ServerObject[]} p.objects
+   * @param {import('../field/index.js').Field[]} [p.fields]
    */
   constructor({
     key,
     objects,
+    fields,
   }) {
     this.#key = key;
     this.objects = objects;
     this.fields = new Fields(objects);
+    this.fields.add(fields ?? []);
 
     /**
      * @type {Subject<import('../user/index.js').UserType>}
@@ -74,6 +81,67 @@ export class Shard {
 
   get id() {
     return 'SHARD';
+  }
+
+  /**
+   * @param {import('../user/index.js').UserType} user
+   */
+  interact(user) {
+    const avatar = user.avatar;
+    const shard = user.shard;
+
+    const interactArea = {
+      ...avatar.getFrontXY(),
+      z: avatar.z,
+      radius: 10,
+    };
+
+    const interactables = shard.objects.filter((object) => {
+      return object !== avatar
+        && object.interaction$.observed
+        && object.xyz.z === avatar.xyz.z
+        && getOverlapRatio(interactArea, object.area);
+    });
+
+    if (interactables.length > 0 === false) {
+      return;
+    }
+
+    const target = interactables.reduce((closest, current) => {
+      const closestDist = Math.hypot(
+        closest.xyz.x - interactArea.x,
+        closest.xyz.y - interactArea.y
+      );
+      const currentDist = Math.hypot(
+        current.xyz.x - interactArea.x,
+        current.xyz.y - interactArea.y
+      );
+      return currentDist < closestDist ? current : closest;
+    });
+
+    const interactDirection = (() => {
+      switch (avatar.direction) {
+        case 'up':
+          return 'down';
+        case 'down':
+          return 'up';
+        case 'left':
+          return 'right';
+        case 'right':
+          return 'left';
+        default:
+          throw new Error('Invalid direction.');
+      }
+    })();
+
+    if (target.canDirectTo(interactDirection)) {
+      const before = shard.move(target, {
+        direction: interactDirection,
+      });
+      user.send([before]);
+    }
+
+    this.#interaction$.next({ user, object: target });
   }
 
   /**

@@ -12,17 +12,25 @@ export class Fields {
   }
 
   /**
-   * @param {import("./index.js").FieldType} field
+   * @param {import("./index.js").FieldType | import("./index.js").FieldType[]} field
    */
   add(field) {
+    if (Array.isArray(field)) {
+      field.forEach((f) => this.add(f));
+      return;
+    }
     this.#objects.forEach((object) => field.checkIn(object));
     this.#fields.add(field);
   }
 
   /**
-   * @param {import("./index.js").FieldType} field
+   * @param {import("./index.js").FieldType | import("./index.js").FieldType[]} field
    */
   delete(field) {
+    if (Array.isArray(field)) {
+      field.forEach((f) => this.delete(f));
+      return;
+    }
     field.destroy();
     this.#fields.delete(field);
   }

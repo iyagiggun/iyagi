@@ -51,22 +51,4 @@ export const StageDirector = {
       },
     };
   },
-
-  /**
-   * @param {import('../object/index.js').ServerObject} target
-   */
-  control(target) {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL,
-      data: {
-        target: target.id,
-      },
-    };
-  },
-
-  release() {
-    return {
-      type: BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL_RELEASE,
-    };
-  },
 };

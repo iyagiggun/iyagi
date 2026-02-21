@@ -40,32 +40,5 @@ export const CLIENT_OBJECT_MESSAGE_HANDLER = {
     target.play({ motion: data.motion, ...data.options });
     return Promise.resolve();
   },
-
-  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL]: (data) => {
-    const { controller, app } = global;
-    if (!controller) {
-      throw new Error('No controller.');
-    }
-    const { width, height } = app.screen;
-
-    const target = shard.objects.find(data.target);
-    controller.target = target;
-    shard.camera.follow(target);
-
-    const cc = controller.container;
-    cc.hitArea = new Rectangle(0, 0, width, height);
-    app.stage.addChild(cc);
-
-    return Promise.resolve();
-  },
-
-  [BUILT_IN_SERVER_MESSAGE_TYPES.CONTROL_RELEASE]: () => {
-    const { controller, app } = global;
-    if (!controller) {
-      throw new Error('No controller.');
-    }
-    controller.release();
-    app.stage.removeChild(controller.container);
-  },
 };
 

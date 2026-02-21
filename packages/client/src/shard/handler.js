@@ -56,8 +56,6 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
     });
 
     await shard.load.after(shard.container);
-
-    shard.container.alpha = 1;
   },
 
   [BUILT_IN_SERVER_MESSAGE_TYPES.CAMERA_FOCUS]:

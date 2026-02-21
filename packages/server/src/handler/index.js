@@ -1,4 +1,5 @@
 
+import { SHARD_HANDLER } from '../shard/handler.js';
 import { CONTROLLER_HANDLER } from './controller.js';
 import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 
@@ -11,6 +12,7 @@ import { BUILT_IN_CLIENT_MESSAGE_TYPES } from '@iyagi/commons';
 
 const map = new Map([
   ...Object.entries(CONTROLLER_HANDLER),
+  ...Object.entries(SHARD_HANDLER),
   [BUILT_IN_CLIENT_MESSAGE_TYPES.SHARD_LOADED, (user) => {
     user.shard.loaded$.next(user);
   }],
