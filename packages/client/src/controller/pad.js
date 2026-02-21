@@ -128,6 +128,8 @@ export const pad = {
   init: () => {
     window.addEventListener('touchstart', touchStart, { passive: false });
   },
-  tap$: tap$.asObservable(),
-  gesture$: gesture$.asObservable(),
+  export: {
+    tap$: tap$.asObservable(),
+    gesture$: gesture$.asObservable(),
+  },
 };

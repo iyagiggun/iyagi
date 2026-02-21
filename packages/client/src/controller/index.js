@@ -6,12 +6,6 @@ export const icontroller = {
     joystick.init();
     pad.init();
   },
-  joystick: {
-    tap$: joystick.tap$,
-    move$: joystick.move$,
-  },
-  pad: {
-    tap$: pad.tap$,
-    gesture$: pad.gesture$,
-  },
+  joystick: joystick.export,
+  pad: pad.export,
 };

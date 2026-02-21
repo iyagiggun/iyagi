@@ -28,11 +28,24 @@ const delta = { x: 0, y: 0 };
 /**
  * @type { Subject<import('@iyagi/commons/coords').XY> }
  */
+const start$ = new Subject();
+/**
+ * @type { Subject<import('@iyagi/commons/coords').XY> }
+ */
 const move$ = new Subject();
 /**
  * @type { Subject<void> }
  */
 const tap$ = new Subject();
+/**
+ * @type { Subject<void> }
+ */
+const end$ = new Subject();
+
+/**
+ * @type {import('../object/index.js').ClientObjectType | null}
+ */
+let target = null;
 
 /**
  * @param {number} x
@@ -75,6 +88,7 @@ const touchStart = (evt) => {
   window.addEventListener('touchmove', touchMove, { passive: false });
   window.addEventListener('touchend', touchEnd, { passive: false });
 
+  start$.next(start);
 };
 
 /**
@@ -122,12 +136,29 @@ const touchEnd = (evt) => {
   delta.x = 0;
   delta.y = 0;
   activatedAt = null;
+  end$.next();
 };
 
 export const joystick = {
   init: () => {
     window.addEventListener('touchstart', touchStart, { passive: false });
   },
-  move$: move$.asObservable(),
-  tap$: tap$.asObservable(),
+  export: {
+    start$: start$.asObservable(),
+    move$: move$.asObservable(),
+    tap$: tap$.asObservable(),
+    end$: end$.asObservable(),
+    /**
+     * @returns {import('../object/index.js').ClientObjectType | null}
+     */
+    get target() {
+      return target;
+    },
+    /**
+     * @param {import('../object/index.js').ClientObjectType | null} _target
+     */
+    set target(_target) {
+      target = _target;
+    },
+  },
 };
