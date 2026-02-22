@@ -10,9 +10,6 @@ import { ShardForge } from '../shard/forge.js';
  * @typedef {{ send: (data: string) => void }} Socket
  */
 
-/**
- * @template [T=unknown]
- */
 export class User {
 
   #key;
@@ -29,18 +26,15 @@ export class User {
    * @param {string} param.name
    * @param {string} param.shard
    * @param {import('../object/index.js').ServerObjectType} param.avatar
-   * @param {T} param.state
    */
   constructor({
     key,
     name,
     shard,
     avatar,
-    state,
   }) {
     this.#key = key;
     this.shard = ShardForge.seek(shard);
-    this.state = state;
     this.name = name;
     this.avatar = avatar;
     this.controllable = false;
