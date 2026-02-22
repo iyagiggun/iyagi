@@ -16,7 +16,7 @@ export const StageDirector = {
   },
 
   /**
-   * @param {import('../object/index.js').ServerObject} target
+   * @param {import('../object/index.js').Obj} target
    * @param {string} motion
    * @param {object} [options]
    * @param {number} [options.speed]
@@ -36,7 +36,7 @@ export const StageDirector = {
   },
 
   /**
-   * @param {string | import('../object/index.js').ServerObject} target
+   * @param {string | import('../object/index.js').Obj} target
    */
   remove(target) {
     const id = typeof target === 'string' ? target : target.id;

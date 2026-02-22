@@ -1,9 +1,9 @@
 export const Pathfinder = {
   /**
    * @param {{
-   *  finder: import("../../index.js").ServerObjectType,
+   *  finder: import("../../index.js").ObjType,
    *  dest: import("@iyagi/commons/coords").XY
-   *  objects?: import("../../index.js").ServerObjectType[],
+   *  objects?: import("../../index.js").ObjType[],
    *  size: number,
    * }} p
    */

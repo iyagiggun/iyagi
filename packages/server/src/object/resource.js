@@ -33,7 +33,8 @@
  */
 
 /**
- * @typedef ObjectResourceData
+ * @typedef ObjResourceParam
+ * @property {string} key
  * @property {SpriteInfo} sprite
  * @property {import('@iyagi/commons/coords').Shape} shape
  */
@@ -56,18 +57,17 @@ const calcOffset = (shape) => {
   throw new Error('invalid shape');
 };
 
-export class ServerObjectResource {
+export class ObjResource {
   #key;
   /**
-   * @param {string} key
-   * @param {ObjectResourceData} data
+   * @param {ObjResourceParam} data
    */
-  constructor(key, data) {
-    if (RESOURCE_KEY_SET.has(key)) {
-      throw new Error(`Resource key "${key}" already exists.`);
+  constructor(data) {
+    if (RESOURCE_KEY_SET.has(data.key)) {
+      throw new Error(`Resource key "${data.key}" already exists.`);
     }
-    RESOURCE_KEY_SET.add(key);
-    this.#key = key;
+    RESOURCE_KEY_SET.add(data.key);
+    this.#key = data.key;
 
     const offsetByShape = calcOffset(data.shape);
     this.data = {
@@ -82,6 +82,9 @@ export class ServerObjectResource {
     };
   }
 
+  /**
+   * @readonly
+   */
   get key() {
     return this.#key;
   }

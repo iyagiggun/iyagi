@@ -18,7 +18,7 @@ class ObjectResource {
 
   /**
    * @param {string} key
-   * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>['sprite']} sprite
+   * @param {ReturnType<import('@iyagi/server/object').ObjResourceType['toClientData']>['sprite']} sprite
    */
   constructor(key, sprite) {
     this.#key = key;

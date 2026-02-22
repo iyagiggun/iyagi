@@ -22,7 +22,7 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
 
     await Promise.all(data.shard.resources.map(
       /**
-      * @param {ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>} r
+      * @param {ReturnType<import('@iyagi/server/object').ObjResourceType['toClientData']>} r
        */
       (r) => {
         const resource = ObjectResource.pool.get(r.key) ?? new ObjectResource(r.key, r.sprite);
@@ -32,7 +32,7 @@ export const CLIENT_SHARD_MESSAGE_HANDLER = {
 
     await Promise.all(data.shard.objects.map(
       /**
-       * @param {ReturnType<import('@iyagi/server/object').ServerObjectType['toClientData']>} info
+       * @param {ReturnType<import('@iyagi/server/object').ObjType['toClientData']>} info
        */
       (info) => {
         const resource = ObjectResource.pool.get(info.resource);

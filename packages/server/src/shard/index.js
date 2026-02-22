@@ -5,7 +5,7 @@ import { Fields } from '../field/fields.js';
 import { ShardUsers } from './users.js';
 /**
  * @typedef {{
- *  target: import('../object/index.js').ServerObject,
+ *  target: import('../object/index.js').Obj,
  *  before: import('@iyagi/commons/coords').XYZ,
  *  after: import('@iyagi/commons/coords').XYZ,
  * }} MovePayload
@@ -32,14 +32,14 @@ export class Shard {
   #move$ = new Subject();
   move$ = this.#move$.asObservable();
 
-  /** @type {Subject<{ user: import('../user/index.js').UserType, target: import('../object/index.js').ServerObjectType }>} */
+  /** @type {Subject<{ user: import('../user/index.js').UserType, target: import('../object/index.js').ObjType }>} */
   #interaction$ = new Subject();
   interaction$ = this.#interaction$.asObservable();
 
   /**
    * @param {Object} p
    * @param {string} p.key
-   * @param {import('../object/index.js').ServerObject[]} p.objects
+   * @param {import('../object/index.js').Obj[]} p.objects
    * @param {import('../field/index.js').Field[]} [p.fields]
    */
   constructor({
@@ -161,7 +161,7 @@ export class Shard {
   }
 
   /**
-   * @param {import('../object/index.js').ServerObject} target
+   * @param {import('../object/index.js').Obj} target
    * @param {{
    *  x?: number,
    *  y?: number,

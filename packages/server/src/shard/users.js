@@ -1,4 +1,4 @@
-import { ServerObject } from '../object/index.js';
+import { Obj } from '../object/index.js';
 
 export class ShardUsers {
 
@@ -30,10 +30,10 @@ export class ShardUsers {
   }
 
   /**
-   * @param {ServerObject} p
+   * @param {Obj} p
    */
   find(p) {
-    if (p instanceof ServerObject) {
+    if (p instanceof Obj) {
       return this.list().find((u) => u.avatar === p);
     }
     throw new Error('Invalid argument: p should be an instance of ServerObject');

@@ -13,7 +13,7 @@ const DEFAULT_COMPLETE = () => undefined;
  *  id: string
  *  name?: string
  *  texture: import('./texture.js').default
- *  sprite: ReturnType<import('@iyagi/server/object').ServerObjectResourceType['toClientData']>['sprite']
+ *  sprite: ReturnType<import('@iyagi/server/object').ObjResourceType['toClientData']>['sprite']
  *  portrait: import('./portrait.js').PortraitType
  * }} ClientObjectParams
  */

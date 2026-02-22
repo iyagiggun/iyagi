@@ -2,8 +2,8 @@
 export const Watcher = {
   /**
    * @param {{
-   *  observer: import("../../index.js").ServerObjectType,
-   *  targets: import("../../index.js").ServerObjectType[],
+   *  observer: import("../../index.js").ObjType,
+   *  targets: import("../../index.js").ObjType[],
    * }} p
    */
   find({ observer, targets }) {

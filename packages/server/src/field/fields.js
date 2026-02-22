@@ -5,7 +5,7 @@ export class Fields {
   #objects;
 
   /**
-   * @param {import("../object/index.js").ServerObjectType[]} objects
+   * @param {import("../object/index.js").ObjType[]} objects
    */
   constructor(objects) {
     this.#objects = objects;
@@ -36,7 +36,7 @@ export class Fields {
   }
 
   /**
-   * @param {import("../object/index.js").ServerObjectType} object
+   * @param {import("../object/index.js").ObjType} object
    */
   check(object) {
     this.#fields.forEach((field) => {

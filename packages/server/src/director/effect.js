@@ -1,9 +1,9 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { Shard } from '../shard/index.js';
-import { ServerObject } from '../object/index.js';
+import { Obj } from '../object/index.js';
 
 /**
- * @typedef {Shard | ServerObject} EffectTarget
+ * @typedef {Shard | Obj} EffectTarget
  */
 
 /**
@@ -15,7 +15,7 @@ const toClientEffectTarget = (target) => {
       type: 'SHARD',
     };
   }
-  if (target instanceof ServerObject) {
+  if (target instanceof Obj) {
     return {
       type: 'OBJECT',
       id: target.id,
@@ -26,7 +26,7 @@ const toClientEffectTarget = (target) => {
 
 export const EffectDirector = {
   /**
-   * @param {Shard | ServerObject} target
+   * @param {Shard | Obj} target
    * @param {*} [options]
    * @returns {import('../const/index.js').ServerMessage}
    */

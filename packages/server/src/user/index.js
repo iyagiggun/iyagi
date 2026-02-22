@@ -2,12 +2,16 @@ import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { ShardForge } from '../shard/forge.js';
 
 /**
- * @typedef {Object} Avatar
- * @property {import('../object/index.js').ServerObjectResourceType} resource
+ * @typedef {{ send: (data: string) => void }} Socket
  */
 
 /**
- * @typedef {{ send: (data: string) => void }} Socket
+ * @typedef {{
+ *  key: string;
+ *  name: string;
+ *  shard: string;
+ *  avatar: import('../object/index.js').ObjType;
+ * }} UserParam
  */
 
 export class User {
@@ -21,11 +25,7 @@ export class User {
   socket = null;
 
   /**
-   * @param {object} param
-   * @param {string} param.key
-   * @param {string} param.name
-   * @param {string} param.shard
-   * @param {import('../object/index.js').ServerObjectType} param.avatar
+   * @param {UserParam} param
    */
   constructor({
     key,

@@ -1,8 +1,8 @@
-import { Subject } from 'rxjs';
-import { ServerObjectResource } from './resource.js';
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
-import { NAI } from './NAI/index.js';
+import { Subject } from 'rxjs';
 import { FRAMES_PER_SECOND } from '../const/index.js';
+import { NAI } from './NAI/index.js';
+import { ObjResource } from './resource.js';
 
 /**
  * @typedef {import("@iyagi/commons/coords").Direction} Direction
@@ -18,13 +18,13 @@ const MOVE_TIME_UNIT = 1000; // 1sec
 const instanceIdxMap = new Map();
 
 /**
- * @typedef {Object} ServerObjectOptions
+ * @typedef {Object} ObjOptions
  * @property {string} [name]
  * @property {string} [id]
  * @property {string | Object<string, string>} [portraits]
  */
 
-export class ServerObject {
+export class Obj {
   /** @type {string | undefined} */
   #name;
 
@@ -52,8 +52,8 @@ export class ServerObject {
   #moveSpeed = FRAMES_PER_SECOND; // pixels per second
 
   /**
-   * @param {ServerObjectResource} r
-   * @param {ServerObjectOptions} [o]
+   * @param {ObjResourceType} r
+   * @param {ObjOptions} [o]
    */
   constructor(r, o) {
     this.#name = o?.name;
@@ -289,11 +289,10 @@ export class ServerObject {
   }
 }
 
-export { ServerObjectResource };
-export { NAI };
+export { NAI, ObjResource };
 
 /**
- * @typedef { ServerObject } ServerObjectType
- * @typedef { ServerObjectResource } ServerObjectResourceType
- * @typedef { import('./resource.js').ObjectResourceData } ServerObjectResourceData
-  */
+ * @typedef {Obj} ObjType
+ * @typedef {ObjResource} ObjResourceType
+ */
+

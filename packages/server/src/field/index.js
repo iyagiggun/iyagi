@@ -3,14 +3,14 @@ import { Subject } from 'rxjs';
 
 /**
  * @typedef {{
- *  target: import('../object/index.js').ServerObjectType;
+ *  target: import('../object/index.js').ObjType;
  *  ratio: number;
  * }} InPayload
  */
 
 /**
  * @typedef {{
- *  target: import('../object/index.js').ServerObjectType;
+ *  target: import('../object/index.js').ObjType;
  * }} OutPayload
  */
 
@@ -31,7 +31,7 @@ export class Field {
   out$ = this.#out$.asObservable();
 
   /**
-   * @type {Set<import("../object/index.js").ServerObjectType>}
+   * @type {Set<import("../object/index.js").ObjType>}
    */
   #incomming = new Set();
 
@@ -50,7 +50,7 @@ export class Field {
   }
 
   /**
-   * @param {import("../object/index.js").ServerObjectType} object
+   * @param {import("../object/index.js").ObjType} object
    */
   checkIn(object) {
     if (this.#incomming.has(object)) return;
@@ -66,7 +66,7 @@ export class Field {
   }
 
   /**
-   * @param {import("../object/index.js").ServerObjectType} object
+   * @param {import("../object/index.js").ObjType} object
    */
   checkOut(object) {
     if (!this.#incomming.has(object)) return;
