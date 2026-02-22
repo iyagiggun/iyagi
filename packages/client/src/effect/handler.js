@@ -1,7 +1,6 @@
 import { BUILT_IN_SERVER_MESSAGE_TYPES } from '@iyagi/commons';
 import { easeInOutSine } from '@iyagi/commons/coords';
 import global from '../global/index.js';
-import { CLIENT_OBJECT_CONTAINER_LABEL } from '../object/index.js';
 import { objects } from '../object/objects.js';
 
 /**
@@ -17,14 +16,14 @@ export const CLIENT_EFFECT_MESSAGE_HANDLER = {
   [BUILT_IN_SERVER_MESSAGE_TYPES.EFFECT_JUMP]: (data) => {
     const ticker = global.app.ticker;
 
-    const object = toObject(data.target);
-    const container = object.container;
+    const target = toObject(data.target);
+    const container = target.container;
 
     const jumpHeight = 18;
     const duration = 18; // 프레임 수 (약 0.67초 @60fps)
     let frame = 0;
 
-    const notShadow = container.children.filter((child) => child.label !== CLIENT_OBJECT_CONTAINER_LABEL.SHADOW);
+    const notShadow = container.children.filter((child) => child !== target.shadow);
     let lastEased = 0;
 
     return new Promise((resolve) => {

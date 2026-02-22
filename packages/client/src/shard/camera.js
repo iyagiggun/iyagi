@@ -21,15 +21,13 @@ export const camera = (container) => {
   let release = null;
 
   /**
-   * @param {import('@iyagi/commons/coords').XY} xy
-   * @param {Object} [options]
-   * @param {1 | 2 | 3} [options.speed]
+   * @param {import('@iyagi/commons/coords').XY & { speed?: number }} p
    * @returns {Promise<void>}
    */
-  const move = (xy, { speed: _speed } = {}) => {
+  const move = ({ x, y, speed: _speed }) => {
     release?.();
 
-    const { x: destX, y: destY } = getContainerPos(xy);
+    const { x: destX, y: destY } = getContainerPos({ x, y });
     if (!_speed) {
       container.x = destX;
       container.y = destY;

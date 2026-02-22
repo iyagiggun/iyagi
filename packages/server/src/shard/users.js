@@ -5,12 +5,17 @@ export class ShardUsers {
   /** @type {Set<import('../user/index.js').UserType>} */
   #set = new Set();
 
-  /** @param {import('../user/index.js').UserType} user */
+
+  /**
+   * @param {import('../user/index.js').UserType} user
+   */
   add(user) {
     this.#set.add(user);
   }
 
-  /** @param {import('../user/index.js').UserType} user */
+  /**
+   * @param {import('../user/index.js').UserType} user
+   */
   delete(user) {
     this.#set.delete(user);
   }

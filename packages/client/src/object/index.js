@@ -8,10 +8,6 @@ import { Subject } from 'rxjs';
 
 const DEFAULT_COMPLETE = () => undefined;
 
-export const CLIENT_OBJECT_CONTAINER_LABEL = {
-  SHADOW: 'shadow',
-};
-
 /**
  * @typedef {{
  *  id: string
@@ -79,17 +75,16 @@ export default class ClientObject {
     this.set(this.#motion, this.#direction);
 
     if (sprite.shadow) {
-      const shadow = new Graphics();
-      shadow.label = CLIENT_OBJECT_CONTAINER_LABEL.SHADOW;
-      shadow.ellipse(0, 0, sprite.shadow.w / 2, sprite.shadow.h / 2);
-      shadow.fill({
+      this.shadow = new Graphics();
+      this.shadow.ellipse(0, 0, sprite.shadow.w / 2, sprite.shadow.h / 2);
+      this.shadow.fill({
         color: 0x000000,
         alpha: 0.4,
       });
-      shadow.x = sprite.shadow.x + this.#offset.x;
-      shadow.y = sprite.shadow.y + this.#offset.y;
+      this.shadow.x = sprite.shadow.x + this.#offset.x;
+      this.shadow.y = sprite.shadow.y + this.#offset.y;
 
-      this.container.addChildAt(shadow, 0);
+      this.container.addChildAt(this.shadow, 0);
     }
   }
 
